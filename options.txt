@@ -1,0 +1,11 @@
+# Options file holding the persistent datas of Bombermen.
+# The file has a specific format, do not remove or change lines unless you know what you're doing!
+# 
+# Client options:
+localhost|3||38|40|39|37|17|16|82|70|71|68|65|81|104|101|102|100|107|109|73|75|76|74|72|89|test|classic|true|true|0|0|43762|4|joe|Coffee|Bomber|Men|Player_4|0|10|20|7|85|85|85|85|
+# Server options:
+<randomly generated>|0|90|5||50|true|false|true|false|true|false|true|true|1|90|100|30|43762|0|17|13|4|10|1|false|false|false|true|true|true|false|false|false|false|false|false|false|10|2|10|10|10|5|5|5|5|5|2|2|2|10|5|5|10|10|10|10|10|10|10|
+# Menu states:
+false|true|
+# Window positions:
+476|14|1023|903|693|837|
