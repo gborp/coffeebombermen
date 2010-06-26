@@ -8,8 +8,9 @@ import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NA
 import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_STRING;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 import classes.GameManager;
 import classes.MainFrame;
@@ -64,7 +65,8 @@ import classes.utils.TimedIterableControlledThread;
  * 
  * @author Andras Belicza
  */
-public class Server extends TimedIterableControlledThread implements OptionsChangeListener<ServerOptions> {
+public class Server extends TimedIterableControlledThread implements
+		OptionsChangeListener<ServerOptions> {
 
 	/**
 	 * Commands to be sent to the server, interpreted by us.
@@ -90,52 +92,52 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	}
 
 	/** Name of the server as a chat client whithout extra signs. */
-	public static final String                  BASE_SERVER_CHAT_NAME           = "<Server>";
+	public static final String BASE_SERVER_CHAT_NAME = "<Server>";
 	/**
 	 * Name of the server as a chat client included a ':' and a space at the
 	 * end.
 	 */
-	public static final String                  SERVER_CHAT_NAME                = BASE_SERVER_CHAT_NAME + ": ";
+	public static final String SERVER_CHAT_NAME = BASE_SERVER_CHAT_NAME + ": ";
 
 	/** Reference to the server options manager. */
 	private final OptionsManager<ServerOptions> serverOptionsManager;
 	/** Reference to the main frame. */
-	private final MainFrame                     mainFrame;
+	private final MainFrame mainFrame;
 	/** Reference to the game manager. */
-	private final GameManager                   gameManager;
+	private final GameManager gameManager;
 	/** The player collector. */
-	private volatile PlayerCollector            playerCollector;
+	private volatile PlayerCollector playerCollector;
 	/** Vector of client contacts. */
-	private final Vector<ClientContact>         clientContacts                  = new Vector<ClientContact>();
+	private final List<ClientContact> clientContacts = new ArrayList<ClientContact>();
 	/** Tells whether starting of game has been requested. */
-	private volatile boolean                    requestedToStartGame            = false;
+	private volatile boolean requestedToStartGame = false;
 	/** Tells whether ending of game has been requested. */
-	private volatile boolean                    requestedToEndGame              = false;
+	private volatile boolean requestedToEndGame = false;
 	/**
 	 * The state of the game. The clients state (stored at MainMenuBar) will be
 	 * synchronized to this by commands.
 	 */
-	private volatile GameStates                 gameState;
+	private volatile GameStates gameState;
 
 	/**
 	 * Counter of iterations. Used to determine whether we have to send
 	 * STARTING_NEXT_ITERATION command or we can start next iteration without it
 	 * based on the network latency.
 	 */
-	private int                                 iterationCounter;
+	private int iterationCounter;
 
 	/** in ms */
-	private static final long                   DELAY_START_SHRINKING_GAME_AREA = 1000 * 30;
-	private static final long                   DELAY_SHRINKING_GAME_AREA       = 500;
-	private long                                gameStartedAt;
-	private long                                lastShrinkOperationAt;
-	private int                                 lastNewWallX;
-	private int                                 lastNewWallY;
-	private int                                 shrinkMinX;
-	private int                                 shrinkMinY;
-	private int                                 shrinkMaxX;
-	private int                                 shrinkMaxY;
-	private ShrinkDirection                     lastShrinkDirection;
+	private static final long DELAY_START_SHRINKING_GAME_AREA = 1000 * 30;
+	private static final long DELAY_SHRINKING_GAME_AREA = 500;
+	private long gameStartedAt;
+	private long lastShrinkOperationAt;
+	private int lastNewWallX;
+	private int lastNewWallY;
+	private int shrinkMinX;
+	private int shrinkMinY;
+	private int shrinkMaxX;
+	private int shrinkMaxY;
+	private ShrinkDirection lastShrinkDirection;
 
 	private enum ShrinkDirection {
 		RIGHT, DOWN, LEFT, UP
@@ -151,7 +153,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 * @param gameManager
 	 *            reference to the game manager
 	 */
-	public Server(final OptionsManager<ServerOptions> serverOptionsManager, final MainFrame mainFrame, final GameManager gameManager) {
+	public Server(final OptionsManager<ServerOptions> serverOptionsManager,
+			final MainFrame mainFrame, final GameManager gameManager) {
 		super(20); // This frequency will not be used, will be overwritten when
 		// game starts
 		this.serverOptionsManager = serverOptionsManager;
@@ -173,7 +176,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 			while (playerCollector == null)
 				Thread.sleep(1l); // Very small because if server socket is
 			// created, we should join first
-		} catch (final InterruptedException ie) {}
+		} catch (final InterruptedException ie) {
+		}
 		if (playerCollector != null)
 			return playerCollector.isServerSocketCreated();
 		return false;
@@ -205,14 +209,16 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 * Collects players until game starting or cancel is requested.
 	 */
 	private void collectPlayers() {
-		playerCollector = new PlayerCollector(this, serverOptionsManager, clientContacts, mainFrame);
+		playerCollector = new PlayerCollector(this, serverOptionsManager,
+				clientContacts, mainFrame);
 
 		while (!requestedToCancel && !requestedToStartGame) {
 			playerCollector.nextIteration();
 			checkForNewCommands();
 			try {
 				sleep(1l);
-			} catch (final InterruptedException ie) {}
+			} catch (final InterruptedException ie) {
+			}
 		}
 		playerCollector.close();
 		playerCollector = null;
@@ -230,7 +236,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		lastShrinkOperationAt = 0;
 
 		// Game starting protocol
-		broadcastCommand(Client.Commands.STARTING_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.STARTING_GAME.ordinal()
+				+ GENERAL_SEPARATOR_STRING);
 
 		// Sending all required options and datas for a new game...
 		broadcastCommand("" + new Random().nextLong());
@@ -251,7 +258,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		startNextRound();
 		try {
 			Thread.sleep(2000);
-		} catch (InterruptedException ex) {}
+		} catch (InterruptedException ex) {
+		}
 		broadcastStartingNextIterationCommand();
 
 		gameStartedAt = System.currentTimeMillis();
@@ -260,7 +268,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		// every iteration, if it's HIGH, we send in every 2, and if it's
 		// EXTRA_HIGH, we send in every 4.
 		final int ITERATION_NETWORK_LATENCY_MASK = serverOptions.networkLatency == NetworkLatencies.LOW ? 0
-		        : (serverOptions.networkLatency == NetworkLatencies.HIGH ? 1 : 3);
+				: (serverOptions.networkLatency == NetworkLatencies.HIGH ? 1
+						: 3);
 		while (!requestedToCancel && !requestedToEndGame) {
 
 			if (nextIterationMayBegin) {
@@ -280,10 +289,12 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 			checkForNewCommands();
 			try {
 				sleep(1l);
-			} catch (final InterruptedException ie) {}
+			} catch (final InterruptedException ie) {
+			}
 		}
 
-		broadcastCommand(Client.Commands.ENDING_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.ENDING_GAME.ordinal()
+				+ GENERAL_SEPARATOR_STRING);
 		requestedToEndGame = false;
 	}
 
@@ -303,12 +314,15 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 */
 	private void broadcastStartingNextIterationCommand() {
 		StringBuilder newClientsActions = new StringBuilder();
-		newClientsActions.append(Integer.toString(Client.Commands.STARTING_NEXT_ITERATION.ordinal()));
+		newClientsActions.append(Integer
+				.toString(Client.Commands.STARTING_NEXT_ITERATION.ordinal()));
 		newClientsActions.append(GENERAL_SEPARATOR_STRING);
 
 		long now = System.currentTimeMillis();
-		if (gameStartedAt != 0 && (now - gameStartedAt) > DELAY_START_SHRINKING_GAME_AREA) {
-			if (lastShrinkOperationAt == 0 || ((now - lastShrinkOperationAt) > DELAY_SHRINKING_GAME_AREA)) {
+		if (gameStartedAt != 0
+				&& (now - gameStartedAt) > DELAY_START_SHRINKING_GAME_AREA) {
+			if (lastShrinkOperationAt == 0
+					|| ((now - lastShrinkOperationAt) > DELAY_SHRINKING_GAME_AREA)) {
 
 				int newWallX = lastNewWallX;
 				int newWallY = lastNewWallY;
@@ -331,46 +345,48 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 						newWallX = -1;
 					} else {
 						switch (lastShrinkDirection) {
-							case RIGHT:
-								newWallX++;
-								if (newWallX == shrinkMaxX) {
-									lastShrinkDirection = ShrinkDirection.DOWN;
-									shrinkMaxX--;
-								}
-								break;
-							case DOWN:
-								newWallY++;
-								if (newWallY == shrinkMaxY) {
-									lastShrinkDirection = ShrinkDirection.LEFT;
-									shrinkMaxY--;
-								}
-								break;
-							case LEFT:
-								newWallX--;
-								if (newWallX == shrinkMinX) {
-									lastShrinkDirection = ShrinkDirection.UP;
-									shrinkMinX++;
-								}
-								break;
-							case UP:
-								newWallY--;
-								if (newWallY == shrinkMinY) {
-									lastShrinkDirection = ShrinkDirection.RIGHT;
-									shrinkMinY++;
-								}
-								break;
+						case RIGHT:
+							newWallX++;
+							if (newWallX == shrinkMaxX) {
+								lastShrinkDirection = ShrinkDirection.DOWN;
+								shrinkMaxX--;
+							}
+							break;
+						case DOWN:
+							newWallY++;
+							if (newWallY == shrinkMaxY) {
+								lastShrinkDirection = ShrinkDirection.LEFT;
+								shrinkMaxY--;
+							}
+							break;
+						case LEFT:
+							newWallX--;
+							if (newWallX == shrinkMinX) {
+								lastShrinkDirection = ShrinkDirection.UP;
+								shrinkMinX++;
+							}
+							break;
+						case UP:
+							newWallY--;
+							if (newWallY == shrinkMinY) {
+								lastShrinkDirection = ShrinkDirection.RIGHT;
+								shrinkMinY++;
+							}
+							break;
 						}
 					}
 				}
 
-				if (newWallX >= 0 && newWallX < width && newWallY >= 0 && newWallY < height) {
+				if (newWallX >= 0 && newWallX < width && newWallY >= 0
+						&& newWallY < height) {
 					newClientsActions.append("wall ");
 					newClientsActions.append(Integer.toString(newWallX));
 					newClientsActions.append(' ');
 					newClientsActions.append(Integer.toString(newWallY));
 					newClientsActions.append(' ');
 					newClientsActions.append('d');
-					newClientsActions.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+					newClientsActions
+							.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 				}
 				lastShrinkOperationAt = now;
@@ -421,42 +437,59 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 			final ClientContact clientContact = clientContacts.get(i);
 			messageLoop: while (clientContact.connectionStub.hasNewMessage())
 				try {
-					final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(clientContact.connectionStub.receiveMessage());
+					final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(
+							clientContact.connectionStub.receiveMessage());
 					switch (Commands.values()[commandTokenizer.nextIntToken()]) {
-						// The message loop checks
-						// Commands.READY_FOR_NEXT_ITERATION and
-						// Commands.MESSAGE first,
-						// because these are the most frequent commands.
-						case READY_FOR_NEXT_ITERATION:
-							clientContact.newClientActions = commandTokenizer.hasRemainingString() ? commandTokenizer.remainingString() : "";
-							break;
-						case MESSAGE:
-							broadcastMessage(clientContact.publicClientOptions.clientName + ": " + commandTokenizer.remainingString());
-							break;
-						case QUIT:
-							handleClientLeaving(clientContact);
-							break messageLoop; // We're not trying read more
-						// message (would not be
-						// error/exception without this
-						// because connectionStub would
-						// simply return that no more
-						// message is available)
-						case SENDING_PUBLIC_CLIENT_OPTIONS:
-							clientContact.publicClientOptions = PublicClientOptions.parseFromString(commandTokenizer.remainingString());
-							broadcastCommand(Client.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING + i + GENERAL_SEPARATOR_STRING
-							        + clientContact.publicClientOptions.packToString());
-							break;
-						case REQUESTING_SERVER_OPTIONS:
-							clientContact.connectionStub.sendMessage(Client.Commands.SENDING_SERVER_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING
-							        + serverOptionsManager.getOptions().packToString());
-							break;
+					// The message loop checks
+					// Commands.READY_FOR_NEXT_ITERATION and
+					// Commands.MESSAGE first,
+					// because these are the most frequent commands.
+					case READY_FOR_NEXT_ITERATION:
+						clientContact.newClientActions = commandTokenizer
+								.hasRemainingString() ? commandTokenizer
+								.remainingString() : "";
+						break;
+					case MESSAGE:
+						broadcastMessage(clientContact.publicClientOptions.clientName
+								+ ": " + commandTokenizer.remainingString());
+						break;
+					case QUIT:
+						handleClientLeaving(clientContact);
+						break messageLoop; // We're not trying read more
+					// message (would not be
+					// error/exception without this
+					// because connectionStub would
+					// simply return that no more
+					// message is available)
+					case SENDING_PUBLIC_CLIENT_OPTIONS:
+						clientContact.publicClientOptions = PublicClientOptions
+								.parseFromString(commandTokenizer
+										.remainingString());
+						broadcastCommand(Client.Commands.SENDING_PUBLIC_CLIENT_OPTIONS
+								.ordinal()
+								+ GENERAL_SEPARATOR_STRING
+								+ i
+								+ GENERAL_SEPARATOR_STRING
+								+ clientContact.publicClientOptions
+										.packToString());
+						break;
+					case REQUESTING_SERVER_OPTIONS:
+						clientContact.connectionStub
+								.sendMessage(Client.Commands.SENDING_SERVER_OPTIONS
+										.ordinal()
+										+ GENERAL_SEPARATOR_STRING
+										+ serverOptionsManager.getOptions()
+												.packToString());
+						break;
 
-						case PLAYER_DIED:
-							// TODO clientContact.publicClientOptions.clientName
-							System.out.println("Server.checkForNewCommands() " + commandTokenizer.remainingString());
-							break;
+					case PLAYER_DIED:
+						// TODO clientContact.publicClientOptions.clientName
+						System.out.println("Server.checkForNewCommands() "
+								+ commandTokenizer.remainingString());
+						break;
 					}
-				} catch (final Exception e) {}
+				} catch (final Exception e) {
+				}
 		}
 	}
 
@@ -467,7 +500,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 *            message to be broadcasted
 	 */
 	public void broadcastMessage(final String message) {
-		broadcastCommand(Client.Commands.MESSAGE.ordinal() + GENERAL_SEPARATOR_STRING + message);
+		broadcastCommand(Client.Commands.MESSAGE.ordinal()
+				+ GENERAL_SEPARATOR_STRING + message);
 	}
 
 	/**
@@ -481,7 +515,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		for (final ClientContact clientContact : clientContacts)
 			try {
 				clientContact.connectionStub.sendMessage(command);
-			} catch (final IOException ie) {}
+			} catch (final IOException ie) {
+			}
 	}
 
 	/**
@@ -493,7 +528,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		try {
 			while (gameState != GameStates.PLAYING)
 				Thread.sleep(1l);
-		} catch (final InterruptedException ie) {}
+		} catch (final InterruptedException ie) {
+		}
 	}
 
 	/**
@@ -504,14 +540,16 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		try {
 			while (gameState == GameStates.PLAYING)
 				Thread.sleep(1l);
-		} catch (final InterruptedException ie) {}
+		} catch (final InterruptedException ie) {
+		}
 	}
 
 	/**
 	 * Starts next round of the game.
 	 */
 	public void startNextRound() {
-		broadcastCommand(Client.Commands.STARTING_NEXT_ROUND.ordinal() + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.STARTING_NEXT_ROUND.ordinal()
+				+ GENERAL_SEPARATOR_STRING);
 	}
 
 	/**
@@ -523,8 +561,11 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	private void handleClientLeaving(final ClientContact clientContact) {
 		clientContacts.remove(clientContact);
 		clientContact.connectionStub.close();
-		broadcastCommand(Client.Commands.A_CLIENT_HAS_LEFT_THE_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
-		broadcastMessage(SERVER_CHAT_NAME + clientContact.publicClientOptions.clientName + " has left the game.");
+		broadcastCommand(Client.Commands.A_CLIENT_HAS_LEFT_THE_GAME.ordinal()
+				+ GENERAL_SEPARATOR_STRING);
+		broadcastMessage(SERVER_CHAT_NAME
+				+ clientContact.publicClientOptions.clientName
+				+ " has left the game.");
 	}
 
 	/**
@@ -539,7 +580,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 *            DONE, ITS CONSTANT FOR A GAME, AND IS SET AT THE STARTING OF
 	 *            ALL GAME!
 	 */
-	public void optionsChanged(final ServerOptions oldOptions, ServerOptions newOptions) {}
+	public void optionsChanged(final ServerOptions oldOptions,
+			ServerOptions newOptions) {
+	}
 
 	/**
 	 * Closes the server. Invoked at the end of shutdown. Must not (not needed

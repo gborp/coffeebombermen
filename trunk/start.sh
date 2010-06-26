@@ -1,1 +1,1 @@
-java -jar coffeebombermen.jar -cp . 
+padsp java -jar coffeebombermen.jar -cp . 
