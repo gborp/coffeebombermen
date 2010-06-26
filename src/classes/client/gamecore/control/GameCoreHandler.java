@@ -9,9 +9,10 @@ import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
 import static classes.client.gamecore.Consts.MAX_PLAYER_VITALITY;
 import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
@@ -45,6 +46,10 @@ import classes.utils.GeneralStringTokenizer;
  */
 public class GameCoreHandler implements ModelProvider, ModelController {
 
+	private enum LEVEL_GEN_ITEM {
+		CONCRETE, UNKNOWN, ACCESSIBLE
+	}
+
 	/** Reference to the game manager. */
 	private final GameManager gameManager;
 	/** Reference to the main frame. */
@@ -59,7 +64,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	/** Random object to be used when we generate random datas. */
 	private final Random random;
 	/** Vector of public client options of the clients. */
-	private final Vector<PublicClientOptions> clientsPublicClientOptions;
+	private final List<PublicClientOptions> clientsPublicClientOptions;
 	/** Our client index, our place among the clients. */
 	private int ourClientIndex;
 
@@ -69,13 +74,13 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * The Player objects of the game. Every client has a player array, and this
 	 * is the vector of these arrays.
 	 */
-	private Vector<Player[]> clientsPlayers;
+	private List<Player[]> clientsPlayers;
 	/** This is a shortcut for the models of the players of all clients. */
-	private Vector<PlayerModel[]> clientsPlayerModels;
+	private List<PlayerModel[]> clientsPlayerModels;
 	/** The bombs of the game. */
-	private Vector<Bomb> bombs;
+	private List<Bomb> bombs;
 	/** Shortcut for the models of the bombs. */
-	private Vector<BombModel> bombModels;
+	private List<BombModel> bombModels;
 
 	/** Handler of the main component being the draw game animation component. */
 	private final MainComponentHandler drawGameAnimationMainComponentHandler;
@@ -108,7 +113,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	public GameCoreHandler(final GameManager gameManager,
 			final MainFrame mainFrame, final ServerOptions globalServerOptions,
 			final LevelModel levelModel, final Random random,
-			final Vector<PublicClientOptions> clientsPublicClientOptions,
+			final List<PublicClientOptions> clientsPublicClientOptions,
 			final int ourClientIndex) {
 		this.gameManager = gameManager;
 		this.mainFrame = mainFrame;
@@ -118,9 +123,9 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
 
-		clientsPlayers = new Vector<Player[]>(this.clientsPublicClientOptions
-				.size());
-		clientsPlayerModels = new Vector<PlayerModel[]>(
+		clientsPlayers = new ArrayList<Player[]>(
+				this.clientsPublicClientOptions.size());
+		clientsPlayerModels = new ArrayList<PlayerModel[]>(
 				this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
 			final PublicClientOptions publicClientOptions = this.clientsPublicClientOptions
@@ -170,8 +175,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 *            index of the client who has just left the game
 	 */
 	public void aClientHasLeftTheGame(final int clientIndex) {
-		clientsPlayers.removeElementAt(clientIndex);
-		clientsPlayerModels.removeElementAt(clientIndex);
+		clientsPlayers.remove(clientIndex);
+		clientsPlayerModels.remove(clientIndex);
 
 		if (ourClientIndex > clientIndex)
 			ourClientIndex--;
@@ -197,7 +202,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		final int maxComponentPosX = levelComponents[0].length - 2;
 		final int maxComponentPosY = levelComponents.length - 2;
 
-		final Vector<int[]> generatedStartPositions = new Vector<int[]>();
+		final ArrayList<int[]> generatedStartPositions = new ArrayList<int[]>();
 
 		// This is the quality of how perfectly can the players be positioned on
 		// the level.
@@ -283,8 +288,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 								+ LEVEL_COMPONENT_GRANULARITY / 2);
 			}
 
-		bombs = new Vector<Bomb>();
-		bombModels = new Vector<BombModel>();
+		bombs = new ArrayList<Bomb>();
+		bombModels = new ArrayList<BombModel>();
 	}
 
 	/**
@@ -330,10 +335,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		return level;
 	}
 
-	private enum LEVEL_GEN_ITEM {
-		CONCRETE, UNKNOWN, ACCESSIBLE
-	}
-
 	private void deblockLevel(LevelComponent[][] levelComponents, int width,
 			int height) {
 		LEVEL_GEN_ITEM[][] accessible = new LEVEL_GEN_ITEM[height][width];
@@ -347,7 +348,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				}
 			}
 		}
-		
 
 		boolean changed = true;
 
@@ -582,7 +582,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private void checkAndHandleBombDetonations() {
 		final LevelComponent[][] levelComponents = getLevelModel()
 				.getComponents();
-		final Vector<BombModel> detonatableBombModels = new Vector<BombModel>();
+		final ArrayList<BombModel> detonatableBombModels = new ArrayList<BombModel>();
 		boolean checkedAllBombModels;
 
 		// First we check the fire triggered bombs...
@@ -592,11 +592,13 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 					&& !levelComponents[bombModel.getComponentPosY()][bombModel
 							.getComponentPosX()].fireModelVector.isEmpty()) {
 				bombModel.setAboutToDetonate(true);
-				bombModel
-						.setTriggererPlayer(levelComponents[bombModel
-								.getComponentPosY()][bombModel
-								.getComponentPosX()].fireModelVector
-								.lastElement().getTriggererPlayer());
+
+				LevelComponent levelComp = levelComponents[bombModel
+						.getComponentPosY()][bombModel.getComponentPosX()];
+
+				bombModel.setTriggererPlayer(levelComp.fireModelVector.get(
+						levelComp.fireModelVector.size() - 1)
+						.getTriggererPlayer());
 			}
 
 		do {
@@ -718,7 +720,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * 
 	 * @return the players of all clients
 	 */
-	public Vector<PlayerModel[]> getClientsPlayerModels() {
+	public List<PlayerModel[]> getClientsPlayerModels() {
 		return clientsPlayerModels;
 	}
 
@@ -727,7 +729,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * 
 	 * @return the bomb models of the game
 	 */
-	public Vector<BombModel> getBombModels() {
+	public List<BombModel> getBombModels() {
 		return bombModels;
 	}
 
@@ -745,7 +747,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * 
 	 * @return the vector of public client options of the clients
 	 */
-	public Vector<PublicClientOptions> getClientsPublicClientOptions() {
+	public List<PublicClientOptions> getClientsPublicClientOptions() {
 		return clientsPublicClientOptions;
 	}
 

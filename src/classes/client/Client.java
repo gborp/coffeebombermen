@@ -12,8 +12,8 @@ import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_STRING;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Random;
-import java.util.Vector;
 
 import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
@@ -63,7 +63,8 @@ import classes.utils.TimedIterableControlledThread;
  * 
  * @author Andras Belicza
  */
-public class Client extends TimedIterableControlledThread implements MessageHandler, OptionsChangeListener<ClientOptions> {
+public class Client extends TimedIterableControlledThread implements
+		MessageHandler, OptionsChangeListener<ClientOptions> {
 
 	/**
 	 * Commands to be sent to the client, interpreted by us.
@@ -97,51 +98,52 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	}
 
 	/** Identification string of the Bombermen client. */
-	public static final String                  CLIENT_IDENTIFICATION_STRING = APPLICATION_NAME + " client";
+	public static final String CLIENT_IDENTIFICATION_STRING = APPLICATION_NAME
+			+ " client";
 
 	/** Reference to the game manager. */
-	private final GameManager                   gameManager;
+	private final GameManager gameManager;
 	/** Reference to the main frame. */
-	private final MainFrame                     mainFrame;
+	private final MainFrame mainFrame;
 	/** Reference to the client options manager. */
 	private final OptionsManager<ClientOptions> clientOptionsManager;
 	/** Reference to the server options manager. */
 	private final OptionsManager<ServerOptions> globalServerOptionsManager;
 	/** Server stub to communicate through. */
-	private ConnectionStub                      serverStub;
+	private ConnectionStub serverStub;
 	/** Public client options of the clients. */
-	private final Vector<PublicClientOptions>   clientsPublicClientOptions   = new Vector<PublicClientOptions>();
+	private final ArrayList<PublicClientOptions> clientsPublicClientOptions = new ArrayList<PublicClientOptions>();
 	/** Our index in the public client options vector. */
-	private int                                 ourIndex;
+	private int ourIndex;
 
 	/** Handler of the main component being the waiting animation component. */
-	private final MainComponentHandler          waitingAnimationMainComponentHandler;
+	private final MainComponentHandler waitingAnimationMainComponentHandler;
 	/** Handler of the main component being the game scene component. */
 	private final GameSceneMainComponentHandler gameSceneMainComponentHandler;
 
 	/** Reference to the game core handler. */
-	private GameCoreHandler                     gameCoreHandler;
+	private GameCoreHandler gameCoreHandler;
 
 	/**
 	 * Counter of iterations. Used to determine whether we have to wait
 	 * STARTING_NEXT_ITERATION command or we can start next iteration without it
 	 * based on the network latency.
 	 */
-	private int                                 iterationCounter;
+	private int iterationCounter;
 	/**
 	 * Iteration mask to determine whether next iteraion will be timed by us or
 	 * the server. Capital letters indicates that its value is constant for the
 	 * whole time of a game.
 	 */
-	private int                                 ITERATION_NETWORK_LATENCY_MASK;
+	private int ITERATION_NETWORK_LATENCY_MASK;
 	/**
 	 * Iteration mask to determine whether we have to redraw the game scene
 	 * after calculating next iteration.
 	 */
-	private int                                 iterationSceneRefreshMask;
+	private int iterationSceneRefreshMask;
 
 	/** New, unprocessed actions of all clients (including ours). */
-	public String                               newClientsActions;
+	public String newClientsActions;
 
 	/**
 	 * Creates a new Client.
@@ -161,38 +163,49 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * @throws ConnectingToServerFailedException
 	 *             if connecting to server fails
 	 */
-	public Client(final GameManager gameManager, final MainFrame mainFrame, final OptionsManager<ClientOptions> clientOptionsManager,
-	        ServerOptions serverOptions) throws ConnectingToServerFailedException {
+	public Client(final GameManager gameManager, final MainFrame mainFrame,
+			final OptionsManager<ClientOptions> clientOptionsManager,
+			ServerOptions serverOptions)
+			throws ConnectingToServerFailedException {
 		super(20); // This frequency will not be used, will be overwritten when
 		// game starts
 		this.gameManager = gameManager;
 		this.mainFrame = mainFrame;
 		this.clientOptionsManager = clientOptionsManager;
-		globalServerOptionsManager = new OptionsManager<ServerOptions>(new ServerComponentOptions(new ServerOptions(), true), "Global server options",
-		        this.mainFrame, true);
+		globalServerOptionsManager = new OptionsManager<ServerOptions>(
+				new ServerComponentOptions(new ServerOptions(), true),
+				"Global server options", this.mainFrame, true);
 
 		connectToServer(serverOptions);
 		clientOptionsManager.registerOptionsChangeListener(this);
 
-		waitingAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
+		waitingAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(
+				this.mainFrame) {
 
 			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
+				return GraphicsManager.getCurrentManager()
+						.getWaitingAnimationDatas();
 			}
 		};
-		this.gameManager.setMainComponentHandler(waitingAnimationMainComponentHandler);
+		this.gameManager
+				.setMainComponentHandler(waitingAnimationMainComponentHandler);
 
-		gameSceneMainComponentHandler = new GameSceneMainComponentHandler(this.mainFrame, clientOptionsManager);
+		gameSceneMainComponentHandler = new GameSceneMainComponentHandler(this,
+				this.mainFrame, clientOptionsManager);
 
 		// Part of the joining protocol: sending our public client options and
 		// receiving others'
 		final ClientOptions clientOptions = clientOptionsManager.getOptions();
-		sendPublicClientOptions(clientOptions.publicClientOptions, clientOptions.playersFromHost);
+		sendPublicClientOptions(clientOptions.publicClientOptions,
+				clientOptions.playersFromHost);
 		try {
-			final int publicClientOptionsCount = Integer.parseInt(serverStub.receiveMessage());
+			final int publicClientOptionsCount = Integer.parseInt(serverStub
+					.receiveMessage());
 			for (int i = 0; i < publicClientOptionsCount; i++)
-				clientsPublicClientOptions.add(PublicClientOptions.parseFromString(serverStub.receiveMessage()));
-		} catch (final IOException ie) {}
+				clientsPublicClientOptions.add(PublicClientOptions
+						.parseFromString(serverStub.receiveMessage()));
+		} catch (final IOException ie) {
+		}
 		// End of joining protocol
 		ourIndex = clientsPublicClientOptions.size() - 1; // We are placed
 		// always to the last
@@ -202,7 +215,8 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		// if it's SLOW, we refersh scene in every 2, and if it's EXTRA_SLOW, we
 		// refresh it in every 4.
 		iterationSceneRefreshMask = clientOptions.sceneRefreshMode == SceneRefreshModes.NORMAL ? 0
-		        : (clientOptions.sceneRefreshMode == SceneRefreshModes.SLOW ? 1 : 3);
+				: (clientOptions.sceneRefreshMode == SceneRefreshModes.SLOW ? 1
+						: 3);
 
 		iterationTimer.start();
 	}
@@ -219,30 +233,43 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * @throws ConnectingToServerFailedException
 	 *             if connecting to server fails
 	 */
-	private void connectToServer(final ServerOptions serverOptions) throws ConnectingToServerFailedException {
+	private void connectToServer(final ServerOptions serverOptions)
+			throws ConnectingToServerFailedException {
 		final ClientOptions clientOptions = clientOptionsManager.getOptions();
 		Socket socket;
 		try {
-			socket = serverOptions == null ? new Socket(clientOptions.serverURL, clientOptions.gamePort) : new Socket("localhost", serverOptions.gamePort);
+			socket = serverOptions == null ? new Socket(
+					clientOptions.serverURL, clientOptions.gamePort)
+					: new Socket("localhost", serverOptions.gamePort);
 		} catch (final UnknownHostException ue) {
 			throw new ConnectingToServerFailedException("Unknown server host!");
 		} catch (final IOException ie) {
-			throw new ConnectingToServerFailedException("Server not running on destination host!");
+			throw new ConnectingToServerFailedException(
+					"Server not running on destination host!");
 		}
 
 		try {
 			try {
 				serverStub = new ConnectionStub(socket);
 				serverStub.sendMessage(CLIENT_IDENTIFICATION_STRING);
-				if (!serverStub.receiveMessage().equals(PlayerCollector.SERVER_IDENTIFICATION_STRING))
-					throw new ConnectingToServerFailedException("Destination server is not a " + APPLICATION_NAME + " server!");
+				if (!serverStub.receiveMessage().equals(
+						PlayerCollector.SERVER_IDENTIFICATION_STRING))
+					throw new ConnectingToServerFailedException(
+							"Destination server is not a " + APPLICATION_NAME
+									+ " server!");
 				serverStub.sendMessage(APPLICATION_VERSION);
 				final String serverVersion = serverStub.receiveMessage();
 				if (!serverVersion.equals(APPLICATION_VERSION))
-					throw new ConnectingToServerFailedException("Incompatible " + APPLICATION_NAME + " server (ver. " + serverVersion + ")!");
-				serverStub.sendMessage(serverOptions == null ? clientOptions.password : serverOptions.password);
-				if (!serverStub.receiveMessage().equals(PlayerCollector.PASSWORD_ACCEPTED))
-					throw new ConnectingToServerFailedException("Incorrect game password!");
+					throw new ConnectingToServerFailedException("Incompatible "
+							+ APPLICATION_NAME + " server (ver. "
+							+ serverVersion + ")!");
+				serverStub
+						.sendMessage(serverOptions == null ? clientOptions.password
+								: serverOptions.password);
+				if (!serverStub.receiveMessage().equals(
+						PlayerCollector.PASSWORD_ACCEPTED))
+					throw new ConnectingToServerFailedException(
+							"Incorrect game password!");
 
 			} catch (final IOException ie) {
 				throw new ConnectingToServerFailedException("Network error!");
@@ -298,7 +325,8 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			checkForNewCommands();
 			try {
 				sleep(1l);
-			} catch (final InterruptedException ie) {}
+			} catch (final InterruptedException ie) {
+			}
 		}
 	}
 
@@ -308,70 +336,85 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	private void checkForNewCommands() {
 		while (serverStub.hasNewMessage())
 			try {
-				final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(serverStub.receiveMessage());
+				final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(
+						serverStub.receiveMessage());
 
-				Commands command = Commands.values()[commandTokenizer.nextIntToken()];
+				Commands command = Commands.values()[commandTokenizer
+						.nextIntToken()];
 
 				switch (command) {
-					// The message loop checks Commands.STARTING_NEXT_ITERATION
-					// and Commands.MESSAGE first,
-					// because these are the most frequent commands.
-					case STARTING_NEXT_ITERATION:
-						newClientsActions = commandTokenizer.hasRemainingString() ? commandTokenizer.remainingString() : "";
-						break;
-					case MESSAGE:
-						mainFrame.receiveMessage(commandTokenizer.remainingString());
-						break;
-					case SENDING_SERVER_OPTIONS:
-						globalServerOptionsManager.setOptions(ServerOptions.parseFromString(commandTokenizer.remainingString()));
-						new Thread() { // Client thread (and checking commands)
+				// The message loop checks Commands.STARTING_NEXT_ITERATION
+				// and Commands.MESSAGE first,
+				// because these are the most frequent commands.
+				case STARTING_NEXT_ITERATION:
+					newClientsActions = commandTokenizer.hasRemainingString() ? commandTokenizer
+							.remainingString()
+							: "";
+					break;
+				case MESSAGE:
+					mainFrame
+							.receiveMessage(commandTokenizer.remainingString());
+					break;
+				case SENDING_SERVER_OPTIONS:
+					globalServerOptionsManager
+							.setOptions(ServerOptions
+									.parseFromString(commandTokenizer
+											.remainingString()));
+					new Thread() { // Client thread (and checking commands)
 
-							// cannot be blocked, we show options
-							// dialog in a new thread!
+						// cannot be blocked, we show options
+						// dialog in a new thread!
 
-							public void run() {
-								globalServerOptionsManager.showOptionsDialog();
-							}
-						}.start();
-						break;
-					case STARTING_GAME:
-						handleGameStarting();
-						break;
-					case ENDING_GAME:
-						handleGameEnding();
-						break;
-					case STARTING_NEXT_ROUND:
-						gameCoreHandler.initNextRound();
-						break;
-					case A_CLIENT_HAS_JOINED_THE_GAME:
-						clientsPublicClientOptions.add(PublicClientOptions.parseFromString(commandTokenizer.remainingString()));
-						break;
-					case A_CLIENT_HAS_LEFT_THE_GAME:
-						final int clientIndex = commandTokenizer.nextIntToken();
-						clientsPublicClientOptions.removeElementAt(clientIndex);
-						if (ourIndex > clientIndex)
-							ourIndex--;
-						if (gameCoreHandler != null)
-							gameCoreHandler.aClientHasLeftTheGame(clientIndex);
-						break;
-					case SENDING_PUBLIC_CLIENT_OPTIONS:
-						final int clientIndex_ = commandTokenizer.nextIntToken(); // Index
-						// of
-						// client
-						// whose
-						// public
-						// client
-						// options
-						// is
-						// being
-						// received
-						clientsPublicClientOptions.setElementAt(PublicClientOptions.parseFromString(commandTokenizer.remainingString()), clientIndex_);
-						break;
-					case SHUTDOWN:
-						serverStub.close();
-						break;
+						public void run() {
+							globalServerOptionsManager.showOptionsDialog();
+						}
+					}.start();
+					break;
+				case STARTING_GAME:
+					handleGameStarting();
+					break;
+				case ENDING_GAME:
+					handleGameEnding();
+					break;
+				case STARTING_NEXT_ROUND:
+					gameCoreHandler.initNextRound();
+					break;
+				case A_CLIENT_HAS_JOINED_THE_GAME:
+					clientsPublicClientOptions
+							.add(PublicClientOptions
+									.parseFromString(commandTokenizer
+											.remainingString()));
+					break;
+				case A_CLIENT_HAS_LEFT_THE_GAME:
+					final int clientIndex = commandTokenizer.nextIntToken();
+					clientsPublicClientOptions.remove(clientIndex);
+					if (ourIndex > clientIndex)
+						ourIndex--;
+					if (gameCoreHandler != null)
+						gameCoreHandler.aClientHasLeftTheGame(clientIndex);
+					break;
+				case SENDING_PUBLIC_CLIENT_OPTIONS:
+					final int clientIndex_ = commandTokenizer.nextIntToken(); // Index
+					// of
+					// client
+					// whose
+					// public
+					// client
+					// options
+					// is
+					// being
+					// received
+					clientsPublicClientOptions.set(clientIndex_,
+							PublicClientOptions
+									.parseFromString(commandTokenizer
+											.remainingString()));
+					break;
+				case SHUTDOWN:
+					serverStub.close();
+					break;
 				}
-			} catch (final Exception e) {}
+			} catch (final Exception e) {
+			}
 	}
 
 	/**
@@ -380,12 +423,16 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 */
 	private void sendReadyForNextIterationCommand() {
 		try {
-			String newClientActions = gameSceneMainComponentHandler.getGameSceneComponent().getAndClearNewActions();
+			String newClientActions = gameSceneMainComponentHandler
+					.getGameSceneComponent().getAndClearNewActions();
 			if (newClientActions.length() > 0)
 				newClientActions += GENERAL_SEPARATOR_STRING;
 
-			serverStub.sendMessage(Server.Commands.READY_FOR_NEXT_ITERATION.ordinal() + GENERAL_SEPARATOR_STRING + newClientActions);
-		} catch (final IOException ie) {}
+			serverStub.sendMessage(Server.Commands.READY_FOR_NEXT_ITERATION
+					.ordinal()
+					+ GENERAL_SEPARATOR_STRING + newClientActions);
+		} catch (final IOException ie) {
+		}
 	}
 
 	/**
@@ -397,11 +444,17 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 *            tells how many public client options of players have to be
 	 *            sent
 	 */
-	private void sendPublicClientOptions(final PublicClientOptions publicClientOptions, final int playersCount) {
+	private void sendPublicClientOptions(
+			final PublicClientOptions publicClientOptions,
+			final int playersCount) {
 		try {
-			serverStub.sendMessage(Server.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING
-			        + publicClientOptions.packToString(playersCount));
-		} catch (final IOException ie) {}
+			serverStub
+					.sendMessage(Server.Commands.SENDING_PUBLIC_CLIENT_OPTIONS
+							.ordinal()
+							+ GENERAL_SEPARATOR_STRING
+							+ publicClientOptions.packToString(playersCount));
+		} catch (final IOException ie) {
+		}
 	}
 
 	/**
@@ -412,8 +465,10 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 */
 	public void handleMessage(final String message) {
 		try {
-			serverStub.sendMessage(Server.Commands.MESSAGE.ordinal() + GENERAL_SEPARATOR_STRING + message);
-		} catch (final IOException ie) {}
+			serverStub.sendMessage(Server.Commands.MESSAGE.ordinal()
+					+ GENERAL_SEPARATOR_STRING + message);
+		} catch (final IOException ie) {
+		}
 	}
 
 	/**
@@ -425,8 +480,12 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			globalServerOptionsManager.showOptionsDialog();
 		else
 			try {
-				serverStub.sendMessage(Server.Commands.REQUESTING_SERVER_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING);
-			} catch (final IOException ie) {}
+				serverStub
+						.sendMessage(Server.Commands.REQUESTING_SERVER_OPTIONS
+								.ordinal()
+								+ GENERAL_SEPARATOR_STRING);
+			} catch (final IOException ie) {
+			}
 	}
 
 	/**
@@ -436,26 +495,35 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		try {
 			newClientsActions = null;
 			// Receiving all required options and datas for a new game...
-			final Random random = new Random(Long.parseLong(serverStub.receiveMessage()));
-			final ServerOptions globalServerOptions = ServerOptions.parseFromString(serverStub.receiveMessage());
+			final Random random = new Random(Long.parseLong(serverStub
+					.receiveMessage()));
+			final ServerOptions globalServerOptions = ServerOptions
+					.parseFromString(serverStub.receiveMessage());
 			globalServerOptionsManager.setOptions(globalServerOptions);
 			LevelModel levelModel = null;
-			if (!globalServerOptions.levelName.equals(RANDOMLY_GENERATED_LEVEL_NAME))
-				levelModel = LevelModel.parseFromString(serverStub.receiveMessage());
+			if (!globalServerOptions.levelName
+					.equals(RANDOMLY_GENERATED_LEVEL_NAME))
+				levelModel = LevelModel.parseFromString(serverStub
+						.receiveMessage());
 
 			// We received all required informations... we can create game core
 			// handler now, and register that game is now in GameStates.PLAYING
 			// state
-			gameCoreHandler = new GameCoreHandler(gameManager, mainFrame, globalServerOptions, levelModel, random, clientsPublicClientOptions, ourIndex);
-			gameSceneMainComponentHandler.getGameSceneComponent().setModelProvider(gameCoreHandler);
-			gameSceneMainComponentHandler.getGameSceneComponent().handleGameStarting();
+			gameCoreHandler = new GameCoreHandler(gameManager, mainFrame,
+					globalServerOptions, levelModel, random,
+					clientsPublicClientOptions, ourIndex);
+			gameSceneMainComponentHandler.getGameSceneComponent()
+					.setModelProvider(gameCoreHandler);
+			gameSceneMainComponentHandler.getGameSceneComponent()
+					.handleGameStarting();
 			gameManager.setMainComponentHandler(gameSceneMainComponentHandler);
 
 			// If network latency is LOW, we wait for STARTING_NEXT_ITERATION
 			// command in every iteration, if it's HIGH, we wait for it in every
 			// 2, and if it's EXTRA_HIGH, we wait for it in every 4.
 			ITERATION_NETWORK_LATENCY_MASK = globalServerOptions.networkLatency == NetworkLatencies.LOW ? 0
-			        : (globalServerOptions.networkLatency == NetworkLatencies.HIGH ? 1 : 3);
+					: (globalServerOptions.networkLatency == NetworkLatencies.HIGH ? 1
+							: 3);
 			iterationCounter = 0;
 			nextIterationMayBegin = false;
 			iterationTimer.setFrequency(globalServerOptions.gameCycleFrequency);
@@ -469,7 +537,8 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			// be
 			// done
 			// last
-		} catch (final Exception e) {}
+		} catch (final Exception e) {
+		}
 	}
 
 	/**
@@ -520,15 +589,18 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * Handles ending of the game.
 	 */
 	private void handleGameEnding() {
-		mainFrame.getMainMenuBar().setGameState(GameStates.PLAYER_COLLECTING_CONNECTED); // This
+		mainFrame.getMainMenuBar().setGameState(
+				GameStates.PLAYER_COLLECTING_CONNECTED); // This
 		// has
 		// to
 		// be
 		// done
 		// first
-		gameSceneMainComponentHandler.getGameSceneComponent().setModelProvider(null);
+		gameSceneMainComponentHandler.getGameSceneComponent().setModelProvider(
+				null);
 		gameCoreHandler = null;
-		gameManager.setMainComponentHandler(waitingAnimationMainComponentHandler);
+		gameManager
+				.setMainComponentHandler(waitingAnimationMainComponentHandler);
 	}
 
 	/**
@@ -540,20 +612,26 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * @param newOptions
 	 *            the new client options are about to become effective
 	 */
-	public void optionsChanged(final ClientOptions oldOptions, final ClientOptions newOptions) {
+	public void optionsChanged(final ClientOptions oldOptions,
+			final ClientOptions newOptions) {
 		if (newOptions.playersFromHost != oldOptions.playersFromHost
-		        || !newOptions.publicClientOptions.equals(oldOptions.publicClientOptions, oldOptions.playersFromHost))
-			sendPublicClientOptions(newOptions.publicClientOptions, newOptions.playersFromHost);
+				|| !newOptions.publicClientOptions.equals(
+						oldOptions.publicClientOptions,
+						oldOptions.playersFromHost))
+			sendPublicClientOptions(newOptions.publicClientOptions,
+					newOptions.playersFromHost);
 
 		if (newOptions.sceneRefreshMode != oldOptions.sceneRefreshMode) {
 			// If scene refresh mode is NORMAL, we refresh scene in every
 			// iteration, if it's SLOW, we refersh scene in every 2, and if it's
 			// EXTRA_SLOW, we refresh it in every 4.
 			iterationSceneRefreshMask = newOptions.sceneRefreshMode == SceneRefreshModes.NORMAL ? 0
-			        : (newOptions.sceneRefreshMode == SceneRefreshModes.SLOW ? 1 : 3);
+					: (newOptions.sceneRefreshMode == SceneRefreshModes.SLOW ? 1
+							: 3);
 		}
 
-		if (newOptions.graphicalTheme == null || !newOptions.graphicalTheme.equals(oldOptions.graphicalTheme)) {
+		if (newOptions.graphicalTheme == null
+				|| !newOptions.graphicalTheme.equals(oldOptions.graphicalTheme)) {
 			waitingAnimationMainComponentHandler.graphicalThemeChanged();
 			gameSceneMainComponentHandler.graphicalThemeChanged();
 		}
@@ -568,9 +646,15 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 
 		clientOptionsManager.unregisterOptionsChangeListener(this);
 		try {
-			serverStub.sendMessage(Server.Commands.QUIT.ordinal() + GENERAL_SEPARATOR_STRING);
-		} catch (final IOException ie) {}
+			serverStub.sendMessage(Server.Commands.QUIT.ordinal()
+					+ GENERAL_SEPARATOR_STRING);
+		} catch (final IOException ie) {
+		}
 		serverStub.close();
+	}
+
+	public int getOurIndex() {
+		return ourIndex;
 	}
 
 }
