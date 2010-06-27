@@ -30,6 +30,7 @@ import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
 import classes.client.graphics.AnimationDatas;
 import classes.client.graphics.GraphicsManager;
+import classes.client.sound.SoundEffect;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
@@ -130,11 +131,12 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
 			final PublicClientOptions publicClientOptions = this.clientsPublicClientOptions
 					.get(i);
+
 			final Player[] players = new Player[publicClientOptions.playerNames.length];
 			final PlayerModel[] playerModels = new PlayerModel[publicClientOptions.playerNames.length];
 
 			for (int j = 0; j < players.length; j++) {
-				players[j] = new Player(i, j, this, this);
+				players[j] = new Player(ourClientIndex == i, i, j, this, this);
 				playerModels[j] = players[j].getModel();
 			}
 
@@ -290,6 +292,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
+		SoundEffect.START_MATCH.play();
 	}
 
 	/**
@@ -543,6 +546,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 				level.getModel().getComponents()[y][x].setItem(null);
 				level.getModel().getComponents()[y][x].setWall(Walls.DEATH);
+				SoundEffect.DEATH_WALL.play();
 
 				if (clientActionsTokenizer.hasMoreTokens()) {
 					commandTarget = clientActionsTokenizer.nextToken();
@@ -843,6 +847,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 *            bomb to be added
 	 */
 	public void addNewBomb(final Bomb bomb) {
+		SoundEffect.PLACE_BOMB.play();
 		bombs.add(bomb);
 		bombModels.add(bomb.getModel());
 	}

@@ -50,6 +50,7 @@ public class Player {
 	private final ModelProvider modelProvider;
 	/** Reference to a model controller. */
 	private final ModelController modelController;
+	private final boolean ourClient;
 
 	/**
 	 * Creates a new Player.
@@ -63,9 +64,10 @@ public class Player {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Player(final int clientIndex, final int playerIndex,
-			final ModelProvider modelProvider,
+	public Player(boolean ourClient, final int clientIndex,
+			final int playerIndex, final ModelProvider modelProvider,
 			final ModelController modelController) {
+		this.ourClient = ourClient;
 		this.clientIndex = clientIndex;
 		this.playerIndex = playerIndex;
 		this.modelProvider = modelProvider;
@@ -440,6 +442,11 @@ public class Player {
 				modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX]
 						.setWall(Walls.BRICK);
 				model.setPlaceableWalls(model.getPlaceableWalls() - 1);
+				SoundEffect.PLACE_WALL.play();
+				if (model.getPlaceableWalls() == 0) {
+					model.hasNonAccumulateableItemsMap.put(Items.WALL_BUILDING,
+							false);
+				}
 			}
 		}
 	}
@@ -621,7 +628,9 @@ public class Player {
 				&& levelComponent.fireModelVector.isEmpty()) {
 			final Items item = levelComponent.getItem();
 
-			SoundEffect.PICKUP.play();
+			if (ourClient) {
+				SoundEffect.PICKUP.play();
+			}
 
 			if (ACCUMULATEABLE_ITEMS.contains(item)) {
 				if (item != Items.HEART) { // We don't accumulate HEARTs.

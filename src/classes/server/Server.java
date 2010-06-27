@@ -256,10 +256,6 @@ public class Server extends TimedIterableControlledThread implements
 		// iteration
 
 		startNextRound();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException ex) {
-		}
 		broadcastStartingNextIterationCommand();
 
 		gameStartedAt = System.currentTimeMillis();

@@ -18,7 +18,9 @@ import javax.sound.sampled.Clip;
 public enum SoundEffect {
 	BOOM("sound/boom.wav"), PICKUP("sound/pickup.wav"), WOUND("sound/wound.wav"), KICK(
 			"sound/kick.wav"), HEAL("sound/heal.wav"), THROW("sound/throw.wav"), DIE(
-			"sound/die.wav");
+			"sound/die.wav"), PLACE_BOMB("sound/placebomb.wav"), START_MATCH(
+			"sound/startmatch.wav"), DEATH_WALL("sound/deathwall.wav"), PLACE_WALL(
+			"sound/placewall.wav");
 
 	// Nested class for specifying volume
 	public static enum Volume {
@@ -45,7 +47,7 @@ public enum SoundEffect {
 			// Open audio clip and load samples from the audio input stream.
 			clip.open(audioInputStream);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -60,7 +62,7 @@ public enum SoundEffect {
 				}
 			}
 		} catch (Throwable e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
