@@ -54,12 +54,15 @@
     </jar>
     <copy todir="${dist}">
 		<fileset dir=".">
-			<include name="start.sh" />
-			<include name="start.bat" />
 			<include name="options.txt" />
 			<include name="graphics/**/*" />
 			<include name="levels/**/*" />
 			<include name="sound/**/*" />
+		</fileset>
+		<fileset dir="scripts">
+			<include name="start.sh" />
+			<include name="start-padsp.sh" />
+			<include name="start.bat" />
 		</fileset>
 	</copy>
   </target>
