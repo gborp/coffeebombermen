@@ -339,6 +339,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			if (playerModel.getActivity() == Activities.DYING && playerModel.getIterationCounter() + 1 >= playerModel.getActivity().activityIterations)
 				continue; // This is a dead player, must not be painted.
 
+			if (playerModel.getActivity() == null) {
+				continue;
+			}
+
 			final Image bombermanImage = playerGraphics.get(playerNumberForGfx).getImage(playerModel, scaleFactor);
 
 			// Position is tricky: head of bomberman may take place on the
