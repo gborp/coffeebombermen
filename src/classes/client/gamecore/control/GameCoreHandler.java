@@ -7,7 +7,6 @@ package classes.client.gamecore.control;
 import static classes.client.gamecore.Consts.FIRE_ITERATIONS;
 import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
 import static classes.client.gamecore.Consts.MAX_PLAYER_VITALITY;
-import static classes.client.gamecore.Consts.SUPER_FIRE_RANGE;
 import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
 
 import java.util.ArrayList;
@@ -19,10 +18,8 @@ import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
 import classes.MainComponentHandler;
 import classes.MainFrame;
-import classes.client.gamecore.Consts;
 import classes.client.gamecore.Consts.Activities;
 import classes.client.gamecore.Consts.BombPhases;
-import classes.client.gamecore.Consts.BombTypes;
 import classes.client.gamecore.Consts.Directions;
 import classes.client.gamecore.Consts.FireShapes;
 import classes.client.gamecore.model.BombModel;
@@ -452,12 +449,11 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		for (int i = bombs.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
 			if (bombModel.isDead()) {
-				if (bombModel.getOwnerPlayer() != null) {
-					bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-							.put(Items.BOMB,
-									bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-											.get(Items.BOMB) + 1);
-				}
+				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+						.put(
+								Items.BOMB,
+								bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+										.get(Items.BOMB) + 1);
 				bombs.remove(i);
 				bombModels.remove(i);
 			}
@@ -469,12 +465,11 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		for (int i = bombs.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
 			if (bombModels.get(i).isDetonated()) {
-				if (bombModel.getOwnerPlayer() != null) {
-					bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-							.put(Items.BOMB,
-									bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-											.get(Items.BOMB) + 1);
-				}
+				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+						.put(
+								Items.BOMB,
+								bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+										.get(Items.BOMB) + 1);
 				bombs.remove(i);
 				bombModels.remove(i);
 			}
@@ -489,23 +484,11 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 					int firesCount = comp.fireModelVector.size();
 					if (!globalServerOptions.multipleFire && firesCount > 1)
 						firesCount = 1;
-					final int damagePerFire = (int) (MAX_PLAYER_VITALITY
-							* globalServerOptions.damageOfWholeBombFire
-							/ (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
-
-					if (globalServerOptions.multipleFire) {
-						for (FireModel fire:comp.fireModelVector) {
-							PlayerModel owner = fire.getOwnerPlayer();
-							if (owner != null) {
-								owner.setVitality(Math.min(Consts.MAX_PLAYER_VITALITY * 2, owner
-										.getVitality()
-										+ damagePerFire / 2));
-
-							}
-						}
-					}
 					if (firesCount > 0) {
-						final int damage = firesCount * damagePerFire;
+						final int damage = firesCount
+								* (int) (MAX_PLAYER_VITALITY
+										* globalServerOptions.damageOfWholeBombFire
+										/ (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
 						// for
 						// ceiling
 						// (can't
@@ -555,10 +538,11 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 			String commandTarget = clientActionsTokenizer.nextToken();
 
-			if (CommandTargets.WALL.equals(commandTarget)) {
+			if ("wall".equals(commandTarget)) {
 
 				Integer x = Integer.valueOf(clientActionsTokenizer.nextToken());
 				Integer y = Integer.valueOf(clientActionsTokenizer.nextToken());
+				String command = clientActionsTokenizer.nextToken();
 
 				level.getModel().getComponents()[y][x].setItem(null);
 				level.getModel().getComponents()[y][x].setWall(Walls.DEATH);
@@ -571,7 +555,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				}
 			}
 
-			if (CommandTargets.PLAYER.equals(commandTarget)) {
+			if ("player".equals(commandTarget)) {
 
 				final int clientIndex = Integer.parseInt(clientActionsTokenizer
 						.nextToken());
@@ -591,77 +575,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 				} while (clientActionsTokenizer.hasMoreTokens());
 			}
-
-			if (CommandTargets.BOMB.equals(commandTarget)) {
-
-				Integer x = Integer.valueOf(clientActionsTokenizer.nextToken());
-				Integer y = Integer.valueOf(clientActionsTokenizer.nextToken());
-				Integer range = Integer.valueOf(clientActionsTokenizer
-						.nextToken());
-				String direction = clientActionsTokenizer.nextToken();
-				
-				Bomb newBomb = new Bomb(new BombModel(null), this, this);
-				final BombModel newBombModel = newBomb.getModel();
-				newBombModel.setType(BombTypes.JELLY);
-				newBombModel.setPosX(x * LEVEL_COMPONENT_GRANULARITY
-						+ LEVEL_COMPONENT_GRANULARITY / 2);
-				newBombModel.setPosY(y * LEVEL_COMPONENT_GRANULARITY
-						+ LEVEL_COMPONENT_GRANULARITY / 2);
-				newBombModel.setRange(range);
-				if (direction.equalsIgnoreCase("S")) {
-					newBombModel.setPhase(BombPhases.STANDING);
-				} else {
-					newBombModel.setPhase(BombPhases.ROLLING);
-					if (direction.equalsIgnoreCase("U")) {
-						newBombModel.setDirection(Directions.UP);
-					} else if (direction.equalsIgnoreCase("R")) {
-						newBombModel.setDirection(Directions.RIGHT);
-					} else if (direction.equalsIgnoreCase("D")) {
-						newBombModel.setDirection(Directions.DOWN);
-					} else if (direction.equalsIgnoreCase("L")) {
-						newBombModel.setDirection(Directions.LEFT);
-					}
-				}
-
-				addNewBomb(newBomb);
-
-				if (clientActionsTokenizer.hasMoreTokens()) {
-					commandTarget = clientActionsTokenizer.nextToken();
-				} else {
-					commandTarget = null;
-				}
-			}
-
-			if (CommandTargets.WALL_REMOVE.equals(commandTarget)) {
-
-				Integer x = Integer.valueOf(clientActionsTokenizer.nextToken());
-				Integer y = Integer.valueOf(clientActionsTokenizer.nextToken());
-
-				level.getModel().getComponents()[y][x].setItem(null);
-				level.getModel().getComponents()[y][x].setWall(Walls.EMPTY);
-
-				if (clientActionsTokenizer.hasMoreTokens()) {
-					commandTarget = clientActionsTokenizer.nextToken();
-				} else {
-					commandTarget = null;
-				}
-			}
-
-			if (CommandTargets.ITEM.equals(commandTarget)) {
-
-				Integer x = Integer.valueOf(clientActionsTokenizer.nextToken());
-				Integer y = Integer.valueOf(clientActionsTokenizer.nextToken());
-				String item = clientActionsTokenizer.nextToken();
-
-				level.getModel().getComponents()[y][x].setItem(classes.options.Consts.getItem(item));
-
-				if (clientActionsTokenizer.hasMoreTokens()) {
-					commandTarget = clientActionsTokenizer.nextToken();
-				} else {
-					commandTarget = null;
-				}
-			}
-
 		}
 	}
 
@@ -699,10 +612,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 			for (final BombModel bombModel : bombModels)
 				if (!bombModel.isDetonated() && bombModel.isAboutToDetonate()) {
-					// attila: bomb owner nem kotelezo ezentul. De vajon mi lesz ha kiszedem innen?
-					if (bombModel.getOwnerPlayer() != null) {
-						bombModel.setTriggererPlayer(bombModel.getOwnerPlayer());
-					}
+					bombModel.setTriggererPlayer(bombModel.getOwnerPlayer());
 					detonatableBombModels.add(bombModel);
 					checkedAllBombModels = false;
 					break;

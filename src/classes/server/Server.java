@@ -16,23 +16,13 @@ import classes.GameManager;
 import classes.MainFrame;
 import classes.MainMenuBar.GameStates;
 import classes.client.Client;
-import classes.client.gamecore.control.CommandTargets;
-import classes.options.Consts.NetworkLatencies;
 import classes.options.OptionsChangeListener;
 import classes.options.OptionsManager;
+import classes.options.Consts.NetworkLatencies;
+import classes.options.model.LevelOptions;
 import classes.options.model.PublicClientOptions;
 import classes.options.model.ServerOptions;
-import classes.server.shrink.AutoBombDropShrinkPerformer;
-import classes.server.shrink.BinaryShrinkPerformer;
-import classes.server.shrink.BombAndWallShrinkPerformer;
-import classes.server.shrink.BombShrinkPerformer;
-import classes.server.shrink.DefaultShrinkPerformer;
-import classes.server.shrink.DrawShrinkPerformer;
-import classes.server.shrink.MassKillShrinkPerformer;
-import classes.server.shrink.ShrinkPerformer;
-import classes.server.shrink.SpiderBombShrinkPerformer;
 import classes.utils.GeneralStringTokenizer;
-import classes.utils.MathHelper;
 import classes.utils.TimedIterableControlledThread;
 
 /**
@@ -138,9 +128,20 @@ public class Server extends TimedIterableControlledThread implements
 
 	/** in ms */
 	private static final long DELAY_START_SHRINKING_GAME_AREA = 1000 * 30;
+	private static final long DELAY_SHRINKING_GAME_AREA = 500;
 	private long gameStartedAt;
-	private ShrinkPerformer[] shrinkPerformers;
-	private ShrinkPerformer shrinkPerformer;
+	private long lastShrinkOperationAt;
+	private int lastNewWallX;
+	private int lastNewWallY;
+	private int shrinkMinX;
+	private int shrinkMinY;
+	private int shrinkMaxX;
+	private int shrinkMaxY;
+	private ShrinkDirection lastShrinkDirection;
+
+	private enum ShrinkDirection {
+		RIGHT, DOWN, LEFT, UP
+	}
 
 	/**
 	 * Creates a new Server.
@@ -160,20 +161,9 @@ public class Server extends TimedIterableControlledThread implements
 		this.mainFrame = mainFrame;
 		this.gameManager = gameManager;
 		this.serverOptionsManager.registerOptionsChangeListener(this);
-		this.shrinkPerformers = new ShrinkPerformer[] {
-				new DefaultShrinkPerformer(this),
-				new BombShrinkPerformer(this),
-				new BombAndWallShrinkPerformer(this),
-				new BinaryShrinkPerformer(this),
-				new SpiderBombShrinkPerformer(this),
-				new MassKillShrinkPerformer(this)};
 		iterationTimer.start();
 	}
 
-	public OptionsManager<ServerOptions> getServerOptionsManager() {
-		return serverOptionsManager;
-	}
-	
 	/**
 	 * Waits until the player collector tries to create server socket, and
 	 * returns the successfulness of the operation.
@@ -239,9 +229,12 @@ public class Server extends TimedIterableControlledThread implements
 	 * Handles the game until it ends or cancel is requested.
 	 */
 	private void handleGame() {
-		shrinkPerformer = shrinkPerformers[MathHelper.randomInt(shrinkPerformers.length - 1)];		
-//		shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
-		shrinkPerformer.init();
+
+		lastShrinkDirection = ShrinkDirection.RIGHT;
+		lastNewWallX = 0;
+		lastNewWallY = 0;
+		lastShrinkOperationAt = 0;
+
 		// Game starting protocol
 		broadcastCommand(Client.Commands.STARTING_GAME.ordinal()
 				+ GENERAL_SEPARATOR_STRING);
@@ -324,13 +317,85 @@ public class Server extends TimedIterableControlledThread implements
 		long now = System.currentTimeMillis();
 		if (gameStartedAt != 0
 				&& (now - gameStartedAt) > DELAY_START_SHRINKING_GAME_AREA) {
-			shrinkPerformer.shrink(newClientsActions);
+			if (lastShrinkOperationAt == 0
+					|| ((now - lastShrinkOperationAt) > DELAY_SHRINKING_GAME_AREA)) {
+
+				int newWallX = lastNewWallX;
+				int newWallY = lastNewWallY;
+
+				LevelOptions levelOptions = serverOptionsManager.getOptions().levelOptions;
+				int width = levelOptions.levelWidth;
+				int height = levelOptions.levelHeight;
+
+				if (lastShrinkOperationAt == 0) {
+
+					newWallX = 0;
+					newWallY = 0;
+					shrinkMinX = 0;
+					shrinkMinY = 1;
+					shrinkMaxX = width - 1;
+					shrinkMaxY = height - 1;
+				} else {
+
+					if (shrinkMaxX <= shrinkMinX && shrinkMaxY <= shrinkMinY) {
+						newWallX = -1;
+					} else {
+						switch (lastShrinkDirection) {
+						case RIGHT:
+							newWallX++;
+							if (newWallX == shrinkMaxX) {
+								lastShrinkDirection = ShrinkDirection.DOWN;
+								shrinkMaxX--;
+							}
+							break;
+						case DOWN:
+							newWallY++;
+							if (newWallY == shrinkMaxY) {
+								lastShrinkDirection = ShrinkDirection.LEFT;
+								shrinkMaxY--;
+							}
+							break;
+						case LEFT:
+							newWallX--;
+							if (newWallX == shrinkMinX) {
+								lastShrinkDirection = ShrinkDirection.UP;
+								shrinkMinX++;
+							}
+							break;
+						case UP:
+							newWallY--;
+							if (newWallY == shrinkMinY) {
+								lastShrinkDirection = ShrinkDirection.RIGHT;
+								shrinkMinY++;
+							}
+							break;
+						}
+					}
+				}
+
+				if (newWallX >= 0 && newWallX < width && newWallY >= 0
+						&& newWallY < height) {
+					newClientsActions.append("wall ");
+					newClientsActions.append(Integer.toString(newWallX));
+					newClientsActions.append(' ');
+					newClientsActions.append(Integer.toString(newWallY));
+					newClientsActions.append(' ');
+					newClientsActions.append('d');
+					newClientsActions
+							.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+
+				}
+				lastShrinkOperationAt = now;
+
+				lastNewWallX = newWallX;
+				lastNewWallY = newWallY;
+			}
 		}
 
 		for (int i = 0; i < clientContacts.size(); i++) {
 			final ClientContact clientContact = clientContacts.get(i);
 			if (!clientContact.newClientActions.isEmpty()) {
-				newClientsActions.append(CommandTargets.PLAYER + " ");
+				newClientsActions.append("player ");
 				newClientsActions.append(Integer.toString(i));
 				newClientsActions.append(' ');
 				newClientsActions.append(clientContact.newClientActions);
