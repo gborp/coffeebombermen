@@ -143,7 +143,7 @@ public class Consts {
 		SUPER_FIRE {
 
 			public String toString() {
-				return "Super fire";
+				return "Super_fire";
 			}
 		},
 		/** The Heart item. */
@@ -164,7 +164,7 @@ public class Consts {
 		ROLLER_SKATES {
 
 			public String toString() {
-				return "Roller skates";
+				return "Roller_skates";
 			}
 		},
 		/** The Jelly item. */
@@ -185,21 +185,21 @@ public class Consts {
 		BLUE_GLOVES {
 
 			public String toString() {
-				return "Blue gloves";
+				return "Blue_gloves";
 			}
 		},
 		/** The Boxing Gloves item. */
 		BOXING_GLOVES {
 
 			public String toString() {
-				return "Boxing gloves";
+				return "Boxing_gloves";
 			}
 		},
 		/** The Bomb sprinkle item. */
 		BOMB_SPRINKLE {
 
 			public String toString() {
-				return "Bomb sprinkle";
+				return "Bomb_sprinkle";
 			}
 		},
 		/** The Trigger item. */
@@ -213,14 +213,14 @@ public class Consts {
 		WALL_CLIMBING {
 
 			public String toString() {
-				return "Wall climbing";
+				return "Wall_climbing";
 			}
 		},
 		/** The Spider bomb item. */
 		SPIDER_BOMB {
 
 			public String toString() {
-				return "Spider bomb";
+				return "Spider_bomb";
 			}
 		},
 		/** The Disease item. */
@@ -234,14 +234,14 @@ public class Consts {
 		SUPER_DISEASE {
 
 			public String toString() {
-				return "Super disease";
+				return "Super_disease";
 			}
 		},
 		/** The Wall building item. */
 		WALL_BUILDING {
 
 			public String toString() {
-				return "Wall building";
+				return "Wall_building";
 			}
 		}
 	}
@@ -475,5 +475,14 @@ public class Consts {
 			}
 		}
 	}
+	
+	public static Items getItem(String item) {
+		for (Items i : Items.values()) {
+			if (i.toString().equals(item)) {
+				return i;
+			}
+		}
 
+		return null;
+	}
 }

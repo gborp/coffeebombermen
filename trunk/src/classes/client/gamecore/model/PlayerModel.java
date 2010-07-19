@@ -55,6 +55,10 @@ public class PlayerModel extends PositionedIterableObject {
 	/** The previous states of the control keys of the player. */
 	private boolean[] lastControlKeyStates = new boolean[PlayerControlKeys
 			.values().length];
+	private int regenerateWeight;
+	private boolean autoDropBombEnabled;
+	private boolean spyderBombEnabled;
+	private int spyderBombRounds;
 
 	/**
 	 * Returns the vitality of the player.
@@ -73,7 +77,10 @@ public class PlayerModel extends PositionedIterableObject {
 	 */
 	public void setVitality(final int vitality) {
 		if (vitality > this.vitality) {
-			SoundEffect.HEAL.play();
+			// no sound for regenerate
+			if (vitality > this.vitality + 100) {
+				SoundEffect.HEAL.play();
+			}
 		} else {
 			SoundEffect.WOUND.play();
 		}
@@ -209,4 +216,36 @@ public class PlayerModel extends PositionedIterableObject {
 		return lastControlKeyStates[playerControlKey.ordinal()];
 	}
 
+	public void setRegenerateWeight(int regenerateWeight) {
+		this.regenerateWeight = regenerateWeight;
+	}
+	
+	public int getRegenerateWeight() {
+		return regenerateWeight;
+	}
+
+	public boolean isAutoDropBombEnabled() {
+		return autoDropBombEnabled;
+	}
+
+	public void setAutoDropBombEnabled(boolean autoDropBombEnabled) {
+		this.autoDropBombEnabled = autoDropBombEnabled;
+	}
+
+	public void setSpyderBombEnabled(boolean spyderBombEnabled) {
+		this.spyderBombEnabled = spyderBombEnabled;
+		spyderBombRounds = spyderBombEnabled ? spyderBombRounds + 6 : 0;
+	}
+	
+	public boolean isSpyderBombEnabled() {
+		return spyderBombEnabled;
+	}
+	
+	public int getSpyderBombRounds() {
+		return spyderBombRounds;
+	}
+	
+	public void setSpyderBombRounds(int spyderBombRounds) {
+		this.spyderBombRounds = spyderBombRounds;
+	}
 }
