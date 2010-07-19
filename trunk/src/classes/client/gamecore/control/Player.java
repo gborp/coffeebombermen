@@ -5,6 +5,7 @@
 package classes.client.gamecore.control;
 
 import static classes.client.gamecore.Consts.BOBMERMAN_MAX_SPEED;
+import static classes.client.gamecore.Consts.BOMB_DETONATION_ITERATIONS;
 import static classes.client.gamecore.Consts.BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
 import static classes.client.gamecore.Consts.BOMBERMAN_BASIC_SPEED;
 import static classes.client.gamecore.Consts.BOMB_FLYING_DISTANCE;
@@ -30,6 +31,7 @@ import classes.client.sound.SoundEffect;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
+import classes.utils.MathHelper;
 
 /**
  * The class implements the control of a player of the GAME (NOT the the
@@ -40,6 +42,8 @@ import classes.options.Consts.Walls;
 public class Player {
 
 	private static final int PLACEABLE_WALLS = 5;
+	private static final int MAX_REGEN = 500;
+	private static final long SPYDER_BOMB_LATENCY = 400000000;
 	/** The client index where this player belogns to. */
 	private int clientIndex;
 	/** The player index inside of its client. */
@@ -51,6 +55,7 @@ public class Player {
 	/** Reference to a model controller. */
 	private final ModelController modelController;
 	private final boolean ourClient;
+	private long lastSpyderBomb;
 
 	/**
 	 * Creates a new Player.
@@ -107,7 +112,14 @@ public class Player {
 
 		model.setDirection(Directions.DOWN);
 		model.setActivity(Activities.STANDING);
-		model.setVitality(MAX_PLAYER_VITALITY);
+		int vitalityChance = MathHelper.randomInt(99);
+		if (vitalityChance < 2) {
+			model.setVitality(MAX_PLAYER_VITALITY / 2);
+		} else if (vitalityChance < 4) {
+			model.setVitality(MAX_PLAYER_VITALITY * 2);
+		} else {
+			model.setVitality(MAX_PLAYER_VITALITY);
+		}
 		model.setPickedUpBombModel(null);
 
 		model.accumulateableItemQuantitiesMap
@@ -147,6 +159,8 @@ public class Player {
 					modelController.replaceItemOnLevel(item);
 			}
 		} else {
+			handleSpyderBomb();
+
 			processActionsAndHandleActivityTransitions();
 
 			stepPlayer(0);
@@ -166,6 +180,70 @@ public class Player {
 		}
 	}
 
+	private void handleSpyderBomb() {
+		long now = System.nanoTime();
+		if (!model.isSpyderBombEnabled() || (lastSpyderBomb + SPYDER_BOMB_LATENCY > now)) {
+			return;
+		}
+
+		throwSpyderBomb(Directions.UP);
+		throwSpyderBomb(Directions.RIGHT);
+		throwSpyderBomb(Directions.DOWN);
+		throwSpyderBomb(Directions.LEFT);
+		
+		int rounds = model.getSpyderBombRounds();
+		
+		if (rounds == 1) {
+			model.setSpyderBombEnabled(false);
+		} else {
+			model.setSpyderBombRounds(rounds - 1);
+		}
+		
+		lastSpyderBomb = now;
+	}
+
+	private void throwSpyderBomb(Directions direction) {
+		if (model.getDirection() == direction || model.getDirection() == direction.getOpposite()) {
+			return;
+		}
+
+		final int playerComponentPosX = model.getComponentPosX();
+		final int playerComponentPosY = model.getComponentPosY();
+		int componentPosX = playerComponentPosX;
+		int componentPosY = playerComponentPosY;
+
+		final Bomb newBomb = new Bomb(model, modelProvider, modelController);
+		final BombModel newBombModel = newBomb.getModel();
+		newBombModel
+				.setRange(model.hasNonAccumulateableItemsMap
+						.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE
+						: model.accumulateableItemQuantitiesMap
+								.get(Items.FIRE) + 1);
+		newBombModel.setPosX(componentPosX * LEVEL_COMPONENT_GRANULARITY
+				+ LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(componentPosY * LEVEL_COMPONENT_GRANULARITY
+				+ LEVEL_COMPONENT_GRANULARITY / 2);
+
+		if (model.hasNonAccumulateableItemsMap.get(Items.JELLY)) {
+			newBombModel.setType(BombTypes.JELLY);
+		} else {
+			newBombModel.setType(BombTypes.NORMAL);
+		}
+		newBombModel.setDirection(direction); // We throw in our
+		newBombModel.setTickingIterations(MathHelper.randomInt(BOMB_DETONATION_ITERATIONS));
+		newBombModel.setPhase(BombPhases.FLYING);
+
+		modelController.validateAndSetFlyingTargetPosX(newBombModel, newBombModel
+				.getPosX()
+				+ newBombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
+		modelController.validateAndSetFlyingTargetPosY(newBombModel, newBombModel
+				.getPosY()
+				+ newBombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
+
+
+		modelController.addNewBomb(newBomb);
+	}
+
 	/**
 	 * Proccesses the player actions and handles the activitry transitions.
 	 */
@@ -175,9 +253,9 @@ public class Player {
 		case STANDING:
 			if (model.isDirectionKeyPressed())
 				model.setActivity(Activities.WALKING);
-			if (model.getControlKeyState(PlayerControlKeys.FUNCTION1)
+			if ((model.getControlKeyState(PlayerControlKeys.FUNCTION1)
 					&& !model
-							.getLastControlKeyState(PlayerControlKeys.FUNCTION1))
+							.getLastControlKeyState(PlayerControlKeys.FUNCTION1)))
 				handleFunction1WithoutBomb();
 			else if (model.getControlKeyState(PlayerControlKeys.FUNCTION2)
 					&& !model
@@ -341,7 +419,7 @@ public class Player {
 	private void throwBombAway() {
 		final BombModel bombModel = model.getPickedUpBombModel();
 
-		bombModel.setTickingIterations(0); // Thrown away bombs start ticking
+		//bombModel.setTickingIterations(0); // Thrown away bombs start ticking
 		// from the beginning again.
 		bombModel.setDirection(model.getDirection()); // We throw in our
 		// direction
@@ -351,15 +429,6 @@ public class Player {
 		bombModel
 				.setPosY(model.getComponentPosY() * LEVEL_COMPONENT_GRANULARITY
 						+ LEVEL_COMPONENT_GRANULARITY / 2);
-
-		bombModel.setPhase(BombPhases.FLYING);
-
-		modelController.validateAndSetFlyingTargetPosX(bombModel, bombModel
-				.getPosX()
-				+ bombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
-		modelController.validateAndSetFlyingTargetPosY(bombModel, bombModel
-				.getPosY()
-				+ bombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 
 		modelController.addNewBomb(new Bomb(bombModel, modelProvider,
 				modelController));
@@ -697,10 +766,12 @@ public class Player {
 			case HEART:
 				model.setVitality(Math.min(
 						model.getVitality() + HEART_VITALITY,
-						MAX_PLAYER_VITALITY));
+						MAX_PLAYER_VITALITY * 2));
 				break;
 			case WALL_BUILDING:
 				model.setPlaceableWalls(PLACEABLE_WALLS);
+			case SPIDER_BOMB:
+				model.setSpyderBombEnabled(true);
 				break;
 			}
 		}
