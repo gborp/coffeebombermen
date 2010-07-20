@@ -318,7 +318,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						|| x == levelWidth - 1) {
 					wall = Walls.CONCRETE; // Border
 				} else if (random.nextInt(100) > 95) {
-					wall = random.nextInt(100) > 50 ? Walls.BRICK
+					wall = random.nextInt(100) > 30 ? Walls.BRICK
 							: Walls.CONCRETE;
 				} else if ((x & 0x01) == 0 && (y & 0x01) == 0) {
 					wall = Walls.CONCRETE; // Inner concrete matrix
