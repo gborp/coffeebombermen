@@ -665,6 +665,7 @@ public class Player {
 					break;
 				case WALL_BUILDING:
 					model.setPlaceableWalls(PLACEABLE_WALLS);
+					break;
 				case SPIDER_BOMB:
 					model.setSpyderBombEnabled(true);
 					break;
