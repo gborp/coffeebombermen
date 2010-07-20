@@ -376,12 +376,17 @@ public class Player {
 	private void throwBombAway() {
 		final BombModel bombModel = model.getPickedUpBombModel();
 
-		// bombModel.setTickingIterations(0); // Thrown away bombs start ticking
+		bombModel.setTickingIterations(0); // Thrown away bombs start ticking
 		// from the beginning again.
 		bombModel.setDirection(model.getDirection()); // We throw in our
 		// direction
 		bombModel.setPosX(model.getComponentPosX() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 		bombModel.setPosY(model.getComponentPosY() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+
+		bombModel.setPhase(BombPhases.FLYING);
+
+		modelController.validateAndSetFlyingTargetPosX(bombModel, bombModel.getPosX() + bombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
+		modelController.validateAndSetFlyingTargetPosY(bombModel, bombModel.getPosY() + bombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 
 		modelController.addNewBomb(new Bomb(bombModel, modelProvider, modelController));
 		model.setPickedUpBombModel(null);
@@ -661,7 +666,7 @@ public class Player {
 					}
 					break;
 				case HEART:
-					model.setVitality(Math.min(model.getVitality() + HEART_VITALITY, MAX_PLAYER_VITALITY * 2));
+					model.setVitality(Math.min(model.getVitality() + HEART_VITALITY, (int) (MAX_PLAYER_VITALITY * 1.5f)));
 					break;
 				case WALL_BUILDING:
 					model.setPlaceableWalls(PLACEABLE_WALLS);
