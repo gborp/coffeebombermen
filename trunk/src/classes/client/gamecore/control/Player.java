@@ -5,9 +5,9 @@
 package classes.client.gamecore.control;
 
 import static classes.client.gamecore.Consts.BOBMERMAN_MAX_SPEED;
-import static classes.client.gamecore.Consts.BOMB_DETONATION_ITERATIONS;
 import static classes.client.gamecore.Consts.BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
 import static classes.client.gamecore.Consts.BOMBERMAN_BASIC_SPEED;
+import static classes.client.gamecore.Consts.BOMB_DETONATION_ITERATIONS;
 import static classes.client.gamecore.Consts.BOMB_FLYING_DISTANCE;
 import static classes.client.gamecore.Consts.DEAD_ITERATIONS_BEFORE_REPLACING_ITEMS;
 import static classes.client.gamecore.Consts.HEART_VITALITY;
@@ -31,7 +31,6 @@ import classes.client.sound.SoundEffect;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
-import classes.utils.MathHelper;
 
 /**
  * The class implements the control of a player of the GAME (NOT the the
@@ -41,21 +40,21 @@ import classes.utils.MathHelper;
  */
 public class Player {
 
-	private static final int PLACEABLE_WALLS = 5;
-	private static final int MAX_REGEN = 500;
-	private static final long SPYDER_BOMB_LATENCY = 400000000;
+	private static final int      PLACEABLE_WALLS     = 5;
+	private static final int      MAX_REGEN           = 500;
+	private static final long     SPYDER_BOMB_LATENCY = 400000000;
 	/** The client index where this player belogns to. */
-	private int clientIndex;
+	private int                   clientIndex;
 	/** The player index inside of its client. */
-	private final int playerIndex;
+	private final int             playerIndex;
 	/** The model of the player. */
-	private final PlayerModel model = new PlayerModel();
+	private final PlayerModel     model               = new PlayerModel();
 	/** Reference to a model provider. */
-	private final ModelProvider modelProvider;
+	private final ModelProvider   modelProvider;
 	/** Reference to a model controller. */
 	private final ModelController modelController;
-	private final boolean ourClient;
-	private long lastSpyderBomb;
+	private final boolean         ourClient;
+	private long                  lastSpyderBomb;
 
 	/**
 	 * Creates a new Player.
@@ -69,9 +68,7 @@ public class Player {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Player(boolean ourClient, final int clientIndex,
-			final int playerIndex, final ModelProvider modelProvider,
-			final ModelController modelController) {
+	public Player(boolean ourClient, final int clientIndex, final int playerIndex, final ModelProvider modelProvider, final ModelController modelController) {
 		this.ourClient = ourClient;
 		this.clientIndex = clientIndex;
 		this.playerIndex = playerIndex;
@@ -112,30 +109,18 @@ public class Player {
 
 		model.setDirection(Directions.DOWN);
 		model.setActivity(Activities.STANDING);
-		int vitalityChance = MathHelper.randomInt(99);
-		if (vitalityChance < 2) {
-			model.setVitality(MAX_PLAYER_VITALITY / 2);
-		} else if (vitalityChance < 4) {
-			model.setVitality(MAX_PLAYER_VITALITY * 2);
-		} else {
-			model.setVitality(MAX_PLAYER_VITALITY);
-		}
+		model.setVitality(MAX_PLAYER_VITALITY);
 		model.setPickedUpBombModel(null);
 
-		model.accumulateableItemQuantitiesMap
-				.putAll(modelProvider.getLevelModel().getLevelOptions().accumulateableItemQuantitiesMap);
-		model.hasNonAccumulateableItemsMap.putAll(modelProvider.getLevelModel()
-				.getLevelOptions().hasNonAccumulateableItemsMap);
+		model.accumulateableItemQuantitiesMap.putAll(modelProvider.getLevelModel().getLevelOptions().accumulateableItemQuantitiesMap);
+		model.hasNonAccumulateableItemsMap.putAll(modelProvider.getLevelModel().getLevelOptions().hasNonAccumulateableItemsMap);
 		model.pickedUpAccumulateableItems.clear();
 		model.pickedUpNonAccumulateableItems.clear();
 		model.setPlaceableWalls(0);
 
-		model.setPlacableTriggeredBombs(model.hasNonAccumulateableItemsMap
-				.get(Items.TRIGGER) ? model.accumulateableItemQuantitiesMap
-				.get(Items.BOMB) : 0);
+		model.setPlacableTriggeredBombs(model.hasNonAccumulateableItemsMap.get(Items.TRIGGER) ? model.accumulateableItemQuantitiesMap.get(Items.BOMB) : 0);
 
-		for (final PlayerControlKeys playerControlKey : PlayerControlKeys
-				.values()) {
+		for (final PlayerControlKeys playerControlKey : PlayerControlKeys.values()) {
 			// Twice, so we delete the last key state also
 			model.setControlKeyState(playerControlKey, false);
 			model.setControlKeyState(playerControlKey, false);
@@ -153,10 +138,12 @@ public class Player {
 			// picked up items.
 
 			if (model.getIterationCounter() == DEAD_ITERATIONS_BEFORE_REPLACING_ITEMS) {
-				for (final Items item : model.pickedUpNonAccumulateableItems)
+				for (final Items item : model.pickedUpNonAccumulateableItems) {
 					modelController.replaceItemOnLevel(item);
-				for (final Items item : model.pickedUpAccumulateableItems)
+				}
+				for (final Items item : model.pickedUpAccumulateableItems) {
 					modelController.replaceItemOnLevel(item);
+				}
 			}
 		} else {
 			handleSpyderBomb();
@@ -165,18 +152,17 @@ public class Player {
 
 			stepPlayer(0);
 
-			if (model.getIterationCounter() + 1 < model.getActivity().activityIterations)
+			if (model.getIterationCounter() + 1 < model.getActivity().activityIterations) {
 				model.nextIteration();
-			else if (model.getActivity().repeatable)
+			} else if (model.getActivity().repeatable) {
 				model.setIterationCounter(0);
+			}
 
 			// These keys can be interpreted as transitions also, we have to
 			// care about last states by "stepping" them (implemented by
 			// resetting them)
-			model.setControlKeyState(PlayerControlKeys.FUNCTION1, model
-					.getControlKeyState(PlayerControlKeys.FUNCTION1));
-			model.setControlKeyState(PlayerControlKeys.FUNCTION2, model
-					.getControlKeyState(PlayerControlKeys.FUNCTION2));
+			model.setControlKeyState(PlayerControlKeys.FUNCTION1, model.getControlKeyState(PlayerControlKeys.FUNCTION1));
+			model.setControlKeyState(PlayerControlKeys.FUNCTION2, model.getControlKeyState(PlayerControlKeys.FUNCTION2));
 		}
 	}
 
@@ -190,20 +176,20 @@ public class Player {
 		throwSpyderBomb(Directions.RIGHT);
 		throwSpyderBomb(Directions.DOWN);
 		throwSpyderBomb(Directions.LEFT);
-		
+
 		int rounds = model.getSpyderBombRounds();
-		
+
 		if (rounds == 1) {
 			model.setSpyderBombEnabled(false);
 		} else {
 			model.setSpyderBombRounds(rounds - 1);
 		}
-		
+
 		lastSpyderBomb = now;
 	}
 
 	private void throwSpyderBomb(Directions direction) {
-		if (model.getDirection() == direction || model.getDirection() == direction.getOpposite()) {
+		if ((model.getDirection() == direction) || (model.getDirection() == direction.getOpposite())) {
 			return;
 		}
 
@@ -214,15 +200,10 @@ public class Player {
 
 		final Bomb newBomb = new Bomb(model, modelProvider, modelController);
 		final BombModel newBombModel = newBomb.getModel();
-		newBombModel
-				.setRange(model.hasNonAccumulateableItemsMap
-						.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE
-						: model.accumulateableItemQuantitiesMap
-								.get(Items.FIRE) + 1);
-		newBombModel.setPosX(componentPosX * LEVEL_COMPONENT_GRANULARITY
-				+ LEVEL_COMPONENT_GRANULARITY / 2);
-		newBombModel.setPosY(componentPosY * LEVEL_COMPONENT_GRANULARITY
-				+ LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setRange(model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap
+		        .get(Items.FIRE) + 1);
+		newBombModel.setPosX(componentPosX * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(componentPosY * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 
 		if (model.hasNonAccumulateableItemsMap.get(Items.JELLY)) {
 			newBombModel.setType(BombTypes.JELLY);
@@ -230,16 +211,11 @@ public class Player {
 			newBombModel.setType(BombTypes.NORMAL);
 		}
 		newBombModel.setDirection(direction); // We throw in our
-		newBombModel.setTickingIterations(MathHelper.randomInt(BOMB_DETONATION_ITERATIONS));
+		newBombModel.setTickingIterations(BOMB_DETONATION_ITERATIONS / 5);
 		newBombModel.setPhase(BombPhases.FLYING);
 
-		modelController.validateAndSetFlyingTargetPosX(newBombModel, newBombModel
-				.getPosX()
-				+ newBombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
-		modelController.validateAndSetFlyingTargetPosY(newBombModel, newBombModel
-				.getPosY()
-				+ newBombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
-
+		modelController.validateAndSetFlyingTargetPosX(newBombModel, newBombModel.getPosX() + newBombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
+		modelController.validateAndSetFlyingTargetPosY(newBombModel, newBombModel.getPosY() + newBombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 
 		modelController.addNewBomb(newBomb);
 	}
@@ -250,77 +226,72 @@ public class Player {
 	private void processActionsAndHandleActivityTransitions() {
 		switch (model.getActivity()) {
 
-		case STANDING:
-			if (model.isDirectionKeyPressed())
-				model.setActivity(Activities.WALKING);
-			if ((model.getControlKeyState(PlayerControlKeys.FUNCTION1)
-					&& !model
-							.getLastControlKeyState(PlayerControlKeys.FUNCTION1)))
-				handleFunction1WithoutBomb();
-			else if (model.getControlKeyState(PlayerControlKeys.FUNCTION2)
-					&& !model
-							.getLastControlKeyState(PlayerControlKeys.FUNCTION2))
-				handleFunction2();
-			break;
+			case STANDING:
+				if (model.isDirectionKeyPressed()) {
+					model.setActivity(Activities.WALKING);
+				}
+				if ((model.getControlKeyState(PlayerControlKeys.FUNCTION1) && !model.getLastControlKeyState(PlayerControlKeys.FUNCTION1))) {
+					handleFunction1WithoutBomb();
+				} else if (model.getControlKeyState(PlayerControlKeys.FUNCTION2) && !model.getLastControlKeyState(PlayerControlKeys.FUNCTION2)) {
+					handleFunction2();
+				}
+				break;
 
-		case STANDING_WITH_BOMB:
-			if (model.isDirectionKeyPressed())
-				model.setActivity(Activities.WALKING_WITH_BOMB);
-			if (!model.getControlKeyState(PlayerControlKeys.FUNCTION1))
-				throwBombAway();
-			break;
+			case STANDING_WITH_BOMB:
+				if (model.isDirectionKeyPressed()) {
+					model.setActivity(Activities.WALKING_WITH_BOMB);
+				}
+				if (!model.getControlKeyState(PlayerControlKeys.FUNCTION1)) {
+					throwBombAway();
+				}
+				break;
 
-		case WALKING:
-			if (!model.isDirectionKeyPressed())
-				model.setActivity(Activities.STANDING);
-			if (model.getControlKeyState(PlayerControlKeys.FUNCTION1)
-					&& !model
-							.getLastControlKeyState(PlayerControlKeys.FUNCTION1))
-				handleFunction1WithoutBomb();
-			else if (model.getControlKeyState(PlayerControlKeys.FUNCTION2)
-					&& !model
-							.getLastControlKeyState(PlayerControlKeys.FUNCTION2))
-				handleFunction2();
-			break;
+			case WALKING:
+				if (!model.isDirectionKeyPressed()) {
+					model.setActivity(Activities.STANDING);
+				}
+				if (model.getControlKeyState(PlayerControlKeys.FUNCTION1) && !model.getLastControlKeyState(PlayerControlKeys.FUNCTION1)) {
+					handleFunction1WithoutBomb();
+				} else if (model.getControlKeyState(PlayerControlKeys.FUNCTION2) && !model.getLastControlKeyState(PlayerControlKeys.FUNCTION2)) {
+					handleFunction2();
+				}
+				break;
 
-		case WALKING_WITH_BOMB:
-			if (!model.isDirectionKeyPressed())
-				model.setActivity(Activities.STANDING_WITH_BOMB);
-			if (!model.getControlKeyState(PlayerControlKeys.FUNCTION1))
-				throwBombAway();
-			break;
+			case WALKING_WITH_BOMB:
+				if (!model.isDirectionKeyPressed()) {
+					model.setActivity(Activities.STANDING_WITH_BOMB);
+				}
+				if (!model.getControlKeyState(PlayerControlKeys.FUNCTION1)) {
+					throwBombAway();
+				}
+				break;
 
-		case KICKING:
-			if (model.getIterationCounter() == model.getActivity().activityIterations - 1)
-				model
-						.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING
-								: Activities.STANDING);
-			break;
+			case KICKING:
+				if (model.getIterationCounter() == model.getActivity().activityIterations - 1) {
+					model.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING : Activities.STANDING);
+				}
+				break;
 
-		case KICKING_WITH_BOMB:
-			if (model.getIterationCounter() == model.getActivity().activityIterations - 1)
-				model
-						.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING_WITH_BOMB
-								: Activities.STANDING_WITH_BOMB);
-			break;
+			case KICKING_WITH_BOMB:
+				if (model.getIterationCounter() == model.getActivity().activityIterations - 1) {
+					model.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING_WITH_BOMB : Activities.STANDING_WITH_BOMB);
+				}
+				break;
 
-		case PUNCHING:
-			if (model.getIterationCounter() == model.getActivity().activityIterations - 1)
-				model
-						.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING
-								: Activities.STANDING);
-			break;
+			case PUNCHING:
+				if (model.getIterationCounter() == model.getActivity().activityIterations - 1) {
+					model.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING : Activities.STANDING);
+				}
+				break;
 
-		case PICKING_UP:
-			if (model.getIterationCounter() == model.getActivity().activityIterations - 1) {
-				model
-						.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING_WITH_BOMB
-								: Activities.STANDING_WITH_BOMB);
-			}
-			break;
+			case PICKING_UP:
+				if (model.getIterationCounter() == model.getActivity().activityIterations - 1) {
+					model.setActivity(model.isDirectionKeyPressed() ? Activities.WALKING_WITH_BOMB : Activities.STANDING_WITH_BOMB);
+				}
+				break;
 
-		case DYING:
-			break;
+			case DYING:
+				break;
 
 		}
 	}
@@ -338,73 +309,59 @@ public class Player {
 		final int playerComponentPosY = model.getComponentPosY();
 		int componentPosX = playerComponentPosX;
 		int componentPosY = playerComponentPosY;
-		int maxPlacableBombs = Math.min(1,
-				model.accumulateableItemQuantitiesMap.get(Items.BOMB));
+		int maxPlacableBombs = Math.min(1, model.accumulateableItemQuantitiesMap.get(Items.BOMB));
 
-		final Integer bombIndexAtComponentPosition = modelProvider
-				.getBombIndexAtComponentPosition(componentPosX, componentPosY);
+		final Integer bombIndexAtComponentPosition = modelProvider.getBombIndexAtComponentPosition(componentPosX, componentPosY);
 		if (bombIndexAtComponentPosition != null) {
 			if (model.hasNonAccumulateableItemsMap.get(Items.BLUE_GLOVES)) {
-				if (modelProvider.getBombModels().get(
-						bombIndexAtComponentPosition).getOwnerPlayer() != model)
+				if (modelProvider.getBombModels().get(bombIndexAtComponentPosition).getOwnerPlayer() != model) {
 					return; // We can only pick up our own bombs
-				model.setPickedUpBombModel(modelProvider.getBombModels().get(
-						bombIndexAtComponentPosition));
+				}
+				model.setPickedUpBombModel(modelProvider.getBombModels().get(bombIndexAtComponentPosition));
 				modelController.removeBombAtIndex(bombIndexAtComponentPosition);
 				model.setActivity(Activities.PICKING_UP);
 				return;
 			}
 			if (model.hasNonAccumulateableItemsMap.get(Items.BOMB_SPRINKLE)) {
-				maxPlacableBombs = model.accumulateableItemQuantitiesMap
-						.get(Items.BOMB);
+				maxPlacableBombs = model.accumulateableItemQuantitiesMap.get(Items.BOMB);
 				// The position of the first bomb is ahead of us.
 				componentPosX += model.getDirectionXMultiplier();
 				componentPosY += model.getDirectionYMultiplier();
 			}
 		}
 
-		final LevelComponent[][] levelComponents = modelProvider
-				.getLevelModel().getComponents();
+		final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
 
 		int bombsCount = model.accumulateableItemQuantitiesMap.get(Items.BOMB);
 		for (int i = 0; i < maxPlacableBombs; i++) {
-			final Walls wallInPosition = levelComponents[componentPosY][componentPosX]
-					.getWall();
+			final Walls wallInPosition = levelComponents[componentPosY][componentPosX].getWall();
 
-			if (modelProvider.isBombAtComponentPosition(componentPosX,
-					componentPosY)
-					|| wallInPosition != Walls.EMPTY
-					|| wallInPosition == Walls.EMPTY
-					&& levelComponents[componentPosY][componentPosX].getItem() != null)
+			if (modelProvider.isBombAtComponentPosition(componentPosX, componentPosY) || (wallInPosition != Walls.EMPTY)
+			        || ((wallInPosition == Walls.EMPTY) && (levelComponents[componentPosY][componentPosX].getItem() != null))) {
 				break;
-			if (componentPosX != playerComponentPosX
-					|| componentPosY != playerComponentPosY)
-				if (modelProvider.isPlayerAtComponentPositionExcludePlayer(
-						componentPosX, componentPosY, model))
+			}
+			if ((componentPosX != playerComponentPosX) || (componentPosY != playerComponentPosY)) {
+				if (modelProvider.isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, model)) {
 					break;
+				}
+			}
 
 			model.accumulateableItemQuantitiesMap.put(Items.BOMB, --bombsCount);
 			final Bomb newBomb = new Bomb(model, modelProvider, modelController);
 			final BombModel newBombModel = newBomb.getModel();
-			newBombModel
-					.setRange(model.hasNonAccumulateableItemsMap
-							.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE
-							: model.accumulateableItemQuantitiesMap
-									.get(Items.FIRE) + 1);
-			newBombModel.setPosX(componentPosX * LEVEL_COMPONENT_GRANULARITY
-					+ LEVEL_COMPONENT_GRANULARITY / 2);
-			newBombModel.setPosY(componentPosY * LEVEL_COMPONENT_GRANULARITY
-					+ LEVEL_COMPONENT_GRANULARITY / 2);
+			newBombModel.setRange(model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap
+			        .get(Items.FIRE) + 1);
+			newBombModel.setPosX(componentPosX * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+			newBombModel.setPosY(componentPosY * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 
-			if (model.hasNonAccumulateableItemsMap.get(Items.JELLY))
+			if (model.hasNonAccumulateableItemsMap.get(Items.JELLY)) {
 				newBombModel.setType(BombTypes.JELLY);
-			else if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER)
-					&& model.getPlacableTriggeredBombs() > 0) {
+			} else if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER) && (model.getPlacableTriggeredBombs() > 0)) {
 				newBombModel.setType(BombTypes.TRIGGERED);
-				model.setPlacableTriggeredBombs(model
-						.getPlacableTriggeredBombs() - 1);
-			} else
+				model.setPlacableTriggeredBombs(model.getPlacableTriggeredBombs() - 1);
+			} else {
 				newBombModel.setType(BombTypes.NORMAL);
+			}
 
 			modelController.addNewBomb(newBomb);
 
@@ -419,24 +376,17 @@ public class Player {
 	private void throwBombAway() {
 		final BombModel bombModel = model.getPickedUpBombModel();
 
-		//bombModel.setTickingIterations(0); // Thrown away bombs start ticking
+		// bombModel.setTickingIterations(0); // Thrown away bombs start ticking
 		// from the beginning again.
 		bombModel.setDirection(model.getDirection()); // We throw in our
 		// direction
-		bombModel
-				.setPosX(model.getComponentPosX() * LEVEL_COMPONENT_GRANULARITY
-						+ LEVEL_COMPONENT_GRANULARITY / 2);
-		bombModel
-				.setPosY(model.getComponentPosY() * LEVEL_COMPONENT_GRANULARITY
-						+ LEVEL_COMPONENT_GRANULARITY / 2);
+		bombModel.setPosX(model.getComponentPosX() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+		bombModel.setPosY(model.getComponentPosY() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 
-		modelController.addNewBomb(new Bomb(bombModel, modelProvider,
-				modelController));
+		modelController.addNewBomb(new Bomb(bombModel, modelProvider, modelController));
 		model.setPickedUpBombModel(null);
 
-		model
-				.setActivity(model.getActivity() == Activities.STANDING_WITH_BOMB ? Activities.STANDING
-						: Activities.WALKING);
+		model.setActivity(model.getActivity() == Activities.STANDING_WITH_BOMB ? Activities.STANDING : Activities.WALKING);
 	}
 
 	/**
@@ -449,72 +399,51 @@ public class Player {
 	private void handleFunction2() {
 		// First of all, function 2 stops normal rolling bombs and triggers
 		// triggerable bombs.
-		for (final BombModel bombModel : modelProvider.getBombModels())
-			if (bombModel.getOwnerPlayer() == model
-					&& bombModel.getType() == BombTypes.NORMAL
-					&& bombModel.getPhase() == BombPhases.ROLLING) {
+		for (final BombModel bombModel : modelProvider.getBombModels()) {
+			if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.NORMAL) && (bombModel.getPhase() == BombPhases.ROLLING)) {
 				bombModel.setPhase(BombPhases.STANDING);
 				bombModel.alignPosXToComponentCenter();
 				bombModel.alignPosYToComponentCenter();
 			}
+		}
 
 		if (model.hasNonAccumulateableItemsMap.get(Items.BOXING_GLOVES)) {
 			model.setActivity(Activities.PUNCHING);
 
-			final Integer bombIndexAhead = modelProvider
-					.getBombIndexAtComponentPosition(model.getComponentPosX()
-							+ model.getDirectionXMultiplier(), model
-							.getComponentPosY()
-							+ model.getDirectionYMultiplier());
+			final Integer bombIndexAhead = modelProvider.getBombIndexAtComponentPosition(model.getComponentPosX() + model.getDirectionXMultiplier(), model
+			        .getComponentPosY()
+			        + model.getDirectionYMultiplier());
 			if (bombIndexAhead != null) {
-				final BombModel bombModel = modelProvider.getBombModels().get(
-						bombIndexAhead);
+				final BombModel bombModel = modelProvider.getBombModels().get(bombIndexAhead);
 				bombModel.setDirection(model.getDirection()); // We punch in our
 				// direction
-				bombModel.setPosX(bombModel.getComponentPosX()
-						* LEVEL_COMPONENT_GRANULARITY
-						+ LEVEL_COMPONENT_GRANULARITY / 2);
-				bombModel.setPosY(bombModel.getComponentPosY()
-						* LEVEL_COMPONENT_GRANULARITY
-						+ LEVEL_COMPONENT_GRANULARITY / 2);
+				bombModel.setPosX(bombModel.getComponentPosX() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+				bombModel.setPosY(bombModel.getComponentPosY() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 				bombModel.setPhase(BombPhases.FLYING);
 
-				modelController.validateAndSetFlyingTargetPosX(bombModel,
-						bombModel.getPosX()
-								+ bombModel.getDirectionXMultiplier()
-								* BOMB_FLYING_DISTANCE);
-				modelController.validateAndSetFlyingTargetPosY(bombModel,
-						bombModel.getPosY()
-								+ bombModel.getDirectionYMultiplier()
-								* BOMB_FLYING_DISTANCE);
+				modelController.validateAndSetFlyingTargetPosX(bombModel, bombModel.getPosX() + bombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
+				modelController.validateAndSetFlyingTargetPosY(bombModel, bombModel.getPosY() + bombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 			}
 		}
 
 		else if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER)) {
-			for (final BombModel bombModel : modelProvider.getBombModels())
-				if (bombModel.getOwnerPlayer() == model
-						&& bombModel.getType() == BombTypes.TRIGGERED
-						&& bombModel.getPhase() != BombPhases.FLYING) {
+			for (final BombModel bombModel : modelProvider.getBombModels()) {
+				if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.TRIGGERED) && (bombModel.getPhase() != BombPhases.FLYING)) {
 					bombModel.setAboutToDetonate(true);
 					break; // Function2 only detonates 1 triggered bomb
 				}
+			}
 		}
 
 		else if (model.hasNonAccumulateableItemsMap.get(Items.WALL_BUILDING)) {
-			final int componentPosX = model.getComponentPosX()
-					+ model.getDirectionXMultiplier();
-			final int componentPosY = model.getComponentPosY()
-					+ model.getDirectionYMultiplier();
-			if (isComponentPositionFreeForWallBuilding(componentPosX,
-					componentPosY)
-					&& model.getPlaceableWalls() > 0) {
-				modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX]
-						.setWall(Walls.BRICK);
+			final int componentPosX = model.getComponentPosX() + model.getDirectionXMultiplier();
+			final int componentPosY = model.getComponentPosY() + model.getDirectionYMultiplier();
+			if (isComponentPositionFreeForWallBuilding(componentPosX, componentPosY) && (model.getPlaceableWalls() > 0)) {
+				modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX].setWall(Walls.BRICK);
 				model.setPlaceableWalls(model.getPlaceableWalls() - 1);
 				SoundEffect.PLACE_WALL.play();
 				if (model.getPlaceableWalls() == 0) {
-					model.hasNonAccumulateableItemsMap.put(Items.WALL_BUILDING,
-							false);
+					model.hasNonAccumulateableItemsMap.put(Items.WALL_BUILDING, false);
 				}
 			}
 		}
@@ -533,23 +462,20 @@ public class Player {
 	 * @return true, if a brick wall can be built in the specified position;
 	 *         false otherwise
 	 */
-	private boolean isComponentPositionFreeForWallBuilding(
-			final int componentPosX, final int componentPosY) {
-		final LevelComponent levelComponent = modelProvider.getLevelModel()
-				.getComponents()[componentPosY][componentPosX];
+	private boolean isComponentPositionFreeForWallBuilding(final int componentPosX, final int componentPosY) {
+		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX];
 
-		if (levelComponent.getWall() != Walls.EMPTY
-				|| levelComponent.getWall() == Walls.EMPTY
-				&& levelComponent.getItem() != null)
+		if ((levelComponent.getWall() != Walls.EMPTY) || ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null))) {
 			return false;
+		}
 
-		if (modelProvider.isBombAtComponentPosition(componentPosX,
-				componentPosY))
+		if (modelProvider.isBombAtComponentPosition(componentPosX, componentPosY)) {
 			return false;
+		}
 
-		if (modelProvider.isPlayerAtComponentPositionExcludePlayer(
-				componentPosX, componentPosY, null))
+		if (modelProvider.isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, null)) {
 			return false;
+		}
 
 		return true;
 	}
@@ -570,33 +496,24 @@ public class Player {
 		// players activity
 
 		// if player can step based on the activity
-		if (activity == Activities.WALKING
-				|| activity == Activities.WALKING_WITH_BOMB
-				|| activity == Activities.PUNCHING
-				&& model.isDirectionKeyPressed()) {
+		if ((activity == Activities.WALKING) || (activity == Activities.WALKING_WITH_BOMB)
+		        || ((activity == Activities.PUNCHING) && model.isDirectionKeyPressed())) {
 			// First of all we determine in what direction we will face and/or
 			// move to
 			boolean movementCorrectionActivated = determineNewDirection();
 
-			int speed = BOMBERMAN_BASIC_SPEED
-					+ model.accumulateableItemQuantitiesMap
-							.get(Items.ROLLER_SKATES)
-					* BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
-			if (speed > BOBMERMAN_MAX_SPEED)
+			int speed = BOMBERMAN_BASIC_SPEED + model.accumulateableItemQuantitiesMap.get(Items.ROLLER_SKATES) * BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
+			if (speed > BOBMERMAN_MAX_SPEED) {
 				speed = BOBMERMAN_MAX_SPEED;
+			}
 
 			boolean needsToBeContained = false;
-			final int posXAhead = model.getPosX()
-					+ model.getDirectionXMultiplier()
-					* LEVEL_COMPONENT_GRANULARITY;
-			final int posYAhead = model.getPosY()
-					+ model.getDirectionYMultiplier()
-					* LEVEL_COMPONENT_GRANULARITY;
+			final int posXAhead = model.getPosX() + model.getDirectionXMultiplier() * LEVEL_COMPONENT_GRANULARITY;
+			final int posYAhead = model.getPosY() + model.getDirectionYMultiplier() * LEVEL_COMPONENT_GRANULARITY;
 			if (movementCorrectionActivated // If movement correction is
-					// activated, we cannot pass the
-					// center of the next column
-					|| !movementCorrectionActivated
-					&& !canPlayerStepToPosition(posXAhead, posYAhead)) // We
+			        // activated, we cannot pass the
+			        // center of the next column
+			        || (!movementCorrectionActivated && !canPlayerStepToPosition(posXAhead, posYAhead))) {
 				// cannot
 				// also,
 				// if
@@ -605,96 +522,83 @@ public class Player {
 				// obstruction
 				// ahead
 				needsToBeContained = true;
+			}
 
 			if (needsToBeContained) {
 				int newSpeed = -1;
-				final boolean bombAhead = modelProvider
-						.isBombAtComponentPosition(posXAhead
-								/ LEVEL_COMPONENT_GRANULARITY, posYAhead
-								/ LEVEL_COMPONENT_GRANULARITY);
+				final boolean bombAhead = modelProvider.isBombAtComponentPosition(posXAhead / LEVEL_COMPONENT_GRANULARITY, posYAhead
+				        / LEVEL_COMPONENT_GRANULARITY);
 
 				switch (model.getDirection()) {
-				case LEFT:
-					if (bombAhead
-							&& model.getPosX() % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)
-						newSpeed = 0;
-					else
-						newSpeed = speed
-								- (LEVEL_COMPONENT_GRANULARITY / 2 - (model
-										.getPosX() - speed)
-										% LEVEL_COMPONENT_GRANULARITY);
-					break;
-				case RIGHT:
-					if (bombAhead
-							&& model.getPosX() % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)
-						newSpeed = 0;
-					else
-						newSpeed = speed
-								- ((model.getPosX() + speed)
-										% LEVEL_COMPONENT_GRANULARITY - LEVEL_COMPONENT_GRANULARITY / 2);
-					break;
-				case UP:
-					if (bombAhead
-							&& model.getPosY() % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)
-						newSpeed = 0;
-					else
-						newSpeed = speed
-								- (LEVEL_COMPONENT_GRANULARITY / 2 - (model
-										.getPosY() - speed)
-										% LEVEL_COMPONENT_GRANULARITY);
-					break;
-				case DOWN:
-					if (bombAhead
-							&& model.getPosY() % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)
-						newSpeed = 0;
-					else
-						newSpeed = speed
-								- ((model.getPosY() + speed)
-										% LEVEL_COMPONENT_GRANULARITY - LEVEL_COMPONENT_GRANULARITY / 2);
-					break;
+					case LEFT:
+						if (bombAhead && (model.getPosX() % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)) {
+							newSpeed = 0;
+						} else {
+							newSpeed = speed - (LEVEL_COMPONENT_GRANULARITY / 2 - (model.getPosX() - speed) % LEVEL_COMPONENT_GRANULARITY);
+						}
+						break;
+					case RIGHT:
+						if (bombAhead && (model.getPosX() % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)) {
+							newSpeed = 0;
+						} else {
+							newSpeed = speed - ((model.getPosX() + speed) % LEVEL_COMPONENT_GRANULARITY - LEVEL_COMPONENT_GRANULARITY / 2);
+						}
+						break;
+					case UP:
+						if (bombAhead && (model.getPosY() % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)) {
+							newSpeed = 0;
+						} else {
+							newSpeed = speed - (LEVEL_COMPONENT_GRANULARITY / 2 - (model.getPosY() - speed) % LEVEL_COMPONENT_GRANULARITY);
+						}
+						break;
+					case DOWN:
+						if (bombAhead && (model.getPosY() % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)) {
+							newSpeed = 0;
+						} else {
+							newSpeed = speed - ((model.getPosY() + speed) % LEVEL_COMPONENT_GRANULARITY - LEVEL_COMPONENT_GRANULARITY / 2);
+						}
+						break;
 				}
 
-				if (newSpeed >= 0 && newSpeed < speed) { // If it's negative,
+				if ((newSpeed >= 0) && (newSpeed < speed)) { // If it's
+					// negative,
 					// it's beyond one
 					// level component, but
 					// that case we surly
 					// dont need to change
 					// speed
-					if (movementCorrectionActivated)
+					if (movementCorrectionActivated) {
 						wasStepCutInOrderToTurn = true;
+					}
 					speed = newSpeed;
 				}
 			}
 
 			if (speed > 0) { // If we can, we step...
 				// And finally we make the step
-				model.setPosX(model.getPosX() + model.getDirectionXMultiplier()
-						* speed);
-				model.setPosY(model.getPosY() + model.getDirectionYMultiplier()
-						* speed);
+				model.setPosX(model.getPosX() + model.getDirectionXMultiplier() * speed);
+				model.setPosY(model.getPosY() + model.getDirectionYMultiplier() * speed);
 				checkAndHandleItemPickingUp();
 			} // ...else we check for kick
-			else if (model.hasNonAccumulateableItemsMap.get(Items.BOOTS))
+			else if (model.hasNonAccumulateableItemsMap.get(Items.BOOTS)) {
 				tryToKick();
+			}
 		}
 
-		if (wasStepCutInOrderToTurn && invocationDepth == 0)
+		if (wasStepCutInOrderToTurn && (invocationDepth == 0)) {
 			stepPlayer(invocationDepth + 1); // Without this it gives a feeling
-		// of stucking for a moment on
-		// turns!!
+			// of stucking for a moment on
+			// turns!!
+		}
 	}
 
 	/**
 	 * Check whether we stand on an item, and handles the picking up.
 	 */
 	private void checkAndHandleItemPickingUp() {
-		final LevelComponent levelComponent = modelProvider.getLevelModel()
-				.getComponents()[model.getComponentPosY()][model
-				.getComponentPosX()];
+		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
 
-		if (levelComponent.getWall() == Walls.EMPTY
-				&& levelComponent.getItem() != null
-				&& levelComponent.fireModelVector.isEmpty()) {
+		if ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null) && levelComponent.fireModelVector.isEmpty()) {
 			final Items item = levelComponent.getItem();
 
 			if (ourClient) {
@@ -703,76 +607,67 @@ public class Player {
 
 			if (ACCUMULATEABLE_ITEMS.contains(item)) {
 				if (item != Items.HEART) { // We don't accumulate HEARTs.
-					model.accumulateableItemQuantitiesMap
-							.put(item, model.accumulateableItemQuantitiesMap
-									.get(item) + 1);
+					model.accumulateableItemQuantitiesMap.put(item, model.accumulateableItemQuantitiesMap.get(item) + 1);
 					model.pickedUpAccumulateableItems.add(item);
 				}
 			} else {
 				model.hasNonAccumulateableItemsMap.put(item, true);
-				if (!model.pickedUpNonAccumulateableItems.contains(item))
+				if (!model.pickedUpNonAccumulateableItems.contains(item)) {
 					model.pickedUpNonAccumulateableItems.add(item);
+				}
 
-				final EnumSet<Items> neutralizedItems = NEUTRALIZER_ITEMS_MAP
-						.get(item);
-				if (neutralizedItems != null) // Can be null in case of diseases
-					for (final Items neutralizedItem : neutralizedItems)
-						if (model.hasNonAccumulateableItemsMap
-								.get(neutralizedItem)) {
+				final EnumSet<Items> neutralizedItems = NEUTRALIZER_ITEMS_MAP.get(item);
+				if (neutralizedItems != null) {
+					for (final Items neutralizedItem : neutralizedItems) {
+						if (model.hasNonAccumulateableItemsMap.get(neutralizedItem)) {
 
-							model.hasNonAccumulateableItemsMap.put(
-									neutralizedItem, false);
-							if (model.pickedUpNonAccumulateableItems
-									.remove(neutralizedItem))
-								modelController
-										.replaceItemOnLevel(neutralizedItem);
+							model.hasNonAccumulateableItemsMap.put(neutralizedItem, false);
+							if (model.pickedUpNonAccumulateableItems.remove(neutralizedItem)) {
+								modelController.replaceItemOnLevel(neutralizedItem);
+							}
 
 							// If Trigger has been thrown out the window, we
 							// have to transform triggered bombs back to normal
 							// or jelly.
-							if (neutralizedItem == Items.TRIGGER)
-								for (final BombModel bombModel : modelProvider
-										.getBombModels())
-									if (bombModel.getOwnerPlayer() == model
-											&& bombModel.getType() == BombTypes.TRIGGERED) {
-										bombModel
-												.setType(model.hasNonAccumulateableItemsMap
-														.get(Items.JELLY) ? BombTypes.JELLY
-														: BombTypes.NORMAL);
+							if (neutralizedItem == Items.TRIGGER) {
+								for (final BombModel bombModel : modelProvider.getBombModels()) {
+									if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.TRIGGERED)) {
+										bombModel.setType(model.hasNonAccumulateableItemsMap.get(Items.JELLY) ? BombTypes.JELLY : BombTypes.NORMAL);
 										bombModel.setIterationCounter(0);
 										bombModel.setTickingIterations(0);
 									}
+								}
+							}
 						}
+					}
+				}
 			}
 
 			levelComponent.setItem(null);
 
 			// Special things to do when an item is picked up
 			switch (item) {
-			case TRIGGER:
-				model
-						.setPlacableTriggeredBombs(model.accumulateableItemQuantitiesMap
-								.get(Items.BOMB));
-				for (final BombModel bombModel : modelProvider.getBombModels())
-					if (bombModel.getOwnerPlayer() == model)
-						model.setPlacableTriggeredBombs(model
-								.getPlacableTriggeredBombs() + 1);
-				break;
-			case BOMB:
-				if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER))
-					model.setPlacableTriggeredBombs(model
-							.getPlacableTriggeredBombs() + 1);
-				break;
-			case HEART:
-				model.setVitality(Math.min(
-						model.getVitality() + HEART_VITALITY,
-						MAX_PLAYER_VITALITY * 2));
-				break;
-			case WALL_BUILDING:
-				model.setPlaceableWalls(PLACEABLE_WALLS);
-			case SPIDER_BOMB:
-				model.setSpyderBombEnabled(true);
-				break;
+				case TRIGGER:
+					model.setPlacableTriggeredBombs(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
+					for (final BombModel bombModel : modelProvider.getBombModels()) {
+						if (bombModel.getOwnerPlayer() == model) {
+							model.setPlacableTriggeredBombs(model.getPlacableTriggeredBombs() + 1);
+						}
+					}
+					break;
+				case BOMB:
+					if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER)) {
+						model.setPlacableTriggeredBombs(model.getPlacableTriggeredBombs() + 1);
+					}
+					break;
+				case HEART:
+					model.setVitality(Math.min(model.getVitality() + HEART_VITALITY, MAX_PLAYER_VITALITY * 2));
+					break;
+				case WALL_BUILDING:
+					model.setPlaceableWalls(PLACEABLE_WALLS);
+				case SPIDER_BOMB:
+					model.setSpyderBombEnabled(true);
+					break;
 			}
 		}
 	}
@@ -794,16 +689,13 @@ public class Player {
 		// standing on in order to be able to turn on it.
 
 		final int movementCorrectionSensitivity = LEVEL_COMPONENT_GRANULARITY
-				* modelProvider.getClientsPublicClientOptions()
-						.get(clientIndex).movementCorrectionSensitivities[playerIndex]
-				/ 200;
+		        * modelProvider.getClientsPublicClientOptions().get(clientIndex).movementCorrectionSensitivities[playerIndex] / 200;
 
 		if (model.getControlKeyState(PlayerControlKeys.DOWN)) {
 			model.setDirection(Directions.DOWN);
 
 			// The first kind of movement correction
-			if (!canPlayerStepToPosition(posX, posY
-					+ (LEVEL_COMPONENT_GRANULARITY / 2 + 1))) { // The
+			if (!canPlayerStepToPosition(posX, posY + (LEVEL_COMPONENT_GRANULARITY / 2 + 1))) { // The
 				// specified
 				// direction
 				// is
@@ -815,7 +707,7 @@ public class Player {
 				// movement
 				// correction
 				// function...
-				if (posX % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) // If
+				if (posX % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -826,22 +718,19 @@ public class Player {
 					// of
 					// the
 					// directions
-					if (canPlayerStepToPosition(posX
-							- LEVEL_COMPONENT_GRANULARITY, posY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									- LEVEL_COMPONENT_GRANULARITY, posY
-									+ LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -859,9 +748,9 @@ public class Player {
 						model.setDirection(Directions.LEFT);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 
-				if (posX % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY
-						- movementCorrectionSensitivity) // If
+				if (posX % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -871,22 +760,19 @@ public class Player {
 					// the
 					// other
 					// direction
-					if (canPlayerStepToPosition(posX
-							+ LEVEL_COMPONENT_GRANULARITY, posY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									+ LEVEL_COMPONENT_GRANULARITY, posY
-									+ LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -904,31 +790,29 @@ public class Player {
 						model.setDirection(Directions.RIGHT);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
 				// obstrucion and we're closer than
 				// LEVEL_COMPONENT_GRANULARITY/2
-				if (posX % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							- LEVEL_COMPONENT_GRANULARITY, posY
-							+ LEVEL_COMPONENT_GRANULARITY)) {
+				if (posX % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.RIGHT);
 						return true; // Movement correction is ACTIVATED
 					}
-				if (posX % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							+ LEVEL_COMPONENT_GRANULARITY, posY
-							+ LEVEL_COMPONENT_GRANULARITY)) {
+				}
+				if (posX % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.LEFT);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 		} else if (model.getControlKeyState(PlayerControlKeys.UP)) {
 			model.setDirection(Directions.UP);
 
-			if (!canPlayerStepToPosition(posX, posY
-					- (LEVEL_COMPONENT_GRANULARITY / 2 + 1))) { // The
+			if (!canPlayerStepToPosition(posX, posY - (LEVEL_COMPONENT_GRANULARITY / 2 + 1))) { // The
 				// specified
 				// direction
 				// is
@@ -940,7 +824,7 @@ public class Player {
 				// movement
 				// correction
 				// function...
-				if (posX % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) // If
+				if (posX % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -951,22 +835,19 @@ public class Player {
 					// of
 					// the
 					// directions
-					if (canPlayerStepToPosition(posX
-							- LEVEL_COMPONENT_GRANULARITY, posY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									- LEVEL_COMPONENT_GRANULARITY, posY
-									- LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -984,9 +865,9 @@ public class Player {
 						model.setDirection(Directions.LEFT);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 
-				if (posX % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY
-						- movementCorrectionSensitivity) // If
+				if (posX % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -996,22 +877,19 @@ public class Player {
 					// the
 					// other
 					// direction
-					if (canPlayerStepToPosition(posX
-							+ LEVEL_COMPONENT_GRANULARITY, posY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									+ LEVEL_COMPONENT_GRANULARITY, posY
-									- LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -1029,31 +907,29 @@ public class Player {
 						model.setDirection(Directions.RIGHT);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
 				// obstrucion and we're closer than
 				// LEVEL_COMPONENT_GRANULARITY/2
-				if (posX % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							- LEVEL_COMPONENT_GRANULARITY, posY
-							- LEVEL_COMPONENT_GRANULARITY)) {
+				if (posX % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.RIGHT);
 						return true; // Movement correction is ACTIVATED
 					}
-				if (posX % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							+ LEVEL_COMPONENT_GRANULARITY, posY
-							- LEVEL_COMPONENT_GRANULARITY)) {
+				}
+				if (posX % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.LEFT);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 		} else if (model.getControlKeyState(PlayerControlKeys.LEFT)) {
 			model.setDirection(Directions.LEFT);
 
-			if (!canPlayerStepToPosition(posX
-					- (LEVEL_COMPONENT_GRANULARITY / 2 + 1), posY)) { // The
+			if (!canPlayerStepToPosition(posX - (LEVEL_COMPONENT_GRANULARITY / 2 + 1), posY)) { // The
 				// specified
 				// direction
 				// is
@@ -1065,7 +941,7 @@ public class Player {
 				// movement
 				// correction
 				// function...
-				if (posY % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) // If
+				if (posY % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -1076,22 +952,19 @@ public class Player {
 					// of
 					// the
 					// directions
-					if (canPlayerStepToPosition(posX, posY
-							- LEVEL_COMPONENT_GRANULARITY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									- LEVEL_COMPONENT_GRANULARITY, posY
-									- LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX, posY - LEVEL_COMPONENT_GRANULARITY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -1109,9 +982,9 @@ public class Player {
 						model.setDirection(Directions.UP);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 
-				if (posY % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY
-						- movementCorrectionSensitivity) // If
+				if (posY % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -1121,22 +994,19 @@ public class Player {
 					// the
 					// other
 					// direction
-					if (canPlayerStepToPosition(posX, posY
-							+ LEVEL_COMPONENT_GRANULARITY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									- LEVEL_COMPONENT_GRANULARITY, posY
-									+ LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX, posY + LEVEL_COMPONENT_GRANULARITY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -1154,31 +1024,29 @@ public class Player {
 						model.setDirection(Directions.DOWN);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
 				// obstrucion and we're closer than
 				// LEVEL_COMPONENT_GRANULARITY/2
-				if (posY % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							- LEVEL_COMPONENT_GRANULARITY, posY
-							- LEVEL_COMPONENT_GRANULARITY)) {
+				if (posY % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);
 						return true; // Movement correction is ACTIVATED
 					}
-				if (posY % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							- LEVEL_COMPONENT_GRANULARITY, posY
-							+ LEVEL_COMPONENT_GRANULARITY)) {
+				}
+				if (posY % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.UP);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 		} else if (model.getControlKeyState(PlayerControlKeys.RIGHT)) {
 			model.setDirection(Directions.RIGHT);
 
-			if (!canPlayerStepToPosition(posX
-					+ (LEVEL_COMPONENT_GRANULARITY / 2 + 1), posY)) { // The
+			if (!canPlayerStepToPosition(posX + (LEVEL_COMPONENT_GRANULARITY / 2 + 1), posY)) { // The
 				// specified
 				// direction
 				// is
@@ -1190,7 +1058,7 @@ public class Player {
 				// movement
 				// correction
 				// function...
-				if (posY % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) // If
+				if (posY % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -1201,22 +1069,19 @@ public class Player {
 					// of
 					// the
 					// directions
-					if (canPlayerStepToPosition(posX, posY
-							- LEVEL_COMPONENT_GRANULARITY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									+ LEVEL_COMPONENT_GRANULARITY, posY
-									- LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX, posY - LEVEL_COMPONENT_GRANULARITY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -1234,9 +1099,9 @@ public class Player {
 						model.setDirection(Directions.UP);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 
-				if (posY % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY
-						- movementCorrectionSensitivity) // If
+				if (posY % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
 					// movement
 					// correction
 					// can
@@ -1246,22 +1111,19 @@ public class Player {
 					// the
 					// other
 					// direction
-					if (canPlayerStepToPosition(posX, posY
-							+ LEVEL_COMPONENT_GRANULARITY) // If
-							// the
-							// direction
-							// in
-							// which
-							// movement
-							// correction
-							// would
-							// take
-							// us
-							// is
-							// free..
-							&& canPlayerStepToPosition(posX
-									+ LEVEL_COMPONENT_GRANULARITY, posY
-									+ LEVEL_COMPONENT_GRANULARITY)) { // ...and
+					if (canPlayerStepToPosition(posX, posY + LEVEL_COMPONENT_GRANULARITY) // If
+					        // the
+					        // direction
+					        // in
+					        // which
+					        // movement
+					        // correction
+					        // would
+					        // take
+					        // us
+					        // is
+					        // free..
+					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
 						// and
 						// the
 						// position
@@ -1279,25 +1141,24 @@ public class Player {
 						model.setDirection(Directions.DOWN);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
 				// obstrucion and we're closer than
 				// LEVEL_COMPONENT_GRANULARITY/2
-				if (posY % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							+ LEVEL_COMPONENT_GRANULARITY, posY
-							- LEVEL_COMPONENT_GRANULARITY)) {
+				if (posY % LEVEL_COMPONENT_GRANULARITY < LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);
 						return true; // Movement correction is ACTIVATED
 					}
-				if (posY % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2)
-					if (!canPlayerStepToPosition(posX
-							+ LEVEL_COMPONENT_GRANULARITY, posY
-							+ LEVEL_COMPONENT_GRANULARITY)) {
+				}
+				if (posY % LEVEL_COMPONENT_GRANULARITY > LEVEL_COMPONENT_GRANULARITY / 2) {
+					if (!canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.UP);
 						return true; // Movement correction is ACTIVATED
 					}
+				}
 			}
 		}
 
@@ -1321,20 +1182,21 @@ public class Player {
 		final int componentPosX = posX / LEVEL_COMPONENT_GRANULARITY;
 		final int componentPosY = posY / LEVEL_COMPONENT_GRANULARITY;
 
-		final Walls wall = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX]
-				.getWall();
+		final Walls wall = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX].getWall();
 
 		if (model.hasNonAccumulateableItemsMap.get(Items.WALL_CLIMBING)) {
-			if (wall == Walls.CONCRETE || wall == Walls.DEATH)
+			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH)) {
 				return false;
+			}
 		} else {
-			if (wall != Walls.EMPTY)
+			if (wall != Walls.EMPTY) {
 				return false;
+			}
 		}
 
-		if (modelProvider.isBombAtComponentPosition(componentPosX,
-				componentPosY))
+		if (modelProvider.isBombAtComponentPosition(componentPosX, componentPosY)) {
 			return false;
+		}
 
 		return true;
 	}
@@ -1343,42 +1205,36 @@ public class Player {
 	 * Tries to kick.
 	 */
 	private void tryToKick() {
-		final int componentPosXAhead = model.getComponentPosX()
-				+ model.getDirectionXMultiplier();
-		final int componentPosYAhead = model.getComponentPosY()
-				+ model.getDirectionYMultiplier();
+		final int componentPosXAhead = model.getComponentPosX() + model.getDirectionXMultiplier();
+		final int componentPosYAhead = model.getComponentPosY() + model.getDirectionYMultiplier();
 
-		final Integer bombIndexAhead = modelProvider
-				.getBombIndexAtComponentPosition(componentPosXAhead,
-						componentPosYAhead);
-		if (bombIndexAhead == null) // There isn't bomb to kick..
+		final Integer bombIndexAhead = modelProvider.getBombIndexAtComponentPosition(componentPosXAhead, componentPosYAhead);
+		if (bombIndexAhead == null) {
 			return;
+		}
 
-		final BombModel bombModel = modelProvider.getBombModels().get(
-				bombIndexAhead);
+		final BombModel bombModel = modelProvider.getBombModels().get(bombIndexAhead);
 
-		final int componentPosXAheadAhead = componentPosXAhead
-				+ model.getDirectionXMultiplier();
-		final int componentPosYAheadAhead = componentPosYAhead
-				+ model.getDirectionYMultiplier();
+		final int componentPosXAheadAhead = componentPosXAhead + model.getDirectionXMultiplier();
+		final int componentPosYAheadAhead = componentPosYAhead + model.getDirectionYMultiplier();
 
-		if (!modelController.canBombRollToComponentPosition(bombModel,
-				componentPosXAheadAhead, componentPosYAheadAhead))
+		if (!modelController.canBombRollToComponentPosition(bombModel, componentPosXAheadAhead, componentPosYAheadAhead)) {
 			return;
+		}
 
 		// Activity can be PUNCHING!!!!
-		model
-				.setActivity(model.getActivity() == Activities.WALKING_WITH_BOMB ? Activities.KICKING_WITH_BOMB
-						: Activities.KICKING);
+		model.setActivity(model.getActivity() == Activities.WALKING_WITH_BOMB ? Activities.KICKING_WITH_BOMB : Activities.KICKING);
 		bombModel.setPhase(BombPhases.ROLLING);
 		bombModel.setDirection(model.getDirection()); // We punch in our
 		// direction
 
 		// We align the bomb to the center based on the kicking direction
-		if (bombModel.getDirectionXMultiplier() != 0)
+		if (bombModel.getDirectionXMultiplier() != 0) {
 			bombModel.alignPosYToComponentCenter();
-		if (bombModel.getDirectionYMultiplier() != 0)
+		}
+		if (bombModel.getDirectionYMultiplier() != 0) {
 			bombModel.alignPosXToComponentCenter();
+		}
 	}
 
 }
