@@ -75,7 +75,24 @@ public class GeneralUtilities {
 		
         return fileNamesWithoutExtension.toArray( new String[ fileNamesWithoutExtension.size() ] );
     }
+
     
+    public static String[] getFileNames( final String directoryName) {
+        final File[] fileList = new File( directoryName ).listFiles();
+		
+        if ( fileList == null )
+            return new String[ 0 ];
+        
+        final List< String > result = new ArrayList< String >();
+        for ( final File file : fileList ) {
+            final String fileName = file.getName();
+            if ( file.isFile())
+                result.add(fileName);
+        }
+		
+        return result.toArray( new String[ result.size() ] );
+    }
+
     /**
      * Creates and returns a buffered image which is compatible with the default display.
      * Can be used to create buffered images for high performance.

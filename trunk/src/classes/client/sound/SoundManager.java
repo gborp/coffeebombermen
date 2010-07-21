@@ -6,7 +6,6 @@
 package classes.client.sound;
 
 import classes.utils.GeneralUtilities;
-import static classes.Consts.SOUND_DIRECTORY_NAME;
 
 /**
  * Manages the sound resources of the game.<br>
@@ -28,7 +27,11 @@ public class SoundManager {
      * @return array of the names of available sound themes
      */
     public static String[] getAvailableSoundThemes() {
-        return GeneralUtilities.getSubdirectoryNames( SOUND_DIRECTORY_NAME );
+        return GeneralUtilities.getSubdirectoryNames( classes.Consts.SOUND_DIRECTORY_NAME );
     }
-    
+
+    public static String getActiveSoundTheme() {
+        return "classic";
+    }
+
 }
