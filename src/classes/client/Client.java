@@ -414,6 +414,7 @@ public class Client extends TimedIterableControlledThread implements
 					break;
 				}
 			} catch (final Exception e) {
+				e.printStackTrace();
 			}
 	}
 
