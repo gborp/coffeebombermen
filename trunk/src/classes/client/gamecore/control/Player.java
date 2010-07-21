@@ -31,6 +31,7 @@ import classes.client.sound.SoundEffect;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
+import classes.utils.MathHelper;
 
 /**
  * The class implements the control of a player of the GAME (NOT the the
@@ -42,7 +43,7 @@ public class Player {
 
 	private static final int      PLACEABLE_WALLS     = 5;
 	private static final int      MAX_REGEN           = 500;
-	private static final long     SPYDER_BOMB_LATENCY = 400000000;
+	private static final long     SPIDER_BOMB_LATENCY = 200000000;
 	/** The client index where this player belogns to. */
 	private int                   clientIndex;
 	/** The player index inside of its client. */
@@ -54,7 +55,7 @@ public class Player {
 	/** Reference to a model controller. */
 	private final ModelController modelController;
 	private final boolean         ourClient;
-	private long                  lastSpyderBomb;
+	private long                  lastSpiderBomb;
 
 	/**
 	 * Creates a new Player.
@@ -146,7 +147,7 @@ public class Player {
 				}
 			}
 		} else {
-			handleSpyderBomb();
+			handleSpiderBomb();
 
 			processActionsAndHandleActivityTransitions();
 
@@ -166,31 +167,41 @@ public class Player {
 		}
 	}
 
-	private void handleSpyderBomb() {
+	private void handleSpiderBomb() {
 		long now = System.nanoTime();
-		if (!model.isSpyderBombEnabled() || (lastSpyderBomb + SPYDER_BOMB_LATENCY > now)) {
+		if (!model.isSpiderBombEnabled() || (lastSpiderBomb + SPIDER_BOMB_LATENCY > now)) {
 			return;
 		}
 
-		throwSpyderBomb(Directions.UP);
-		throwSpyderBomb(Directions.RIGHT);
-		throwSpyderBomb(Directions.DOWN);
-		throwSpyderBomb(Directions.LEFT);
+		throwSpiderBomb(Directions.UP);
+		throwSpiderBomb(Directions.RIGHT);
+		throwSpiderBomb(Directions.DOWN);
+		throwSpiderBomb(Directions.LEFT);
 
-		int rounds = model.getSpyderBombRounds();
+		int rounds = model.getSpiderBombRounds();
 
 		if (rounds == 1) {
-			model.setSpyderBombEnabled(false);
+			model.setSpiderBombEnabled(false);
 		} else {
-			model.setSpyderBombRounds(rounds - 1);
+			model.setSpiderBombRounds(rounds - 1);
 		}
 
-		lastSpyderBomb = now;
+		lastSpiderBomb = now;
 	}
 
-	private void throwSpyderBomb(Directions direction) {
+	private void throwSpiderBomb(Directions direction) {
 		if ((model.getDirection() == direction) || (model.getDirection() == direction.getOpposite())) {
 			return;
+		}
+
+		if (direction.equals(Directions.DOWN) || direction.equals(Directions.LEFT)) {
+			if (model.getSpiderBombRounds() % 2 == 1) {
+				return;
+			}
+		} else {
+			if (model.getSpiderBombRounds() % 2 == 0) {
+				return;
+			}
 		}
 
 		final int playerComponentPosX = model.getComponentPosX();
@@ -210,8 +221,8 @@ public class Player {
 		} else {
 			newBombModel.setType(BombTypes.NORMAL);
 		}
-		newBombModel.setDirection(direction); // We throw in our
-		newBombModel.setTickingIterations(BOMB_DETONATION_ITERATIONS / 5);
+		newBombModel.setDirection(direction);
+		newBombModel.setTickingIterations(BOMB_DETONATION_ITERATIONS / 2);
 		newBombModel.setPhase(BombPhases.FLYING);
 
 		modelController.validateAndSetFlyingTargetPosX(newBombModel, newBombModel.getPosX() + newBombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
@@ -376,7 +387,7 @@ public class Player {
 	private void throwBombAway() {
 		final BombModel bombModel = model.getPickedUpBombModel();
 
-		bombModel.setTickingIterations(0); // Thrown away bombs start ticking
+		// bombModel.setTickingIterations(0); // Thrown away bombs start ticking
 		// from the beginning again.
 		bombModel.setDirection(model.getDirection()); // We throw in our
 		// direction
@@ -666,13 +677,13 @@ public class Player {
 					}
 					break;
 				case HEART:
-					model.setVitality(Math.min(model.getVitality() + HEART_VITALITY, (int) (MAX_PLAYER_VITALITY * 1.5f)));
+					model.setVitality(Math.min(model.getVitality() + HEART_VITALITY, MAX_PLAYER_VITALITY * 2));
 					break;
 				case WALL_BUILDING:
 					model.setPlaceableWalls(PLACEABLE_WALLS);
 					break;
 				case SPIDER_BOMB:
-					model.setSpyderBombEnabled(true);
+					model.setSpiderBombEnabled(true);
 					break;
 			}
 		}
