@@ -477,8 +477,8 @@ public class GameSceneComponent extends JComponent implements KeyListener,
 						/ LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2
 						+ 1, playerModel.getPosY() * levelComponentSize
 						/ LEVEL_COMPONENT_GRANULARITY + levelComponentSize / 2
-						+ 3, (levelComponentSize - 1)
-						* playerModel.getVitality() / MAX_PLAYER_VITALITY, 4);
+						+ 3, (levelComponentSize - 1) * vitality
+						/ MAX_PLAYER_VITALITY, 4);
 
 			}
 		}
