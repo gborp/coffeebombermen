@@ -31,7 +31,6 @@ import classes.client.sound.SoundEffect;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
-import classes.utils.MathHelper;
 
 /**
  * The class implements the control of a player of the GAME (NOT the the
@@ -56,6 +55,7 @@ public class Player {
 	private final ModelController modelController;
 	private final boolean         ourClient;
 	private long                  lastSpiderBomb;
+	private final String          name;
 
 	/**
 	 * Creates a new Player.
@@ -69,12 +69,14 @@ public class Player {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Player(boolean ourClient, final int clientIndex, final int playerIndex, final ModelProvider modelProvider, final ModelController modelController) {
+	public Player(boolean ourClient, final int clientIndex, final int playerIndex, final ModelProvider modelProvider, final ModelController modelController,
+	        String name) {
 		this.ourClient = ourClient;
 		this.clientIndex = clientIndex;
 		this.playerIndex = playerIndex;
 		this.modelProvider = modelProvider;
 		this.modelController = modelController;
+		this.name = name;
 	}
 
 	/**
@@ -906,21 +908,9 @@ public class Player {
 					        // us
 					        // is
 					        // free..
-					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
+					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
+						// ...and the position where the movement correction
+						// wants to take us to is allowed
 						model.setDirection(Directions.RIGHT);
 						return true; // Movement correction is ACTIVATED
 					}
@@ -947,17 +937,8 @@ public class Player {
 			model.setDirection(Directions.LEFT);
 
 			if (!canPlayerStepToPosition(posX - (LEVEL_COMPONENT_GRANULARITY / 2 + 1), posY)) { // The
-				// specified
-				// direction
-				// is
-				// unreachable
-				// for
-				// movement,
-				// try
-				// the
-				// movement
-				// correction
-				// function...
+				// specifieddirection is unreachable for movement, try the
+				// movement correction function...
 				if (posY % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
 					// movement
 					// correction
