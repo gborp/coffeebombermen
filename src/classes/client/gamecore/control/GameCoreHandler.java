@@ -919,5 +919,4 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		level.removeFireFromComponentPos(fire, componentPosX, componentPosY);
 	}
-
 }
