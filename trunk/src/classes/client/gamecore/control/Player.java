@@ -687,6 +687,9 @@ public class Player {
 				case SPIDER_BOMB:
 					model.setSpiderBombEnabled(true);
 					break;
+				case SUPER_DISEASE:
+					modelProvider.getLevelModel().startBlackOut();
+					break;
 			}
 		}
 	}
@@ -714,98 +717,19 @@ public class Player {
 			model.setDirection(Directions.DOWN);
 
 			// The first kind of movement correction
-			if (!canPlayerStepToPosition(posX, posY + (LEVEL_COMPONENT_GRANULARITY / 2 + 1))) { // The
-				// specified
-				// direction
-				// is
-				// unreachable
-				// for
-				// movement,
-				// try
-				// the
-				// movement
-				// correction
-				// function...
+			if (!canPlayerStepToPosition(posX, posY + (LEVEL_COMPONENT_GRANULARITY / 2 + 1))) {
 				if (posX % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// one
-					// of
-					// the
-					// directions
-					if (canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
-					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
+					if (canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY)
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.LEFT);
 						return true; // Movement correction is ACTIVATED
 					}
 				}
 
 				if (posX % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// the
-					// other
-					// direction
-					if (canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
-					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
+
+					if (canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY)
+					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.RIGHT);
 						return true; // Movement correction is ACTIVATED
 					}
@@ -832,82 +756,17 @@ public class Player {
 			model.setDirection(Directions.UP);
 
 			if (!canPlayerStepToPosition(posX, posY - (LEVEL_COMPONENT_GRANULARITY / 2 + 1))) { // The
-				// specified
-				// direction
-				// is
-				// unreachable
-				// for
-				// movement,
-				// try
-				// the
-				// movement
-				// correction
-				// function...
+
 				if (posX % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// one
-					// of
-					// the
-					// directions
-					if (canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
-					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
+					if (canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY)
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.LEFT);
 						return true; // Movement correction is ACTIVATED
 					}
 				}
 
 				if (posX % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// the
-					// other
-					// direction
-					if (canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
+					if (canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY)
 					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						// ...and the position where the movement correction
 						// wants to take us to is allowed
@@ -940,85 +799,18 @@ public class Player {
 				// specifieddirection is unreachable for movement, try the
 				// movement correction function...
 				if (posY % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// one
-					// of
-					// the
-					// directions
-					if (canPlayerStepToPosition(posX, posY - LEVEL_COMPONENT_GRANULARITY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
-					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
+
+					if (canPlayerStepToPosition(posX, posY - LEVEL_COMPONENT_GRANULARITY)
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.UP);
 						return true; // Movement correction is ACTIVATED
 					}
 				}
 
 				if (posY % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// the
-					// other
-					// direction
-					if (canPlayerStepToPosition(posX, posY + LEVEL_COMPONENT_GRANULARITY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
-					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
+
+					if (canPlayerStepToPosition(posX, posY + LEVEL_COMPONENT_GRANULARITY)
+					        && canPlayerStepToPosition(posX - LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);
 						return true; // Movement correction is ACTIVATED
 					}
@@ -1044,98 +836,18 @@ public class Player {
 		} else if (model.getControlKeyState(PlayerControlKeys.RIGHT)) {
 			model.setDirection(Directions.RIGHT);
 
-			if (!canPlayerStepToPosition(posX + (LEVEL_COMPONENT_GRANULARITY / 2 + 1), posY)) { // The
-				// specified
-				// direction
-				// is
-				// unreachable
-				// for
-				// movement,
-				// try
-				// the
-				// movement
-				// correction
-				// function...
+			if (!canPlayerStepToPosition(posX + (LEVEL_COMPONENT_GRANULARITY / 2 + 1), posY)) {
 				if (posY % LEVEL_COMPONENT_GRANULARITY < movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// one
-					// of
-					// the
-					// directions
-					if (canPlayerStepToPosition(posX, posY - LEVEL_COMPONENT_GRANULARITY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
-					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
+					if (canPlayerStepToPosition(posX, posY - LEVEL_COMPONENT_GRANULARITY)
+					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY - LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.UP);
 						return true; // Movement correction is ACTIVATED
 					}
 				}
 
 				if (posY % LEVEL_COMPONENT_GRANULARITY >= LEVEL_COMPONENT_GRANULARITY - movementCorrectionSensitivity) {
-					// movement
-					// correction
-					// can
-					// be
-					// activated
-					// in
-					// the
-					// other
-					// direction
 					if (canPlayerStepToPosition(posX, posY + LEVEL_COMPONENT_GRANULARITY) // If
-					        // the
-					        // direction
-					        // in
-					        // which
-					        // movement
-					        // correction
-					        // would
-					        // take
-					        // us
-					        // is
-					        // free..
 					        && canPlayerStepToPosition(posX + LEVEL_COMPONENT_GRANULARITY, posY + LEVEL_COMPONENT_GRANULARITY)) { // ...and
-						// and
-						// the
-						// position
-						// where
-						// the
-						// movement
-						// correction
-						// wants
-						// to
-						// take
-						// us
-						// to
-						// is
-						// allowed
 						model.setDirection(Directions.DOWN);
 						return true; // Movement correction is ACTIVATED
 					}

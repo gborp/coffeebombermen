@@ -145,26 +145,26 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			return;
 
 		long now = System.currentTimeMillis();
-		if (nextFlashStart == -1) {
-			nextFlashStart = now;
-		}
 
-		boolean blackOut;
-		if (now >= nextFlashStart && now < (nextFlashStart + flashDuration)) {
-			blackOut = false;
-		} else {
-			if (now >= (nextFlashStart + flashDuration)) {
-				nextFlashStart = now + blackOutDuration;
+		boolean blackOut = false;
+		if (modelProvider.getLevelModel().isBlackout()) {
+			if (nextFlashStart == -1) {
+				nextFlashStart = now;
 			}
-			blackOut = true;
-		}
 
-		if (hasActualDetonation()) {
-			blackOut = false;
-		}
+			if (now >= nextFlashStart && now < (nextFlashStart + flashDuration)) {
+				blackOut = false;
+			} else {
+				if (now >= (nextFlashStart + flashDuration)) {
+					nextFlashStart = now + blackOutDuration;
+				}
+				blackOut = true;
+			}
 
-		// FIXME disable blackout function
-		blackOut = false;
+			if (hasActualDetonation()) {
+				blackOut = false;
+			}
+		}
 
 		setWorkingParameters(graphics);
 
