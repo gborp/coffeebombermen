@@ -13,8 +13,10 @@ import static classes.client.gamecore.Consts.FIRE_ITERATIONS;
 import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
 import static classes.client.gamecore.Consts.MAX_PLAYER_VITALITY;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -161,6 +163,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			blackOut = false;
 		}
 
+		// FIXME disable blackout function
 		blackOut = false;
 
 		setWorkingParameters(graphics);
@@ -235,61 +238,108 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	/**
 	 * Paints the level.
 	 * 
-	 * @param graphics
+	 * @param g
 	 *            graphics context in which to paint
 	 */
-	private void paintLevel(final Graphics graphics) {
-		final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
-		final float wallScaleFactor = (float) levelComponentSize / wallImageHandlers[0].getOriginalWidth();
-		final float itemScaleFactor = (float) levelComponentSize / itemImageHandlers[0].getOriginalWidth();
-		final float fireScaleFactor = (float) levelComponentSize / firePhaseHandlers[0][0].getOriginalWidth();
-		final float burningScaleFactor = (float) levelComponentSize / burningPhaseHandlers[0].getOriginalWidth();
+	private void paintLevel(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+		float wallScaleFactor = (float) levelComponentSize / wallImageHandlers[0].getOriginalWidth();
+		float itemScaleFactor = (float) levelComponentSize / itemImageHandlers[0].getOriginalWidth();
+		float fireScaleFactor = (float) levelComponentSize / firePhaseHandlers[0][0].getOriginalWidth();
+		float burningScaleFactor = (float) levelComponentSize / burningPhaseHandlers[0].getOriginalWidth();
+
+		AlphaComposite fireLightComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
+		AlphaComposite normalComposit = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 
 		for (int i = 0, y = 0; i < levelComponents.length; i++, y += levelComponentSize) {
-			final LevelComponent[] levelComponentLine = levelComponents[i];
+			LevelComponent[] levelComponentLine = levelComponents[i];
 			for (int j = 0, x = 0; j < levelComponentLine.length; j++, x += levelComponentSize) {
 				final LevelComponent levelComponent = levelComponentLine[j];
 
 				if (levelComponent.fireModelVector.isEmpty()) {
-					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) // item
-						graphics.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
-					else
+					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) {
+						// item
+						g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
+					} else {
 						// wall
-						graphics.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+						if (!levelComponent.getWall().equals(Walls.EMPTY)) {
+							boolean fwTop = false;
+							boolean fwBottom = false;
+							boolean fwLeft = false;
+							boolean fwRight = false;
+							int fwLeftHeight = levelComponentSize;
+							int fwRightHeight = levelComponentSize;
+
+							if (i < levelComponents.length - 1 && !levelComponents[i + 1][j].fireModelVector.isEmpty()) {
+								fwTop = true;
+								fwLeftHeight -= levelComponentSize / 4;
+								fwRightHeight -= levelComponentSize / 4;
+							}
+							if (i > 0 && !levelComponents[i - 1][j].fireModelVector.isEmpty()) {
+								fwBottom = true;
+								fwLeftHeight -= levelComponentSize / 4;
+								fwRightHeight -= levelComponentSize / 4;
+							}
+							if (j < levelComponentLine.length - 1 && !levelComponents[i][j + 1].fireModelVector.isEmpty()) {
+								fwRight = true;
+							}
+
+							if (j > 1 && !levelComponents[i][j - 1].fireModelVector.isEmpty()) {
+								fwLeft = true;
+							}
+
+							if (fwBottom || fwTop || fwLeft || fwRight) {
+								g2.setComposite(fireLightComposite);
+								g.setColor(Color.YELLOW);
+								if (fwBottom) {
+									g.fillRect(x, y, levelComponentSize, levelComponentSize / 4);
+								}
+								if (fwTop) {
+									g.fillRect(x, y + levelComponentSize * 3 / 4, levelComponentSize, levelComponentSize / 4);
+								}
+								if (fwLeft) {
+									g.fillRect(x, y + (fwBottom ? (levelComponentSize / 4) : (0)), levelComponentSize / 4, fwLeftHeight);
+								}
+								if (fwRight) {
+									g.fillRect(x + levelComponentSize * 3 / 4, y + (fwBottom ? (levelComponentSize / 4) : (0)), levelComponentSize / 4,
+									        fwRightHeight);
+								}
+								g2.setComposite(normalComposit);
+							}
+						}
+					}
 				} else {
 					final FireModel fireModel = levelComponent.fireModelVector.get(levelComponent.fireModelVector.size() - 1);
 					final int firePhasesCount = firePhaseHandlers[fireModel.getShape().ordinal()].length;
 
 					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() == null) {
-						graphics.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
-						graphics.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * fireModel.getIterationCounter()
-						        / FIRE_ITERATIONS].getScaledImage(fireScaleFactor), x, y, null);
+						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+						g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * fireModel.getIterationCounter() / FIRE_ITERATIONS]
+						        .getScaledImage(fireScaleFactor), x, y, null);
 					} else {
-						if (fireModel.getIterationCounter() < FIRE_ITERATIONS / 2) { // The
-							// original
-							// wall
-							// or
-							// item
-							// is
-							// burning.
-							if (levelComponent.getWall() == Walls.EMPTY) // item
-								graphics.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
-							else
-								// wall
-								graphics.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
-						} else { // Now the item or the empty wall what will
-							// remain after the burning is visible through
-							// the burning.
-							if (levelComponent.getWall() != Walls.EMPTY && levelComponent.getItem() != null) // An
+						if (fireModel.getIterationCounter() < FIRE_ITERATIONS / 2) {
+							// The original wall or item is burning.
+							if (levelComponent.getWall() == Walls.EMPTY) {
 								// item
-								// will
-								// remain
-								graphics.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
-							else
+								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
+							} else {
+								// wall
+								g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+							}
+						} else {
+							// Now the item or the empty wall what will remain
+							// after the burning is visible through the burning.
+							if (levelComponent.getWall() != Walls.EMPTY && levelComponent.getItem() != null) {
+								// An item will remain
+								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
+							} else {
 								// Empty wall will remain
-								graphics.drawImage(wallImageHandlers[Walls.EMPTY.ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+								g.drawImage(wallImageHandlers[Walls.EMPTY.ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+							}
 						}
-						graphics.drawImage(burningPhaseHandlers[burningPhaseHandlers.length * fireModel.getIterationCounter() / FIRE_ITERATIONS]
+						g.drawImage(burningPhaseHandlers[burningPhaseHandlers.length * fireModel.getIterationCounter() / FIRE_ITERATIONS]
 						        .getScaledImage(burningScaleFactor), x, y, null);
 					}
 				}
@@ -312,9 +362,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 		final float scaleFactor = (float) levelComponentSize / bombPhaseHandlers[0][0].getOriginalWidth();
 
-		for (int i = 0; i < bombModels.size(); i++) { // Easy with the enhanced
-			// for: modifying is
-			// possible during a
+		for (int i = 0; i < bombModels.size(); i++) {
+			// Easy with the enhanced for: modifying is possible during a
 			// paint()
 			final BombModel bombModel = bombModels.get(i);
 			final int phasesCount = bombPhaseHandlers[bombModel.getType().ordinal()].length;
@@ -527,14 +576,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	public void keyPressed(final KeyEvent keyEvent) {
 		final int keyCode = keyEvent.getKeyCode();
 
-		final int gamePlayersFromHost = playersControlKeyStates.length; // Might
-		// not
-		// equal
-		// to
-		// the
-		// one
-		// at
-		// cilentOptions...
+		final int gamePlayersFromHost = playersControlKeyStates.length;
+		// Might not equal to the one at cilentOptions...
 		for (int i = 0; i < gamePlayersFromHost; i++)
 			for (int j = 0; j < playersControlKeys[i].length; j++)
 				if (keyCode == playersControlKeys[i][j] && playersControlKeyStates[i][j] == false) {

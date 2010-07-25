@@ -52,43 +52,43 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	}
 
 	/** Reference to the game manager. */
-	private final GameManager gameManager;
+	private final GameManager               gameManager;
 	/** Reference to the main frame. */
-	private final MainFrame mainFrame;
+	private final MainFrame                 mainFrame;
 	/** The global server options. */
-	private final ServerOptions globalServerOptions;
+	private final ServerOptions             globalServerOptions;
 	/**
 	 * Received level model from the server (if level is set to randomly
 	 * generated, this can be null).
 	 */
-	private final LevelModel receivedLevelModel;
+	private final LevelModel                receivedLevelModel;
 	/** Random object to be used when we generate random datas. */
-	private final Random random;
+	private final Random                    random;
 	/** Vector of public client options of the clients. */
 	private final List<PublicClientOptions> clientsPublicClientOptions;
 	/** Our client index, our place among the clients. */
-	private int ourClientIndex;
+	private int                             ourClientIndex;
 
 	/** Level of the game. */
-	private Level level;
+	private Level                           level;
 	/**
 	 * The Player objects of the game. Every client has a player array, and this
 	 * is the vector of these arrays.
 	 */
-	private List<Player[]> clientsPlayers;
+	private List<Player[]>                  clientsPlayers;
 	/** This is a shortcut for the models of the players of all clients. */
-	private List<PlayerModel[]> clientsPlayerModels;
+	private List<PlayerModel[]>             clientsPlayerModels;
 	/** The bombs of the game. */
-	private List<Bomb> bombs;
+	private List<Bomb>                      bombs;
 	/** Shortcut for the models of the bombs. */
-	private List<BombModel> bombModels;
+	private List<BombModel>                 bombModels;
 
 	/** Handler of the main component being the draw game animation component. */
-	private final MainComponentHandler drawGameAnimationMainComponentHandler;
+	private final MainComponentHandler      drawGameAnimationMainComponentHandler;
 	/** Handler of the main component being the losing animation component. */
-	private final MainComponentHandler losingAnimationMainComponentHandler;
+	private final MainComponentHandler      losingAnimationMainComponentHandler;
 	/** Handler of the main component being the winning animation component. */
-	private final MainComponentHandler winningAnimationMainComponentHandler;
+	private final MainComponentHandler      winningAnimationMainComponentHandler;
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -111,11 +111,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * @param ourClientIndex
 	 *            our client index, our place among the clients
 	 */
-	public GameCoreHandler(final GameManager gameManager,
-			final MainFrame mainFrame, final ServerOptions globalServerOptions,
-			final LevelModel levelModel, final Random random,
-			final List<PublicClientOptions> clientsPublicClientOptions,
-			final int ourClientIndex) {
+	public GameCoreHandler(final GameManager gameManager, final MainFrame mainFrame, final ServerOptions globalServerOptions, final LevelModel levelModel,
+	        final Random random, final List<PublicClientOptions> clientsPublicClientOptions, final int ourClientIndex) {
 		this.gameManager = gameManager;
 		this.mainFrame = mainFrame;
 		this.globalServerOptions = globalServerOptions;
@@ -124,19 +121,16 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
 
-		clientsPlayers = new ArrayList<Player[]>(
-				this.clientsPublicClientOptions.size());
-		clientsPlayerModels = new ArrayList<PlayerModel[]>(
-				this.clientsPublicClientOptions.size());
+		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
+		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
-			final PublicClientOptions publicClientOptions = this.clientsPublicClientOptions
-					.get(i);
+			final PublicClientOptions publicClientOptions = this.clientsPublicClientOptions.get(i);
 
 			final Player[] players = new Player[publicClientOptions.playerNames.length];
 			final PlayerModel[] playerModels = new PlayerModel[publicClientOptions.playerNames.length];
 
 			for (int j = 0; j < players.length; j++) {
-				players[j] = new Player(ourClientIndex == i, i, j, this, this);
+				players[j] = new Player(ourClientIndex == i, i, j, this, this, publicClientOptions.playerNames[j]);
 				playerModels[j] = players[j].getModel();
 			}
 
@@ -144,28 +138,22 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			clientsPlayerModels.add(playerModels);
 		}
 
-		drawGameAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(
-				this.mainFrame) {
+		drawGameAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
 
 			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager()
-						.getWaitingAnimationDatas();
+				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
 			}
 		};
-		losingAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(
-				this.mainFrame) {
+		losingAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
 
 			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager()
-						.getWaitingAnimationDatas();
+				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
 			}
 		};
-		winningAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(
-				this.mainFrame) {
+		winningAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
 
 			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager()
-						.getWaitingAnimationDatas();
+				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
 			}
 		};
 	}
@@ -192,12 +180,10 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * Inits the next round.
 	 */
 	public void initNextRound() {
-		level = globalServerOptions.levelName
-				.equals(RANDOMLY_GENERATED_LEVEL_NAME) ? generateRandomLevel()
-				: new Level(receivedLevelModel.cloneLevel(), this, this);
+		level = globalServerOptions.levelName.equals(RANDOMLY_GENERATED_LEVEL_NAME) ? generateRandomLevel() : new Level(receivedLevelModel.cloneLevel(), this,
+		        this);
 
-		final LevelComponent[][] levelComponents = level.getModel()
-				.getComponents();
+		final LevelComponent[][] levelComponents = level.getModel().getComponents();
 
 		// The level is surrounded with concrete walls, we dont even try
 		// there...
@@ -222,8 +208,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				int componentPosY = 1 + getRandom().nextInt(maxComponentPosY);
 
 				qualityCycle: while (true) {
-					trialCycle: for (int trialsCount = (maxComponentPosX - 1)
-							* (maxComponentPosY - 1); trialsCount >= 0; trialsCount--) {
+					trialCycle: for (int trialsCount = (maxComponentPosX - 1) * (maxComponentPosY - 1); trialsCount >= 0; trialsCount--) {
 						if (--componentPosX < 1) {
 							componentPosX = maxComponentPosX;
 							if (--componentPosY < 1)
@@ -231,33 +216,24 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						}
 
 						if (positioningAlgoritmQuality < 4)
-							if (levelComponents[componentPosY][componentPosX]
-									.getWall() == Walls.CONCRETE)
+							if (levelComponents[componentPosY][componentPosX].getWall() == Walls.CONCRETE)
 								continue; // Obvious...
 
 						if (positioningAlgoritmQuality < 2) {
-							if (levelComponents[componentPosY][componentPosX - 1]
-									.getWall() == Walls.CONCRETE
-									&& levelComponents[componentPosY][componentPosX + 1]
-											.getWall() == Walls.CONCRETE)
+							if (levelComponents[componentPosY][componentPosX - 1].getWall() == Walls.CONCRETE
+							        && levelComponents[componentPosY][componentPosX + 1].getWall() == Walls.CONCRETE)
 								continue; // Horizontally not open the component
-							if (levelComponents[componentPosY - 1][componentPosX]
-									.getWall() == Walls.CONCRETE
-									&& levelComponents[componentPosY + 1][componentPosX]
-											.getWall() == Walls.CONCRETE)
+							if (levelComponents[componentPosY - 1][componentPosX].getWall() == Walls.CONCRETE
+							        && levelComponents[componentPosY + 1][componentPosX].getWall() == Walls.CONCRETE)
 								continue; // Vertically not open the component
 						}
 
 						for (final int[] startPosition : generatedStartPositions)
-							if (Math.abs(componentPosX - startPosition[0])
-									+ Math
-											.abs(componentPosY
-													- startPosition[1]) < 4 - positioningAlgoritmQuality)
+							if (Math.abs(componentPosX - startPosition[0]) + Math.abs(componentPosY - startPosition[1]) < 4 - positioningAlgoritmQuality)
 								continue trialCycle; // Too close to another
 						// player
 
-						generatedStartPositions.add(new int[] { componentPosX,
-								componentPosY });
+						generatedStartPositions.add(new int[] { componentPosX, componentPosY });
 						break qualityCycle;
 					}
 
@@ -267,27 +243,22 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				}
 
 				// We clear the level around the player.
-				final int[][] DELTA_COORDS = new int[][] { { -1, 0 }, { 0, 0 },
-						{ 1, 0 }, { 0, -1 }, { 0, 1 } }; // Delta
+				final int[][] DELTA_COORDS = new int[][] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }; // Delta
 				// coordinates
 				// of
 				// the
 				// clearable
 				// components
 				for (int i = 0; i < DELTA_COORDS.length; i++) {
-					final LevelComponent levelComponent = levelComponents[componentPosY
-							+ DELTA_COORDS[i][0]][componentPosX
-							+ DELTA_COORDS[i][1]];
+					final LevelComponent levelComponent = levelComponents[componentPosY + DELTA_COORDS[i][0]][componentPosX + DELTA_COORDS[i][1]];
 					if (levelComponent.getWall() != Walls.CONCRETE) {
 						levelComponent.setWall(Walls.EMPTY);
 						levelComponent.setItem(null);
 					}
 				}
 
-				player.initForNextRound(LEVEL_COMPONENT_GRANULARITY
-						* componentPosX + LEVEL_COMPONENT_GRANULARITY / 2,
-						LEVEL_COMPONENT_GRANULARITY * componentPosY
-								+ LEVEL_COMPONENT_GRANULARITY / 2);
+				player.initForNextRound(LEVEL_COMPONENT_GRANULARITY * componentPosX + LEVEL_COMPONENT_GRANULARITY / 2, LEVEL_COMPONENT_GRANULARITY
+				        * componentPosY + LEVEL_COMPONENT_GRANULARITY / 2);
 			}
 
 		bombs = new ArrayList<Bomb>();
@@ -304,8 +275,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private Level generateRandomLevel() {
 		final LevelOptions levelOptions = globalServerOptions.levelOptions;
 		final Level level = new Level(levelOptions, this, this);
-		final LevelComponent[][] levelComponents = level.getModel()
-				.getComponents();
+		final LevelComponent[][] levelComponents = level.getModel().getComponents();
 
 		final int levelWidth = levelComponents[0].length;
 		final int levelHeight = levelComponents.length;
@@ -314,32 +284,27 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			for (int x = 0; x < levelWidth; x++) {
 				Walls wall;
 
-				if (y == 0 || y == levelHeight - 1 || x == 0
-						|| x == levelWidth - 1) {
+				if (y == 0 || y == levelHeight - 1 || x == 0 || x == levelWidth - 1) {
 					wall = Walls.CONCRETE; // Border
 				} else if (random.nextInt(100) > 95) {
-					wall = random.nextInt(100) > 30 ? Walls.BRICK
-							: Walls.CONCRETE;
+					wall = random.nextInt(100) > 30 ? Walls.BRICK : Walls.CONCRETE;
 				} else if ((x & 0x01) == 0 && (y & 0x01) == 0) {
 					wall = Walls.CONCRETE; // Inner concrete matrix
 				} else {
-					wall = random.nextInt(100) < globalServerOptions.amountOfBrickWalls ? Walls.BRICK
-							: Walls.EMPTY;
+					wall = random.nextInt(100) < globalServerOptions.amountOfBrickWalls ? Walls.BRICK : Walls.EMPTY;
 				}
 
 				levelComponents[y][x].setWall(wall);
 			}
 		}
-		levelComponents[1][1].setWall(random.nextInt(100) > 50 ? Walls.BRICK
-				: Walls.EMPTY);
+		levelComponents[1][1].setWall(random.nextInt(100) > 50 ? Walls.BRICK : Walls.EMPTY);
 
 		deblockLevel(levelComponents, levelWidth, levelHeight);
 
 		return level;
 	}
 
-	private void deblockLevel(LevelComponent[][] levelComponents, int width,
-			int height) {
+	private void deblockLevel(LevelComponent[][] levelComponents, int width, int height) {
 		LEVEL_GEN_ITEM[][] accessible = new LEVEL_GEN_ITEM[height][width];
 		for (int y = 0; y < height - 0; y++) {
 			LEVEL_GEN_ITEM[] row = accessible[y];
@@ -365,10 +330,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						continue;
 					}
 					if (row[x] == LEVEL_GEN_ITEM.UNKNOWN) {
-						boolean hasAccessibleNeighbour = row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE
-								|| row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE
-								|| aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE
-								|| accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE;
+						boolean hasAccessibleNeighbour = row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE || row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE
+						        || aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE || accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE;
 
 						if (hasAccessibleNeighbour) {
 							accessible[y][x] = LEVEL_GEN_ITEM.ACCESSIBLE;
@@ -396,23 +359,19 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 						if (x > 1 && (vert || (!vert && !horz))) {
 							levelComponents[y][x - 1].setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible
-									|| row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE;
 						}
 						if (x < width - 2 && (vert || (!vert && !horz))) {
 							levelComponents[y][x + 1].setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible
-									|| row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE;
 						}
 						if (y > 1 && (horz || (!horz && !vert))) {
 							levelComponents[y - 1][x].setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible
-									|| aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE;
 						}
 						if (y < height - 2 && (horz || (!horz && !vert))) {
 							levelComponents[y + 1][x].setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible
-									|| accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE;
 						}
 						if (isNowAccessible) {
 							row[x] = LEVEL_GEN_ITEM.ACCESSIBLE;
@@ -449,11 +408,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		for (int i = bombs.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
 			if (bombModel.isDead()) {
-				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-						.put(
-								Items.BOMB,
-								bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-										.get(Items.BOMB) + 1);
+				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+				        .get(Items.BOMB) + 1);
 				bombs.remove(i);
 				bombModels.remove(i);
 			}
@@ -465,11 +421,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		for (int i = bombs.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
 			if (bombModels.get(i).isDetonated()) {
-				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-						.put(
-								Items.BOMB,
-								bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-										.get(Items.BOMB) + 1);
+				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+				        .get(Items.BOMB) + 1);
 				bombs.remove(i);
 				bombModels.remove(i);
 			}
@@ -479,16 +432,13 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		for (final PlayerModel[] playerModels : clientsPlayerModels)
 			for (final PlayerModel playerModel : playerModels)
 				if (playerModel.getActivity() != Activities.DYING) {
-					LevelComponent comp = getLevelModel().getComponents()[playerModel
-							.getComponentPosY()][playerModel.getComponentPosX()];
+					LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
 					int firesCount = comp.fireModelVector.size();
 					if (!globalServerOptions.multipleFire && firesCount > 1)
 						firesCount = 1;
 					if (firesCount > 0) {
 						final int damage = firesCount
-								* (int) (MAX_PLAYER_VITALITY
-										* globalServerOptions.damageOfWholeBombFire
-										/ (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
+						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.damageOfWholeBombFire / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
 						// for
 						// ceiling
 						// (can't
@@ -504,9 +454,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						// the
 						// player
 						// live!)
-						playerModel.setVitality(Math.max(0, playerModel
-								.getVitality()
-								- damage));
+						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
 						if (playerModel.getVitality() <= 0)
 							playerModel.setActivity(Activities.DYING);
 					}
@@ -529,12 +477,10 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		if (newClientsActions.isEmpty()) {
 			return;
 		}
-		final GeneralStringTokenizer clientsActionsTokenizer = new GeneralStringTokenizer(
-				newClientsActions);
+		final GeneralStringTokenizer clientsActionsTokenizer = new GeneralStringTokenizer(newClientsActions);
 
 		while (clientsActionsTokenizer.hasRemainingString()) {
-			final StringTokenizer clientActionsTokenizer = new StringTokenizer(
-					clientsActionsTokenizer.nextStringToken(), " ");
+			final StringTokenizer clientActionsTokenizer = new StringTokenizer(clientsActionsTokenizer.nextStringToken(), " ");
 
 			String commandTarget = clientActionsTokenizer.nextToken();
 
@@ -557,21 +503,14 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 			if ("player".equals(commandTarget)) {
 
-				final int clientIndex = Integer.parseInt(clientActionsTokenizer
-						.nextToken());
+				final int clientIndex = Integer.parseInt(clientActionsTokenizer.nextToken());
 
 				do {
-					final int playerIndex = Integer
-							.parseInt(clientActionsTokenizer.nextToken());
-					final PlayerControlKeys playerControlKey = PlayerControlKeys
-							.values()[Integer.parseInt(clientActionsTokenizer
-							.nextToken())];
-					final boolean playerControlKeyPressed = clientActionsTokenizer
-							.nextToken().charAt(0) == 'p' ? true : false;
+					final int playerIndex = Integer.parseInt(clientActionsTokenizer.nextToken());
+					final PlayerControlKeys playerControlKey = PlayerControlKeys.values()[Integer.parseInt(clientActionsTokenizer.nextToken())];
+					final boolean playerControlKeyPressed = clientActionsTokenizer.nextToken().charAt(0) == 'p' ? true : false;
 
-					clientsPlayers.get(clientIndex)[playerIndex].getModel()
-							.setControlKeyState(playerControlKey,
-									playerControlKeyPressed);
+					clientsPlayers.get(clientIndex)[playerIndex].getModel().setControlKeyState(playerControlKey, playerControlKeyPressed);
 
 				} while (clientActionsTokenizer.hasMoreTokens());
 			}
@@ -584,25 +523,19 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * bombs.
 	 */
 	private void checkAndHandleBombDetonations() {
-		final LevelComponent[][] levelComponents = getLevelModel()
-				.getComponents();
+		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
 		final ArrayList<BombModel> detonatableBombModels = new ArrayList<BombModel>();
 		boolean checkedAllBombModels;
 
 		// First we check the fire triggered bombs...
 		for (final BombModel bombModel : bombModels)
-			if (bombModel.getPhase() != BombPhases.FLYING
-					&& !bombModel.isAboutToDetonate()
-					&& !levelComponents[bombModel.getComponentPosY()][bombModel
-							.getComponentPosX()].fireModelVector.isEmpty()) {
+			if (bombModel.getPhase() != BombPhases.FLYING && !bombModel.isAboutToDetonate()
+			        && !levelComponents[bombModel.getComponentPosY()][bombModel.getComponentPosX()].fireModelVector.isEmpty()) {
 				bombModel.setAboutToDetonate(true);
 
-				LevelComponent levelComp = levelComponents[bombModel
-						.getComponentPosY()][bombModel.getComponentPosX()];
+				LevelComponent levelComp = levelComponents[bombModel.getComponentPosY()][bombModel.getComponentPosX()];
 
-				bombModel.setTriggererPlayer(levelComp.fireModelVector.get(
-						levelComp.fireModelVector.size() - 1)
-						.getTriggererPlayer());
+				bombModel.setTriggererPlayer(levelComp.fireModelVector.get(levelComp.fireModelVector.size() - 1).getTriggererPlayer());
 			}
 
 		do {
@@ -631,71 +564,45 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				// (so it
 				// must be
 				// upward)!
-				final BombModel detonatedBombModel = detonatableBombModels
-						.get(i);
-				final int detonatedBombComponentPosX = detonatedBombModel
-						.getComponentPosX();
-				final int detonatedBombComponentPosY = detonatedBombModel
-						.getComponentPosY();
+				final BombModel detonatedBombModel = detonatableBombModels.get(i);
+				final int detonatedBombComponentPosX = detonatedBombModel.getComponentPosX();
+				final int detonatedBombComponentPosY = detonatedBombModel.getComponentPosY();
 
 				for (final Directions direction : Directions.values())
-					for (int range = direction == Directions.values()[0] ? 0
-							: 1; range < detonatedBombModel.getRange(); range++) {
-						if (range > 0
-								&& detonatedBombModel.excludedDetonationDirections
-										.contains(direction))
+					for (int range = direction == Directions.values()[0] ? 0 : 1; range < detonatedBombModel.getRange(); range++) {
+						if (range > 0 && detonatedBombModel.excludedDetonationDirections.contains(direction))
 							break;
 
-						final int componentPosX = detonatedBombComponentPosX
-								+ direction.getXMultiplier() * range;
-						final int componentPosY = detonatedBombComponentPosY
-								+ direction.getYMultiplier() * range;
+						final int componentPosX = detonatedBombComponentPosX + direction.getXMultiplier() * range;
+						final int componentPosY = detonatedBombComponentPosY + direction.getYMultiplier() * range;
 						final LevelComponent levelComponent = levelComponents[componentPosY][componentPosX];
 
-						if (levelComponent.getWall() == Walls.CONCRETE
-								|| levelComponent.getWall() == Walls.DEATH)
+						if (levelComponent.getWall() == Walls.CONCRETE || levelComponent.getWall() == Walls.DEATH)
 							break;
 
-						final Integer bombIndexAtComponentPos = range == 0 ? null
-								: getBombIndexAtComponentPosition(
-										componentPosX, componentPosY);
+						final Integer bombIndexAtComponentPos = range == 0 ? null : getBombIndexAtComponentPosition(componentPosX, componentPosY);
 
 						if (bombIndexAtComponentPos != null) {
-							final BombModel bombModelAtComponentPos = bombModels
-									.get(bombIndexAtComponentPos);
-							bombModelAtComponentPos.excludedDetonationDirections
-									.add(direction.getOpposite());
-							if (!bombModelAtComponentPos.isDetonated()
-									&& !detonatableBombModels
-											.contains(bombModelAtComponentPos)) {
-								bombModelAtComponentPos
-										.setTriggererPlayer(detonatedBombModel
-												.getTriggererPlayer());
-								detonatableBombModels
-										.add(bombModelAtComponentPos);
+							final BombModel bombModelAtComponentPos = bombModels.get(bombIndexAtComponentPos);
+							bombModelAtComponentPos.excludedDetonationDirections.add(direction.getOpposite());
+							if (!bombModelAtComponentPos.isDetonated() && !detonatableBombModels.contains(bombModelAtComponentPos)) {
+								bombModelAtComponentPos.setTriggererPlayer(detonatedBombModel.getTriggererPlayer());
+								detonatableBombModels.add(bombModelAtComponentPos);
 							}
 							break;
 						} else {
 							// Now here we can set the fire...
-							final Fire fire = new Fire(componentPosX,
-									componentPosY, this, this);
+							final Fire fire = new Fire(componentPosX, componentPosY, this, this);
 							final FireModel fireModel = fire.getModel();
 
-							fireModel
-									.setShape(range == 0 ? FireShapes.CROSSING
-											: (direction.getXMultiplier() != 0 ? FireShapes.HORIZONTAL
-													: FireShapes.VERTICAL));
-							fireModel.setOwnerPlayer(detonatedBombModel
-									.getOwnerPlayer());
-							fireModel.setTriggererPlayer(detonatedBombModel
-									.getTriggererPlayer());
+							fireModel.setShape(range == 0 ? FireShapes.CROSSING : (direction.getXMultiplier() != 0 ? FireShapes.HORIZONTAL
+							        : FireShapes.VERTICAL));
+							fireModel.setOwnerPlayer(detonatedBombModel.getOwnerPlayer());
+							fireModel.setTriggererPlayer(detonatedBombModel.getTriggererPlayer());
 
-							level.addFireToComponentPos(fire, componentPosX,
-									componentPosY);
+							level.addFireToComponentPos(fire, componentPosX, componentPosY);
 
-							if (levelComponent.getWall() == Walls.BRICK
-									|| levelComponent.getWall() == Walls.EMPTY
-									&& levelComponent.getItem() != null)
+							if (levelComponent.getWall() == Walls.BRICK || levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null)
 								break;
 						}
 					}
@@ -768,8 +675,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * @return true if there is a bomb at the specified position or there is one
 	 *         that hangs down into it; false otherwise
 	 */
-	public boolean isBombAtComponentPosition(final int componentPosX,
-			final int componentPosY) {
+	public boolean isBombAtComponentPosition(final int componentPosX, final int componentPosY) {
 		return getBombIndexAtComponentPosition(componentPosX, componentPosY) != null;
 	}
 
@@ -784,15 +690,13 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * @return the bomb being at a component position or the one hanging down
 	 *         into the component; or null if there is no bomb there
 	 */
-	public Integer getBombIndexAtComponentPosition(final int componentPosX,
-			final int componentPosY) {
+	public Integer getBombIndexAtComponentPosition(final int componentPosX, final int componentPosY) {
 		for (int i = bombModels.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
 			if (bombModel.getPhase() != BombPhases.FLYING) // Flying bombs
 				// "aren't" in the
 				// level.
-				if (bombModel.getComponentPosX() == componentPosX
-						&& bombModel.getComponentPosY() == componentPosY)
+				if (bombModel.getComponentPosX() == componentPosX && bombModel.getComponentPosY() == componentPosY)
 					return i;
 		}
 
@@ -812,9 +716,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * @return true if there is a player at the specified position or there is
 	 *         one that hangs down into it; false otherwise
 	 */
-	public boolean isPlayerAtComponentPositionExcludePlayer(
-			final int componentPosX, final int componentPosY,
-			final PlayerModel playerModelToExclude) {
+	public boolean isPlayerAtComponentPositionExcludePlayer(final int componentPosX, final int componentPosY, final PlayerModel playerModelToExclude) {
 		for (final PlayerModel[] playerModels : clientsPlayerModels)
 			for (final PlayerModel playerModel : playerModels)
 				if (playerModel != playerModelToExclude)
@@ -822,8 +724,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						// players
 						// doesn't
 						// count...
-						if (playerModel.getComponentPosX() == componentPosX
-								&& playerModel.getComponentPosY() == componentPosY)
+						if (playerModel.getComponentPosX() == componentPosX && playerModel.getComponentPosY() == componentPosY)
 							return true;
 
 		return false;
@@ -882,17 +783,12 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 *            the whished x coordiante of the target position in case of a
 	 *            flying bomb
 	 */
-	public void validateAndSetFlyingTargetPosX(final BombModel bombModel,
-			final int flyingTargetPosX) {
-		final LevelComponent[][] levelComponents = getLevelModel()
-				.getComponents();
+	public void validateAndSetFlyingTargetPosX(final BombModel bombModel, final int flyingTargetPosX) {
+		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
 
 		if (flyingTargetPosX < 0)
-			bombModel.setFlyingTargetPosX((levelComponents[0].length - 1)
-					* LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY
-					/ 2);
-		else if (flyingTargetPosX > levelComponents[0].length
-				* LEVEL_COMPONENT_GRANULARITY)
+			bombModel.setFlyingTargetPosX((levelComponents[0].length - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+		else if (flyingTargetPosX > levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY)
 			bombModel.setFlyingTargetPosX(LEVEL_COMPONENT_GRANULARITY / 2);
 		else
 			bombModel.setFlyingTargetPosX(flyingTargetPosX);
@@ -908,17 +804,12 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 *            the whished y coordiante of the target position in case of a
 	 *            flying bomb
 	 */
-	public void validateAndSetFlyingTargetPosY(final BombModel bombModel,
-			final int flyingTargetPosY) {
-		final LevelComponent[][] levelComponents = getLevelModel()
-				.getComponents();
+	public void validateAndSetFlyingTargetPosY(final BombModel bombModel, final int flyingTargetPosY) {
+		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
 
 		if (flyingTargetPosY < 0)
-			bombModel.setFlyingTargetPosY((levelComponents.length - 1)
-					* LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY
-					/ 2);
-		else if (flyingTargetPosY > levelComponents.length
-				* LEVEL_COMPONENT_GRANULARITY)
+			bombModel.setFlyingTargetPosY((levelComponents.length - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+		else if (flyingTargetPosY > levelComponents.length * LEVEL_COMPONENT_GRANULARITY)
 			bombModel.setFlyingTargetPosY(LEVEL_COMPONENT_GRANULARITY / 2);
 		else
 			bombModel.setFlyingTargetPosY(flyingTargetPosY);
@@ -936,16 +827,12 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * @return true, if the specified bomb can roll to the component; false
 	 *         otherwise
 	 */
-	public boolean canBombRollToComponentPosition(final BombModel bombModel,
-			final int componentPosX, final int componentPosY) {
+	public boolean canBombRollToComponentPosition(final BombModel bombModel, final int componentPosX, final int componentPosY) {
 
-		final LevelComponent levelComponentAheadAhead = getLevelModel()
-				.getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponentAheadAhead = getLevelModel().getComponents()[componentPosY][componentPosX];
 		if (levelComponentAheadAhead.getWall() != Walls.EMPTY)
 			return false;
-		if (levelComponentAheadAhead.getWall() == Walls.EMPTY
-				&& levelComponentAheadAhead.getItem() != null
-				&& getGlobalServerOptions().itemsStopRollingBombs)
+		if (levelComponentAheadAhead.getWall() == Walls.EMPTY && levelComponentAheadAhead.getItem() != null && getGlobalServerOptions().itemsStopRollingBombs)
 			return false;
 
 		// Collision with players:
@@ -955,18 +842,12 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 					// players
 					// doesn't
 					// count...
-					if (playerModel.getComponentPosX() == componentPosX
-							&& playerModel.getComponentPosY() == componentPosY)
-						if (playerModel.getComponentPosX() != bombModel
-								.getComponentPosX()
-								|| playerModel.getComponentPosY() != bombModel
-										.getComponentPosY())
+					if (playerModel.getComponentPosX() == componentPosX && playerModel.getComponentPosY() == componentPosY)
+						if (playerModel.getComponentPosX() != bombModel.getComponentPosX() || playerModel.getComponentPosY() != bombModel.getComponentPosY())
 							return false;
 
-		final Integer bombIndexAhead = getBombIndexAtComponentPosition(
-				componentPosX, componentPosY);
-		if (bombIndexAhead != null
-				&& getBombModels().get(bombIndexAhead) != bombModel) // There's
+		final Integer bombIndexAhead = getBombIndexAtComponentPosition(componentPosX, componentPosY);
+		if (bombIndexAhead != null && getBombModels().get(bombIndexAhead) != bombModel) // There's
 			// another
 			// bomb
 			return false;
@@ -981,8 +862,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 *            item to be replaced
 	 */
 	public void replaceItemOnLevel(final Items item) {
-		final LevelComponent[][] levelComponents = getLevelModel()
-				.getComponents();
+		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
 
 		// The level is surrounded with concrete walls, we dont even try
 		// there...
@@ -1001,15 +881,13 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 			final LevelComponent levelComponent = levelComponents[componentPosY][componentPosX];
 
-			if (levelComponent.getWall() != Walls.EMPTY
-					|| levelComponent.getItem() != null)
+			if (levelComponent.getWall() != Walls.EMPTY || levelComponent.getItem() != null)
 				continue;
 
 			if (isBombAtComponentPosition(componentPosX, componentPosY))
 				continue;
 
-			if (isPlayerAtComponentPositionExcludePlayer(componentPosX,
-					componentPosY, null))
+			if (isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, null))
 				continue;
 
 			levelComponent.setItem(item);
@@ -1027,18 +905,15 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * @param componentPosY
 	 *            y coordinate of the component to remove the fire from
 	 */
-	public void removeFireFromComponentPos(final Fire fire,
-			final int componentPosX, final int componentPosY) {
+	public void removeFireFromComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		final LevelComponent levelComponent = getLevelModel().getComponents()[componentPosY][componentPosX];
 
 		if (levelComponent.getWall() == Walls.BRICK)
 			levelComponent.setWall(Walls.EMPTY);
-		else if (levelComponent.getWall() == Walls.EMPTY
-				&& levelComponent.getItem() != null) {
+		else if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) {
 			final Items item = levelComponent.getItem();
 			levelComponent.setItem(null);
-			if (item == Items.DISEASE
-					&& !getGlobalServerOptions().explosionAnnihilatesDiseases)
+			if (item == Items.DISEASE && !getGlobalServerOptions().explosionAnnihilatesDiseases)
 				replaceItemOnLevel(item);
 		}
 
