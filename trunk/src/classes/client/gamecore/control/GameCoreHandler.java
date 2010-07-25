@@ -38,6 +38,7 @@ import classes.options.model.LevelOptions;
 import classes.options.model.PublicClientOptions;
 import classes.options.model.ServerOptions;
 import classes.utils.GeneralStringTokenizer;
+import classes.utils.MathHelper;
 
 /**
  * The class which handles the core of the game: manages rounds and the running
@@ -118,6 +119,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		this.globalServerOptions = globalServerOptions;
 		this.receivedLevelModel = levelModel;
 		this.random = random;
+		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
 
