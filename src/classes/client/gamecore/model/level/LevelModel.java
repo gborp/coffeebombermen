@@ -45,6 +45,14 @@ public class LevelModel {
 		return levelOptions;
 	}
 
+	public int getWidth() {
+		return components[0].length;
+	}
+
+	public int getHeight() {
+		return components.length;
+	}
+
 	/**
 	 * Returns the components of the level.
 	 * 

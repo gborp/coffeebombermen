@@ -125,8 +125,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		refreshGraphicDatas();
 	}
 
-	private long blackOutDuration = 300;
-	private long flashDuration    = 300;
+	private long blackOutDuration = 1000;
+	private long flashDuration    = 100;
 	private long nextFlashStart   = -1;
 
 	/**
@@ -177,33 +177,75 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				}
 				blackOut = true;
 			}
-
-			if (hasActualDetonation()) {
-				blackOut = false;
-			}
 		}
 
 		setWorkingParameters(graphics);
 
+		paintLevel(graphics);
+		paintBombs(graphics);
+		paintBombermen(graphics);
+
 		if (blackOut) {
-
-			graphics.setColor(Color.BLACK);
-
-			final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
-
-			for (int i = 0, y = 0; i < levelComponents.length; i++, y += levelComponentSize) {
-				final LevelComponent[] levelComponentLine = levelComponents[i];
-				for (int j = 0, x = 0; j < levelComponentLine.length; j++, x += levelComponentSize) {
-					graphics.fillRect(x, y, levelComponentSize, levelComponentSize);
-				}
-			}
-			// paintLevel(graphics);
-
-		} else {
-			paintLevel(graphics);
-			paintBombs(graphics);
-			paintBombermen(graphics);
+			paintBlackout(graphics);
 		}
+	}
+
+	private void paintBlackout(Graphics graphics) {
+
+		graphics.setColor(Color.BLACK);
+		Graphics2D g2 = (Graphics2D) graphics;
+		AlphaComposite darknessComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .90f);
+		AlphaComposite normalComposit = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+
+		g2.setComposite(darknessComposite);
+
+		if (!hasActualDetonation()) {
+			g2.fillRect(0, 0, modelProvider.getLevelModel().getWidth() * levelComponentSize, modelProvider.getLevelModel().getHeight() * levelComponentSize);
+			g2.setComposite(normalComposit);
+			return;
+		}
+
+		final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+
+		for (int i = 0, y = 0; i < levelComponents.length; i++, y += levelComponentSize) {
+			final LevelComponent[] levelComponentLine = levelComponents[i];
+			for (int j = 0, x = 0; j < levelComponentLine.length; j++, x += levelComponentSize) {
+				LevelComponent levelComponent = levelComponentLine[j];
+				if (!levelComponent.fireModelVector.isEmpty()) {
+					continue;
+				}
+
+				if (levelComponent.getWall() == Walls.EMPTY) {
+					g2.fillRect(x, y, levelComponentSize, levelComponentSize);
+					continue;
+				}
+				// wall
+				boolean fwTop = false;
+				boolean fwLeft = false;
+				int fwWidth = levelComponentSize;
+				int fwHeight = levelComponentSize;
+
+				if (i < levelComponents.length - 1 && !levelComponents[i + 1][j].fireModelVector.isEmpty()) {
+					fwHeight -= levelComponentSize / 4;
+				}
+				if (i > 0 && !levelComponents[i - 1][j].fireModelVector.isEmpty()) {
+					fwTop = true;
+					fwHeight -= levelComponentSize / 4;
+				}
+				if (j < levelComponentLine.length - 1 && !levelComponents[i][j + 1].fireModelVector.isEmpty()) {
+					fwWidth -= levelComponentSize / 4;
+				}
+
+				if (j > 1 && !levelComponents[i][j - 1].fireModelVector.isEmpty()) {
+					fwLeft = true;
+					fwWidth -= levelComponentSize / 4;
+				}
+
+				g2.fillRect(x + (fwLeft ? levelComponentSize / 4 : 0), y + (fwTop ? levelComponentSize / 4 : 0), fwWidth, fwHeight);
+			}
+		}
+
+		g2.setComposite(normalComposit);
 	}
 
 	private boolean hasActualDetonation() {
@@ -362,6 +404,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				}
 			}
 		}
+		g2.setComposite(normalComposit);
 	}
 
 	/**
