@@ -9,10 +9,12 @@ import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
 import static classes.client.gamecore.Consts.MAX_PLAYER_VITALITY;
 import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
@@ -31,6 +33,7 @@ import classes.client.gamecore.model.level.LevelModel;
 import classes.client.graphics.AnimationDatas;
 import classes.client.graphics.GraphicsManager;
 import classes.client.sound.SoundEffect;
+import classes.options.Consts.Diseases;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
@@ -90,6 +93,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private final MainComponentHandler      losingAnimationMainComponentHandler;
 	/** Handler of the main component being the winning animation component. */
 	private final MainComponentHandler      winningAnimationMainComponentHandler;
+
+	private long                            tick;
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -193,6 +198,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		final int maxComponentPosY = levelComponents.length - 2;
 
 		final ArrayList<int[]> generatedStartPositions = new ArrayList<int[]>();
+
+		tick = 0;
 
 		// This is the quality of how perfectly can the players be positioned on
 		// the level.
@@ -385,6 +392,45 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		}
 	}
 
+	private void playerInfectPlayer(int noPlayers) {
+		List<Player> lstPlayer = new ArrayList<Player>(noPlayers);
+		List<Rectangle> lstPlayerBounds = new ArrayList<Rectangle>(noPlayers);
+
+		for (final Player[] players : clientsPlayers) {
+			for (final Player player : players) {
+				lstPlayer.add(player);
+				PlayerModel model = player.getModel();
+				lstPlayerBounds.add(new Rectangle(model.getPosX(), model.getPosY(), 900, 1300));
+
+				// remove the expired diseases
+				for (Entry<Diseases, Long> entry : new ArrayList<Entry<Diseases, Long>>(model.getOwnedDiseases().entrySet())) {
+					if (entry.getValue() < tick) {
+						model.expireDisease(entry.getKey());
+					}
+				}
+			}
+		}
+
+		// who infect who?
+		for (int i = 0; i < lstPlayerBounds.size() - 1; i++) {
+			for (int j = i + 1; j < lstPlayerBounds.size(); j++) {
+				if (lstPlayerBounds.get(i).intersects(lstPlayerBounds.get(j))) {
+					Player player1 = lstPlayer.get(i);
+					Player player2 = lstPlayer.get(j);
+					PlayerModel playerModel1 = player1.getModel();
+					PlayerModel playerModel2 = player2.getModel();
+
+					for (Entry<Diseases, Long> entry : playerModel1.getOwnedDiseases().entrySet()) {
+						playerModel2.addDisease(entry.getKey(), entry.getValue());
+					}
+					for (Entry<Diseases, Long> entry : playerModel2.getOwnedDiseases().entrySet()) {
+						playerModel1.addDisease(entry.getKey(), entry.getValue());
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Called when next iteration starts.<br>
 	 * Calculates the next iteration.
@@ -394,12 +440,20 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 *            means there are no new unprocessed actions
 	 */
 	public void nextIteration(final String newClientsActions) {
-		if (newClientsActions != null)
+		tick++;
+		if (newClientsActions != null) {
 			processNewClientsActions(newClientsActions);
+		}
 
-		for (final Player[] players : clientsPlayers)
-			for (final Player player : players)
+		int noPlayers = 0;
+
+		for (final Player[] players : clientsPlayers) {
+			for (final Player player : players) {
 				player.nextIteration();
+				noPlayers++;
+			}
+		}
+		playerInfectPlayer(noPlayers);
 
 		level.nextIteration();
 
@@ -441,21 +495,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 					if (firesCount > 0) {
 						final int damage = firesCount
 						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.damageOfWholeBombFire / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
-						// for
-						// ceiling
-						// (can't
-						// flooring,
-						// cause
-						// 100%
-						// damage
-						// might
-						// cause
-						// remainder,
-						// would
-						// let
-						// the
-						// player
-						// live!)
+						// for ceiling (can't flooring, cause 100% damage might
+						// cause remainder, would let the player live!)
 						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
 						if (playerModel.getVitality() <= 0)
 							playerModel.setActivity(Activities.DYING);
@@ -920,5 +961,9 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		}
 
 		level.removeFireFromComponentPos(fire, componentPosX, componentPosY);
+	}
+
+	public long getTick() {
+		return tick;
 	}
 }

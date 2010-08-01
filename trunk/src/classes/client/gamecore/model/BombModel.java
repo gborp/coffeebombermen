@@ -24,30 +24,30 @@ import classes.client.sound.SoundEffect;
 public class BombModel extends PositionedIterableObject {
 
 	/** Type of the bomb. */
-	private BombTypes type;
+	private BombTypes                  type;
 	/** The owner player of the bomb. */
-	private final PlayerModel ownerPlayer;
+	private final PlayerModel          ownerPlayer;
 	/** The phase of the bomb. */
-	private BombPhases phase;
+	private BombPhases                 phase;
 	/** Number of iterations during the current phase. */
-	private int iterationsDuringPhase;
+	private int                        iterationsDuringPhase;
 	/** Number of iterations when the bomb was ticking. */
-	private int tickingIterations;
+	private int                        tickingIterations;
 	/**
 	 * In case of a flying bomb, this is the x coordinate of its target
 	 * position.
 	 */
-	private int flyingTargetPosX;
+	private int                        flyingTargetPosX;
 	/**
 	 * In case of a flying bomb, this is the y coordinate of its target
 	 * position.
 	 */
-	private int flyingTargetPosY;
+	private int                        flyingTargetPosY;
 	/**
 	 * Tells wheter this bomb is dead. A bomb is dead when it is thrown/punched
 	 * away from the level, and it cannot come back (game rule).
 	 */
-	private boolean dead;
+	private boolean                    dead;
 
 	// The following attributes aid to detonate the bomb
 
@@ -55,19 +55,18 @@ public class BombModel extends PositionedIterableObject {
 	 * Tells whether this bomb is about to detonate (in the current game
 	 * iteration).
 	 */
-	private boolean aboutToDetonate;
+	private boolean                    aboutToDetonate;
 	/** Tells whether this bomb has been detonated. */
-	private boolean detonated;
+	private boolean                    detonated;
 	/** The range of the bomb. */
-	private int range;
+	private int                        range;
 	/**
 	 * Excluded detonation direction: when this bomb goes off, detonation cannot
 	 * spread in these directions.
 	 */
-	public final ArrayList<Directions> excludedDetonationDirections = new ArrayList<Directions>(
-			2);
+	public final ArrayList<Directions> excludedDetonationDirections = new ArrayList<Directions>(2);
 	/** The triggerer player of the bomb. */
-	private PlayerModel triggererPlayer;
+	private PlayerModel                triggererPlayer;
 
 	/**
 	 * Creates a new Bomb.

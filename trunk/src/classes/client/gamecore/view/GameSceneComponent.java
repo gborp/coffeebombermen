@@ -36,6 +36,7 @@ import classes.client.graphics.GraphicsManager;
 import classes.client.graphics.ImageHandler;
 import classes.options.OptionsChangeListener;
 import classes.options.OptionsManager;
+import classes.options.Consts.Diseases;
 import classes.options.Consts.Walls;
 import classes.options.model.ClientOptions;
 import classes.options.model.PublicClientOptions;
@@ -147,7 +148,23 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		long now = System.currentTimeMillis();
 
 		boolean blackOut = false;
-		if (modelProvider.getLevelModel().isBlackout()) {
+
+		int ourIndex = client.getOurIndex();
+		List<PlayerModel[]> clientPlayerModels = modelProvider.getClientsPlayerModels();
+
+		for (int i = 0; i < clientPlayerModels.size(); i++) {
+
+			if (ourIndex == i) {
+
+				for (PlayerModel playerModel : clientPlayerModels.get(i)) {
+					if (playerModel.getOwnedDiseases().containsKey(Diseases.BLACK_OUT)) {
+						blackOut = true;
+					}
+				}
+			}
+		}
+
+		if (blackOut) {
 			if (nextFlashStart == -1) {
 				nextFlashStart = now;
 			}
@@ -402,11 +419,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 		int ourIndex = client.getOurIndex();
 		int playerNumberForGfx = 0;
-		for (int i = 0; i < clientPlayerModels.size(); i++) { // Easy with the
-			// enhanced for:
-			// modifying is
-			// possible during
-			// a paint()
+		for (int i = 0; i < clientPlayerModels.size(); i++) {
+			// Easy with the enhanced for: modifying is possible during a
+			// paint()
 
 			final PlayerModel[] playerModels = clientPlayerModels.get(i);
 
@@ -419,10 +434,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		}
 		playerNumberForGfx = 0;
 		for (int i = 0; i < clientPlayerModels.size(); i++) { // Easy with the
-			// enhanced for:
-			// modifying is
-			// possible during
-			// a paint()
+			// enhanced for: modifying is possible during a paint()
 
 			final PlayerModel[] playerModels = clientPlayerModels.get(i);
 

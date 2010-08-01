@@ -6,9 +6,12 @@ package classes.client.gamecore.model;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 
 import classes.client.gamecore.Consts.Activities;
 import classes.client.sound.SoundEffect;
+import classes.options.LevelComponentOptions;
+import classes.options.Consts.Diseases;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 
@@ -20,6 +23,12 @@ import classes.options.Consts.PlayerControlKeys;
  * @author Andras Belicza
  */
 public class PlayerModel extends PositionedIterableObject {
+
+	/** game core tick frequency is 30hz */
+	public static final long             DISEASE_DURATION                = 4 * 30;
+
+	/** game core tick frequency is 30hz */
+	public static final long             SUPER_DISEASE_DURATION          = DISEASE_DURATION * 2;
 
 	/** Vitality of the player. */
 	private int                          vitality;
@@ -47,6 +56,9 @@ public class PlayerModel extends PositionedIterableObject {
 	 * player.
 	 */
 	public final ArrayList<Items>        pickedUpNonAccumulateableItems  = new ArrayList<Items>();
+
+	/** disease - when will it expire */
+	public final HashMap<Diseases, Long> mapOwnedDiseases                = new HashMap<Diseases, Long>();
 
 	/** The states of the control keys of the player. */
 	private boolean[]                    controlKeyStates                = new boolean[PlayerControlKeys.values().length];
@@ -223,5 +235,34 @@ public class PlayerModel extends PositionedIterableObject {
 
 	public void setSpiderBombRounds(int spyderBombRounds) {
 		this.spiderBombRounds = spyderBombRounds;
+	}
+
+	public void addDisease(Diseases disease, Long expire) {
+		if (!mapOwnedDiseases.containsKey(disease) || mapOwnedDiseases.get(disease) < expire) {
+			mapOwnedDiseases.put(disease, expire);
+		}
+	}
+
+	public HashMap<Diseases, Long> getOwnedDiseases() {
+		return mapOwnedDiseases;
+	}
+
+	public void expireDisease(Diseases key) {
+		mapOwnedDiseases.remove(key);
+	}
+
+	/** picked up rollerskates +- diseases */
+	public Integer getEffectiveRollerSkates() {
+		Integer rollerSkates = accumulateableItemQuantitiesMap.get(Items.ROLLER_SKATES);
+		if (rollerSkates == null) {
+			rollerSkates = 0;
+		}
+		if (mapOwnedDiseases.containsKey(Diseases.SCUDING)) {
+			rollerSkates = LevelComponentOptions.MAXIMUM_ROLLER_SKATES_QUANTITY;
+		}
+		if (mapOwnedDiseases.containsKey(Diseases.TODDLING)) {
+			rollerSkates = -5;
+		}
+		return rollerSkates;
 	}
 }

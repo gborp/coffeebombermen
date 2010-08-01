@@ -19,6 +19,7 @@ import static classes.options.Consts.NEUTRALIZER_ITEMS_MAP;
 
 import java.util.EnumSet;
 
+import classes.client.gamecore.Consts;
 import classes.client.gamecore.Consts.Activities;
 import classes.client.gamecore.Consts.BombPhases;
 import classes.client.gamecore.Consts.BombTypes;
@@ -28,9 +29,11 @@ import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.sound.SoundEffect;
+import classes.options.Consts.Diseases;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
+import classes.utils.MathHelper;
 
 /**
  * The class implements the control of a player of the GAME (NOT the the
@@ -77,6 +80,10 @@ public class Player {
 		this.modelProvider = modelProvider;
 		this.modelController = modelController;
 		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -151,6 +158,7 @@ public class Player {
 		} else {
 			handleSpiderBomb();
 
+			processDiseaseEffects();
 			processActionsAndHandleActivityTransitions();
 
 			stepPlayer(0);
@@ -231,6 +239,12 @@ public class Player {
 		modelController.validateAndSetFlyingTargetPosY(newBombModel, newBombModel.getPosY() + newBombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 
 		modelController.addNewBomb(newBomb);
+	}
+
+	private void processDiseaseEffects() {
+		if (model.getOwnedDiseases().keySet().contains(Diseases.BOMB_SHITTING)) {
+			handleFunction1WithoutBomb();
+		}
 	}
 
 	/**
@@ -318,6 +332,10 @@ public class Player {
 	 * Items.BLUE_GLOVES, then we pick up the bomb being under us.
 	 */
 	private void handleFunction1WithoutBomb() {
+		if (model.getOwnedDiseases().containsKey(Diseases.CEASEFIRE)) {
+			return;
+		}
+
 		final int playerComponentPosX = model.getComponentPosX();
 		final int playerComponentPosY = model.getComponentPosY();
 		int componentPosX = playerComponentPosX;
@@ -362,8 +380,15 @@ public class Player {
 			model.accumulateableItemQuantitiesMap.put(Items.BOMB, --bombsCount);
 			final Bomb newBomb = new Bomb(model, modelProvider, modelController);
 			final BombModel newBombModel = newBomb.getModel();
-			newBombModel.setRange(model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap
-			        .get(Items.FIRE) + 1);
+
+			int bombRange = model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE
+			        : model.accumulateableItemQuantitiesMap.get(Items.FIRE) + 1;
+
+			if (model.getOwnedDiseases().containsKey(Diseases.SHORT_RANGE)) {
+				bombRange = 2;
+			}
+
+			newBombModel.setRange(bombRange);
 			newBombModel.setPosX(componentPosX * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 			newBombModel.setPosY(componentPosY * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 
@@ -374,6 +399,10 @@ public class Player {
 				model.setPlacableTriggeredBombs(model.getPlacableTriggeredBombs() - 1);
 			} else {
 				newBombModel.setType(BombTypes.NORMAL);
+			}
+
+			if (model.getOwnedDiseases().containsKey(Diseases.FAST_DETONATION)) {
+				newBombModel.setTickingIterations(Consts.BOMB_DETONATION_ITERATIONS * 3 / 4);
 			}
 
 			modelController.addNewBomb(newBomb);
@@ -520,7 +549,7 @@ public class Player {
 			// move to
 			boolean movementCorrectionActivated = determineNewDirection();
 
-			int speed = BOMBERMAN_BASIC_SPEED + model.accumulateableItemQuantitiesMap.get(Items.ROLLER_SKATES) * BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
+			int speed = BOMBERMAN_BASIC_SPEED + model.getEffectiveRollerSkates() * BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
 			if (speed > BOBMERMAN_MAX_SPEED) {
 				speed = BOBMERMAN_MAX_SPEED;
 			}
@@ -528,17 +557,8 @@ public class Player {
 			boolean needsToBeContained = false;
 			final int posXAhead = model.getPosX() + model.getDirectionXMultiplier() * LEVEL_COMPONENT_GRANULARITY;
 			final int posYAhead = model.getPosY() + model.getDirectionYMultiplier() * LEVEL_COMPONENT_GRANULARITY;
-			if (movementCorrectionActivated // If movement correction is
-			        // activated, we cannot pass the
-			        // center of the next column
-			        || (!movementCorrectionActivated && !canPlayerStepToPosition(posXAhead, posYAhead))) {
-				// cannot
-				// also,
-				// if
-				// we
-				// have
-				// obstruction
-				// ahead
+			if (movementCorrectionActivated || (!movementCorrectionActivated && !canPlayerStepToPosition(posXAhead, posYAhead))) {
+				// cannot also, if we have obstruction ahead
 				needsToBeContained = true;
 			}
 
@@ -578,13 +598,9 @@ public class Player {
 						break;
 				}
 
-				if ((newSpeed >= 0) && (newSpeed < speed)) { // If it's
-					// negative,
-					// it's beyond one
-					// level component, but
-					// that case we surly
-					// dont need to change
-					// speed
+				if ((newSpeed >= 0) && (newSpeed < speed)) {
+					// If it's negative, it's beyond one level component, but
+					// that case we surly don't need to change speed
 					if (movementCorrectionActivated) {
 						wasStepCutInOrderToTurn = true;
 					}
@@ -687,9 +703,46 @@ public class Player {
 				case SPIDER_BOMB:
 					model.setSpiderBombEnabled(true);
 					break;
-				case SUPER_DISEASE:
-					modelProvider.getLevelModel().startBlackOut();
+				case DISEASE: {
+					int[] diseaseWeights = modelController.getGlobalServerOptions().levelOptions.diseaseWeights;
+					int allWeight = 0;
+					for (int w : diseaseWeights) {
+						allWeight += w;
+					}
+
+					int whichDisease = MathHelper.randomInt(allWeight);
+
+					int i = 0;
+					for (int w : diseaseWeights) {
+						whichDisease -= w;
+						if (whichDisease <= 0) {
+							getModel().addDisease(Diseases.values()[i], modelProvider.getTick() + PlayerModel.DISEASE_DURATION);
+							break;
+						}
+						i++;
+					}
 					break;
+				}
+				case SUPER_DISEASE: {
+					int[] diseaseWeights = modelController.getGlobalServerOptions().levelOptions.diseaseWeights;
+					int allWeight = 0;
+					for (int w : diseaseWeights) {
+						allWeight += w;
+					}
+
+					int whichDisease = MathHelper.randomInt(allWeight);
+
+					int i = 0;
+					for (int w : diseaseWeights) {
+						whichDisease -= w;
+						if (whichDisease <= 0) {
+							getModel().addDisease(Diseases.values()[i], modelProvider.getTick() + PlayerModel.SUPER_DISEASE_DURATION);
+							break;
+						}
+						i++;
+					}
+					break;
+				}
 			}
 		}
 	}

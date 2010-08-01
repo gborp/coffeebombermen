@@ -338,10 +338,10 @@ public class Consts {
 			}
 		},
 		/** The Position changing disease. */
-		POSITION_CHANGING {
+		BLACK_OUT {
 
 			public String toString() {
-				return "Position changing";
+				return "Black out";
 			}
 		}
 	}

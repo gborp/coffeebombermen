@@ -63,8 +63,7 @@ public interface ModelProvider {
 	 * @return the bomb being at a component position or the one hanging down
 	 *         into the component; or null if there is no bomb there
 	 */
-	Integer getBombIndexAtComponentPosition(final int componentPosX,
-			final int componentPosY);
+	Integer getBombIndexAtComponentPosition(final int componentPosX, final int componentPosY);
 
 	/**
 	 * Tells whether there is a bomb at a component position or whether there is
@@ -77,8 +76,7 @@ public interface ModelProvider {
 	 * @return true if there is a bomb at the specified position or there is one
 	 *         that hangs down into it; false otherwise
 	 */
-	boolean isBombAtComponentPosition(final int componentPosX,
-			final int componentPosY);
+	boolean isBombAtComponentPosition(final int componentPosX, final int componentPosY);
 
 	/**
 	 * Tells whether there is a player at a component position or whether there
@@ -93,7 +91,8 @@ public interface ModelProvider {
 	 * @return true if there is a player at the specified position or there is
 	 *         one that hangs down into it; false otherwise
 	 */
-	boolean isPlayerAtComponentPositionExcludePlayer(final int componentPosX,
-			final int componentPosY, final PlayerModel playerModelToExclude);
+	boolean isPlayerAtComponentPositionExcludePlayer(final int componentPosX, final int componentPosY, final PlayerModel playerModelToExclude);
+
+	long getTick();
 
 }

@@ -82,13 +82,4 @@ public class LevelModel {
 	public LevelModel cloneLevel() {
 		return parseFromString(packToString());
 	}
-
-	public void startBlackOut() {
-		blackOutStarted = System.currentTimeMillis();
-	}
-
-	public boolean isBlackout() {
-		return ((System.currentTimeMillis() - blackOutStarted) < BLACKOUT_DURATION);
-	}
-
 }
