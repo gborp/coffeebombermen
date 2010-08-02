@@ -49,7 +49,7 @@ import classes.options.model.PublicClientOptions;
 public class GameSceneComponent extends JComponent implements KeyListener, OptionsChangeListener<ClientOptions> {
 
 	/** A string containing only a space. Used several times on keyboard events. */
-	private static final String                 SPACE_STRING = " ";
+	private static final String                 SPACE_STRING       = " ";
 
 	/** Reference to the client options manager. */
 	private final OptionsManager<ClientOptions> clientOptionsManager;
@@ -90,6 +90,11 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	private Color[]                             playerHudColor;
 
 	private final Client                        client;
+
+	private AlphaComposite                      normalComposit     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+	private AlphaComposite                      infectedComposite  = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .50f);
+	private AlphaComposite                      darknessComposite  = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .90f);
+	private AlphaComposite                      fireLightComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
 
 	/**
 	 * Creates a new GameSceneComponent.
@@ -194,8 +199,6 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 		graphics.setColor(Color.BLACK);
 		Graphics2D g2 = (Graphics2D) graphics;
-		AlphaComposite darknessComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .90f);
-		AlphaComposite normalComposit = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 
 		g2.setComposite(darknessComposite);
 
@@ -307,9 +310,6 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		float itemScaleFactor = (float) levelComponentSize / itemImageHandlers[0].getOriginalWidth();
 		float fireScaleFactor = (float) levelComponentSize / firePhaseHandlers[0][0].getOriginalWidth();
 		float burningScaleFactor = (float) levelComponentSize / burningPhaseHandlers[0].getOriginalWidth();
-
-		AlphaComposite fireLightComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
-		AlphaComposite normalComposit = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 
 		for (int i = 0, y = 0; i < levelComponents.length; i++, y += levelComponentSize) {
 			LevelComponent[] levelComponentLine = levelComponents[i];
@@ -492,14 +492,19 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 	public void paintOneBomberMan(Graphics graphics, ClientOptions clientOptions, PublicClientOptions publicClientOptions, PlayerModel[] playerModels,
 	        int playerNumberForGfx, float scaleFactor) {
+
+		Graphics2D g2 = (Graphics2D) graphics;
+
 		for (int j = 0; j < playerModels.length; j++) {
 			playerNumberForGfx++;
 			if (playerNumberForGfx == playerGraphics.size()) {
 				playerNumberForGfx = 0;
 			}
 			final PlayerModel playerModel = playerModels[j];
-			if (playerModel.getActivity() == Activities.DYING && playerModel.getIterationCounter() + 1 >= playerModel.getActivity().activityIterations)
-				continue; // This is a dead player, must not be painted.
+			if (playerModel.getActivity() == Activities.DYING && playerModel.getIterationCounter() + 1 >= playerModel.getActivity().activityIterations) {
+				// This is a dead player, must not be painted.
+				continue;
+			}
 
 			if (playerModel.getActivity() == null) {
 				continue;
@@ -507,18 +512,27 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 			final Image bombermanImage = playerGraphics.get(playerNumberForGfx).getImage(playerModel, scaleFactor);
 
+			if (playerModel.hasDisease()) {
+				if ((modelProvider.getTick() & 8) == 0) {
+					g2.setComposite(infectedComposite);
+				} else {
+					g2.setComposite(normalComposit);
+				}
+			} else {
+				g2.setComposite(normalComposit);
+			}
+
+			int playerX = playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
+			int playerY = playerModel.getPosY() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
+
 			// Position is tricky: head of bomberman may take place on the
 			// row over the position of bobmerman
-			graphics.drawImage(bombermanImage, playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2, playerModel
-			        .getPosY()
-			        * levelComponentSize / LEVEL_COMPONENT_GRANULARITY + levelComponentSize / 2 - bombermanImage.getHeight(null), null);
-
+			graphics.drawImage(bombermanImage, playerX - levelComponentSize / 2, playerY + levelComponentSize / 2 - bombermanImage.getHeight(null), null);
+			g2.setComposite(normalComposit);
 			if (clientOptions.showPlayerNames) {
 				final String playerName = publicClientOptions.playerNames[j];
-				final int stringPosX = playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY
-				        - graphics.getFontMetrics().stringWidth(playerName) / 2;
-				final int stringPosY = playerModel.getPosY() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY + levelComponentSize / 2
-				        - bombermanImage.getHeight(null);
+				final int stringPosX = playerX - graphics.getFontMetrics().stringWidth(playerName) / 2;
+				final int stringPosY = playerY + levelComponentSize / 2 - bombermanImage.getHeight(null);
 
 				graphics.setColor(Color.BLACK);
 				graphics.drawString(playerName, stringPosX, stringPosY);
@@ -535,11 +549,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				}
 
 				graphics.setColor(Color.BLACK);
-				graphics.drawRect(playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2, playerModel.getPosY()
-				        * levelComponentSize / LEVEL_COMPONENT_GRANULARITY + levelComponentSize / 2 + 2, levelComponentSize, 5);
+				graphics.drawRect(playerX - levelComponentSize / 2, playerY + levelComponentSize / 2 + 2, levelComponentSize, 5);
 				graphics.setColor(Color.WHITE);
-				graphics.fillRect(playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2 + 1, playerModel.getPosY()
-				        * levelComponentSize / LEVEL_COMPONENT_GRANULARITY + levelComponentSize / 2 + 3, levelComponentSize - 1, 4);
+				graphics.fillRect(playerX - levelComponentSize / 2 + 1, playerY + levelComponentSize / 2 + 3, levelComponentSize - 1, 4);
 
 				if (uberMaxVitality) {
 					graphics.setColor(Color.YELLOW);
@@ -547,8 +559,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 					graphics.setColor(Color.RED);
 				}
 
-				graphics.fillRect(playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2 + 1, playerModel.getPosY()
-				        * levelComponentSize / LEVEL_COMPONENT_GRANULARITY + levelComponentSize / 2 + 3, (levelComponentSize - 1) * vitality
+				graphics.fillRect(playerX - levelComponentSize / 2 + 1, playerY + levelComponentSize / 2 + 3, (levelComponentSize - 1) * vitality
 				        / MAX_PLAYER_VITALITY, 4);
 
 			}

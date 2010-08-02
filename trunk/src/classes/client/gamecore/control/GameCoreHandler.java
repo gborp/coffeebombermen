@@ -396,10 +396,17 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		List<Player> lstPlayer = new ArrayList<Player>(noPlayers);
 		List<Rectangle> lstPlayerBounds = new ArrayList<Rectangle>(noPlayers);
 
+		boolean hasInfectedPlayer = false;
+
 		for (final Player[] players : clientsPlayers) {
 			for (final Player player : players) {
-				lstPlayer.add(player);
 				PlayerModel model = player.getModel();
+				if (model.getActivity() == Activities.DYING) {
+					// dead player can't infect or get infected
+					continue;
+				}
+
+				lstPlayer.add(player);
 				lstPlayerBounds.add(new Rectangle(model.getPosX(), model.getPosY(), 900, 1300));
 
 				// remove the expired diseases
@@ -408,23 +415,28 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						model.expireDisease(entry.getKey());
 					}
 				}
+				if (!hasInfectedPlayer && model.hasDisease()) {
+					hasInfectedPlayer = true;
+				}
 			}
 		}
 
-		// who infect who?
-		for (int i = 0; i < lstPlayerBounds.size() - 1; i++) {
-			for (int j = i + 1; j < lstPlayerBounds.size(); j++) {
-				if (lstPlayerBounds.get(i).intersects(lstPlayerBounds.get(j))) {
-					Player player1 = lstPlayer.get(i);
-					Player player2 = lstPlayer.get(j);
-					PlayerModel playerModel1 = player1.getModel();
-					PlayerModel playerModel2 = player2.getModel();
+		if (hasInfectedPlayer) {
+			// who infect who?
+			for (int i = 0; i < lstPlayerBounds.size() - 1; i++) {
+				for (int j = i + 1; j < lstPlayerBounds.size(); j++) {
+					if (lstPlayerBounds.get(i).intersects(lstPlayerBounds.get(j))) {
+						Player player1 = lstPlayer.get(i);
+						Player player2 = lstPlayer.get(j);
+						PlayerModel playerModel1 = player1.getModel();
+						PlayerModel playerModel2 = player2.getModel();
 
-					for (Entry<Diseases, Long> entry : playerModel1.getOwnedDiseases().entrySet()) {
-						playerModel2.addDisease(entry.getKey(), entry.getValue());
-					}
-					for (Entry<Diseases, Long> entry : playerModel2.getOwnedDiseases().entrySet()) {
-						playerModel1.addDisease(entry.getKey(), entry.getValue());
+						for (Entry<Diseases, Long> entry : playerModel1.getOwnedDiseases().entrySet()) {
+							playerModel2.addDisease(entry.getKey(), entry.getValue());
+						}
+						for (Entry<Diseases, Long> entry : playerModel2.getOwnedDiseases().entrySet()) {
+							playerModel1.addDisease(entry.getKey(), entry.getValue());
+						}
 					}
 				}
 			}
@@ -879,15 +891,18 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			return false;
 
 		// Collision with players:
-		for (final PlayerModel[] playerModels : getClientsPlayerModels())
-			for (final PlayerModel playerModel : playerModels)
-				if (playerModel.getActivity() != Activities.DYING) // "Dead"
-					// players
-					// doesn't
-					// count...
-					if (playerModel.getComponentPosX() == componentPosX && playerModel.getComponentPosY() == componentPosY)
-						if (playerModel.getComponentPosX() != bombModel.getComponentPosX() || playerModel.getComponentPosY() != bombModel.getComponentPosY())
+		for (final PlayerModel[] playerModels : getClientsPlayerModels()) {
+			for (final PlayerModel playerModel : playerModels) {
+				if (playerModel.getActivity() != Activities.DYING) {
+					// "Dead" players doesn't count...
+					if (playerModel.getComponentPosX() == componentPosX && playerModel.getComponentPosY() == componentPosY) {
+						if (playerModel.getComponentPosX() != bombModel.getComponentPosX() || playerModel.getComponentPosY() != bombModel.getComponentPosY()) {
 							return false;
+						}
+					}
+				}
+			}
+		}
 
 		final Integer bombIndexAhead = getBombIndexAtComponentPosition(componentPosX, componentPosY);
 		if (bombIndexAhead != null && getBombModels().get(bombIndexAhead) != bombModel) // There's

@@ -243,6 +243,10 @@ public class PlayerModel extends PositionedIterableObject {
 		}
 	}
 
+	public boolean hasDisease() {
+		return !mapOwnedDiseases.isEmpty();
+	}
+
 	public HashMap<Diseases, Long> getOwnedDiseases() {
 		return mapOwnedDiseases;
 	}
@@ -265,4 +269,5 @@ public class PlayerModel extends PositionedIterableObject {
 		}
 		return rollerSkates;
 	}
+
 }
