@@ -4,7 +4,13 @@
 
 package classes.client.graphics;
 
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
 
 import classes.options.OptionsChangeListener;
 import classes.options.Consts.ImageScalingAlgorithms;
@@ -83,14 +89,29 @@ public class ImageHandler {
 	 *         scaleFactor attribute
 	 */
 	public Image getScaledImage(final float scaleFactor) {
+		return getScaledImage(scaleFactor, true);
+	}
+
+	public Image getScaledImage(final float scaleFactor, boolean transparent) {
 		if (this.scaleFactor == scaleFactor && usedimageScalingAlgorithm == imageScalingAlgorithm) {
 			return scaledImage;
 		}
 		// Invoking Math.max() because with or height cannot be zero (and that
 		// amount is calculated when the divider of JSplitPane is in outside)
-		setScaledImage(originalImage.getScaledInstance(Math.max((int) (originalImage.getWidth(null) * scaleFactor), 1), Math.max((int) (originalImage
-		        .getHeight(null) * scaleFactor), 1), imageScalingAlgorithm == ImageScalingAlgorithms.FAST ? Image.SCALE_FAST : Image.SCALE_SMOOTH),
-		        scaleFactor, imageScalingAlgorithm);
+		Image newScaledImage = originalImage.getScaledInstance(Math.max((int) (originalImage.getWidth(null) * scaleFactor), 1), Math.max((int) (originalImage
+		        .getHeight(null) * scaleFactor), 1), imageScalingAlgorithm == ImageScalingAlgorithms.FAST ? Image.SCALE_FAST : Image.SCALE_SMOOTH);
+
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		GraphicsConfiguration gc = gd.getDefaultConfiguration();
+
+		BufferedImage newCompatibleScaledImage = gc.createCompatibleImage(newScaledImage.getWidth(null), newScaledImage.getHeight(null),
+		        transparent ? Transparency.BITMASK : Transparency.OPAQUE);
+		Graphics2D g = newCompatibleScaledImage.createGraphics();
+		g.drawImage(newScaledImage, 0, 0, null);
+		g.dispose();
+
+		setScaledImage(newCompatibleScaledImage, scaleFactor, imageScalingAlgorithm);
+
 		return scaledImage;
 	}
 
