@@ -319,10 +319,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				if (levelComponent.fireModelVector.isEmpty()) {
 					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) {
 						// item
-						g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
+						g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 					} else {
 						// wall
-						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 						if (!levelComponent.getWall().equals(Walls.EMPTY)) {
 							boolean fwTop = false;
 							boolean fwBottom = false;
@@ -374,7 +374,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 					final int firePhasesCount = firePhaseHandlers[fireModel.getShape().ordinal()].length;
 
 					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() == null) {
-						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 						g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * fireModel.getIterationCounter() / FIRE_ITERATIONS]
 						        .getScaledImage(fireScaleFactor), x, y, null);
 					} else {
@@ -382,20 +382,20 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 							// The original wall or item is burning.
 							if (levelComponent.getWall() == Walls.EMPTY) {
 								// item
-								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
+								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 							} else {
 								// wall
-								g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+								g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 							}
 						} else {
 							// Now the item or the empty wall what will remain
 							// after the burning is visible through the burning.
 							if (levelComponent.getWall() != Walls.EMPTY && levelComponent.getItem() != null) {
 								// An item will remain
-								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor), x, y, null);
+								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 							} else {
 								// Empty wall will remain
-								g.drawImage(wallImageHandlers[Walls.EMPTY.ordinal()].getScaledImage(wallScaleFactor), x, y, null);
+								g.drawImage(wallImageHandlers[Walls.EMPTY.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 							}
 						}
 						g.drawImage(burningPhaseHandlers[burningPhaseHandlers.length * fireModel.getIterationCounter() / FIRE_ITERATIONS]

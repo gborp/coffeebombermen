@@ -270,9 +270,10 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 						broadcastStartingNextIterationCommand();
 						startNextIteration();
 					}
-				} else
+				} else {
 					// The clients time themselves
 					startNextIteration();
+				}
 			}
 
 			checkForNewCommands();
@@ -412,10 +413,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 * they did.
 	 */
 	private void checkForNewCommands() {
-		for (int i = 0; i < clientContacts.size(); i++) { // Can't use enhanced
-			// for because
-			// elements can be
-			// removed (QUIT)
+		for (int i = 0; i < clientContacts.size(); i++) {
+			// Can't use enhanced for because elements can be removed (QUIT)
 			final ClientContact clientContact = clientContacts.get(i);
 			messageLoop: while (clientContact.connectionStub.hasNewMessage())
 				try {
@@ -423,8 +422,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 					switch (Commands.values()[commandTokenizer.nextIntToken()]) {
 						// The message loop checks
 						// Commands.READY_FOR_NEXT_ITERATION and
-						// Commands.MESSAGE first,
-						// because these are the most frequent commands.
+						// Commands.MESSAGE first, because these are the most
+						// frequent commands.
 						case READY_FOR_NEXT_ITERATION:
 							clientContact.newClientActions = commandTokenizer.hasRemainingString() ? commandTokenizer.remainingString() : "";
 							break;
@@ -433,12 +432,11 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 							break;
 						case QUIT:
 							handleClientLeaving(clientContact);
-							break messageLoop; // We're not trying read more
-						// message (would not be
-						// error/exception without this
-						// because connectionStub would
-						// simply return that no more
-						// message is available)
+							break messageLoop;
+						// We're not trying read more message (would not be
+						// error/exception without this because connectionStub
+						// would simply return that no more message is
+						// available)
 						case SENDING_PUBLIC_CLIENT_OPTIONS:
 							clientContact.publicClientOptions = PublicClientOptions.parseFromString(commandTokenizer.remainingString());
 							broadcastCommand(Client.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING + i + GENERAL_SEPARATOR_STRING
