@@ -126,7 +126,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	private int                                 iterationCounter;
 
 	/** in ms */
-	private static final long                   DELAY_START_SHRINKING_GAME_AREA = 1000 * 30 * 60;
+	private static final long                   DELAY_START_SHRINKING_GAME_AREA = 1000 * 30 ;
 	private static final long                   DELAY_SHRINKING_GAME_AREA       = 500;
 	private long                                gameStartedAt;
 	private long                                lastShrinkOperationAt;
