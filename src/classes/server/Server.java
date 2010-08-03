@@ -126,7 +126,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	private int                                 iterationCounter;
 
 	/** in ms */
-	private static final long                   DELAY_START_SHRINKING_GAME_AREA = 1000 * 30 ;
+	private static final long                   DELAY_START_SHRINKING_GAME_AREA = 1000 * 30;
 	private static final long                   DELAY_SHRINKING_GAME_AREA       = 500;
 	private long                                gameStartedAt;
 	private long                                lastShrinkOperationAt;
@@ -174,7 +174,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 			while (playerCollector == null)
 				Thread.sleep(1l); // Very small because if server socket is
 			// created, we should join first
-		} catch (final InterruptedException ie) {}
+		} catch (final InterruptedException ie) {
+			ie.printStackTrace();
+		}
 		if (playerCollector != null)
 			return playerCollector.isServerSocketCreated();
 		return false;
@@ -213,7 +215,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 			checkForNewCommands();
 			try {
 				sleep(1l);
-			} catch (final InterruptedException ie) {}
+			} catch (final InterruptedException ie) {
+				ie.printStackTrace();
+			}
 		}
 		playerCollector.close();
 		playerCollector = null;
@@ -278,8 +282,10 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 
 			checkForNewCommands();
 			try {
-				sleep(1l);
-			} catch (final InterruptedException ie) {}
+				sleep(10);
+			} catch (final InterruptedException ie) {
+				ie.printStackTrace();
+			}
 		}
 
 		broadcastCommand(Client.Commands.ENDING_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
@@ -452,7 +458,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 							System.out.println("Server.checkForNewCommands() " + commandTokenizer.remainingString());
 							break;
 					}
-				} catch (final Exception e) {}
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
 		}
 	}
 
@@ -477,7 +485,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		for (final ClientContact clientContact : clientContacts)
 			try {
 				clientContact.connectionStub.sendMessage(command);
-			} catch (final IOException ie) {}
+			} catch (final IOException ie) {
+				ie.printStackTrace();
+			}
 	}
 
 	/**
@@ -489,7 +499,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		try {
 			while (gameState != GameStates.PLAYING)
 				Thread.sleep(1l);
-		} catch (final InterruptedException ie) {}
+		} catch (final InterruptedException ie) {
+			ie.printStackTrace();
+		}
 	}
 
 	/**

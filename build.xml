@@ -60,6 +60,8 @@
 			<include name="sound/**/*" />
 		</fileset>
 		<fileset dir="scripts">
+			<include name="start" />
+			<include name="start-padsp" />
 			<include name="start.sh" />
 			<include name="start-padsp.sh" />
 			<include name="start.bat" />
