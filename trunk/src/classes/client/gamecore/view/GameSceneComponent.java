@@ -107,20 +107,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		this.client = client;
 		this.clientOptionsManager = clientOptionsManager;
 		playersControlKeys = this.clientOptionsManager.getOptions().playersControlKeys;
-		playersControlKeyStates = new boolean[0][playersControlKeys[0].length]; // The
-		// 2nd
-		// dimension
-		// could
-		// be
-		// 0
-		// size
-		// as
-		// well,
-		// but
-		// this
-		// is
-		// the
-		// proper
+		playersControlKeyStates = new boolean[0][playersControlKeys[0].length];
+		// The 2nd dimension could be 0 size as well, but this is the proper
 		// solution.
 
 		this.clientOptionsManager.registerOptionsChangeListener(this);

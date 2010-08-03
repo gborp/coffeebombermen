@@ -190,7 +190,23 @@ public class PlayerModel extends PositionedIterableObject {
 	 *            player control key whose state to be returned
 	 * @return the state of a player control key
 	 */
-	public boolean getControlKeyState(final PlayerControlKeys playerControlKey) {
+	public boolean getControlKeyState(PlayerControlKeys playerControlKey) {
+		if (mapOwnedDiseases.containsKey(Diseases.REVERSE)) {
+			switch (playerControlKey) {
+				case DOWN:
+					playerControlKey = PlayerControlKeys.UP;
+					break;
+				case UP:
+					playerControlKey = PlayerControlKeys.DOWN;
+					break;
+				case LEFT:
+					playerControlKey = PlayerControlKeys.RIGHT;
+					break;
+				case RIGHT:
+					playerControlKey = PlayerControlKeys.LEFT;
+					break;
+			}
+		}
 		return controlKeyStates[playerControlKey.ordinal()];
 	}
 

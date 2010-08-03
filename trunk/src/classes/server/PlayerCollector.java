@@ -55,31 +55,30 @@ import classes.utils.GeneralStringTokenizer;
 public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 
 	/** Identification string of the Bombermen server. */
-	public static final String SERVER_IDENTIFICATION_STRING = APPLICATION_NAME
-			+ " server";
+	public static final String                  SERVER_IDENTIFICATION_STRING = APPLICATION_NAME + " server";
 	/** Message to the client that the given password was accepted. */
-	public static final String PASSWORD_ACCEPTED = "Password accepted";
+	public static final String                  PASSWORD_ACCEPTED            = "Password accepted";
 	/** Message to the client that the given password was rejected. */
-	public static final String PASSWORD_REJECTED = "Password rejected";
+	public static final String                  PASSWORD_REJECTED            = "Password rejected";
 
 	/** Reference to the server. */
-	private final Server server;
+	private final Server                        server;
 	/** Reference to the server options manager. */
 	private final OptionsManager<ServerOptions> serverOptionsManager;
 	/** Reference to the vector of client contacts. */
-	private final List<ClientContact> clientContacts;
+	private final List<ClientContact>           clientContacts;
 	/** Reference to the main frame for displaying message dialogs. */
-	private final JFrame mainFrame;
+	private final JFrame                        mainFrame;
 
 	/** Server socket which through the players can connect. */
-	private volatile ServerSocket serverSocket;
+	private volatile ServerSocket               serverSocket;
 	/** Tells whether this player collector is closed. */
-	private volatile boolean closed = false;
+	private volatile boolean                    closed                       = false;
 	/**
 	 * When a new client has been accepted, its contact object will be stored
 	 * here.
 	 */
-	private volatile ClientContact newClientContact;
+	private volatile ClientContact              newClientContact;
 
 	/**
 	 * Creates a new PalyerCollector. Creates the server socket which through
@@ -95,9 +94,8 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 	 * @param mainFrame
 	 *            reference to the main frame
 	 */
-	public PlayerCollector(final Server server,
-			final OptionsManager<ServerOptions> serverOptionsManager,
-			final List<ClientContact> clientContacts, final JFrame mainFrame) {
+	public PlayerCollector(final Server server, final OptionsManager<ServerOptions> serverOptionsManager, final List<ClientContact> clientContacts,
+	        final JFrame mainFrame) {
 		this.server = server;
 		this.serverOptionsManager = serverOptionsManager;
 		this.clientContacts = clientContacts;
@@ -120,13 +118,10 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 			// Server thread cannot be blocked (messages can arrive while this
 			// message is displayed), we show error message in a new thread
 			new Thread() {
+
 				public void run() {
-					JOptionPane.showMessageDialog(mainFrame,
-							new String[] {
-									"Player collector:",
-									"Can't create server socket on port "
-											+ port + "!" }, "Error",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(mainFrame, new String[] { "Player collector:", "Can't create server socket on port " + port + "!" }, "Error",
+					        JOptionPane.ERROR_MESSAGE);
 				}
 			}.start();
 		}
@@ -147,6 +142,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 				// the serverSocket != null can be true!
 				serverSocket_copy.close();
 			} catch (final IOException ie) {
+				ie.printStackTrace();
 			}
 	}
 
@@ -171,31 +167,21 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 				// Still part of the joining potocol
 				// Client must send
 				// Server.Commands.SENDING_PUBLIC_CLIENT_OPTIONS
-				final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(
-						newClientContact.connectionStub.receiveMessage());
+				final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(newClientContact.connectionStub.receiveMessage());
 				commandTokenizer.nextIntToken();
-				newClientContact.publicClientOptions = PublicClientOptions
-						.parseFromString(commandTokenizer.remainingString());
-				server
-						.broadcastCommand(Client.Commands.A_CLIENT_HAS_JOINED_THE_GAME
-								.ordinal()
-								+ GENERAL_SEPARATOR_STRING
-								+ newClientContact.publicClientOptions
-										.packToString());
+				newClientContact.publicClientOptions = PublicClientOptions.parseFromString(commandTokenizer.remainingString());
+				server.broadcastCommand(Client.Commands.A_CLIENT_HAS_JOINED_THE_GAME.ordinal() + GENERAL_SEPARATOR_STRING
+				        + newClientContact.publicClientOptions.packToString());
 				clientContacts.add(newClientContact);
 
-				newClientContact.connectionStub.sendMessage(""
-						+ clientContacts.size());
+				newClientContact.connectionStub.sendMessage("" + clientContacts.size());
 				for (final ClientContact clientContact : clientContacts)
-					newClientContact.connectionStub
-							.sendMessage(clientContact.publicClientOptions
-									.packToString());
+					newClientContact.connectionStub.sendMessage(clientContact.publicClientOptions.packToString());
 				// End of joining protocol
 
-				server.broadcastMessage(Server.SERVER_CHAT_NAME
-						+ newClientContact.publicClientOptions.clientName
-						+ " has joined the game.");
+				server.broadcastMessage(Server.SERVER_CHAT_NAME + newClientContact.publicClientOptions.clientName + " has joined the game.");
 			} catch (final IOException ie) {
+				ie.printStackTrace();
 			}
 			newClientContact = null;
 		}
@@ -207,6 +193,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 	 */
 	private void startAcceptingClients() {
 		new Thread() {
+
 			public void run() {
 				closed = false;
 				while (serverSocket != null) {
@@ -214,8 +201,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 						ConnectionStub connectionStub_ = null;
 						try {
 							// Start of the joining protocol
-							final ConnectionStub connectionStub = new ConnectionStub(
-									serverSocket.accept());
+							final ConnectionStub connectionStub = new ConnectionStub(serverSocket.accept());
 							connectionStub_ = connectionStub; // We need this
 							// outside the
 							// try block but
@@ -223,45 +209,33 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 							// final here...
 
 							// Introducing ourself...
-							connectionStub
-									.sendMessage(SERVER_IDENTIFICATION_STRING);
+							connectionStub.sendMessage(SERVER_IDENTIFICATION_STRING);
 							// Authentication of the client...
-							if (!connectionStub.receiveMessage().equals(
-									Client.CLIENT_IDENTIFICATION_STRING))
-								throw new AcceptingClientFailedException(
-										"Client is not a " + APPLICATION_NAME
-												+ " cilent");
+							if (!connectionStub.receiveMessage().equals(Client.CLIENT_IDENTIFICATION_STRING))
+								throw new AcceptingClientFailedException("Client is not a " + APPLICATION_NAME + " cilent");
 							connectionStub.sendMessage(APPLICATION_VERSION);
-							if (!connectionStub.receiveMessage().equals(
-									APPLICATION_VERSION))
-								throw new AcceptingClientFailedException(
-										"Incompatible versions");
-							final String gamePassword = serverOptionsManager
-									.getOptions().password;
-							final String receivedGamePassword = connectionStub
-									.receiveMessage();
-							if (gamePassword.equals("")
-									|| gamePassword
-											.equals(receivedGamePassword)) {
+							if (!connectionStub.receiveMessage().equals(APPLICATION_VERSION))
+								throw new AcceptingClientFailedException("Incompatible versions");
+							final String gamePassword = serverOptionsManager.getOptions().password;
+							final String receivedGamePassword = connectionStub.receiveMessage();
+							if (gamePassword.equals("") || gamePassword.equals(receivedGamePassword)) {
 								connectionStub.sendMessage(PASSWORD_ACCEPTED);
-								newClientContact = new ClientContact(
-										connectionStub);
+								newClientContact = new ClientContact(connectionStub);
 							} else {
 								connectionStub.sendMessage(PASSWORD_REJECTED);
-								throw new AcceptingClientFailedException(
-										"Incorrect game password");
+								throw new AcceptingClientFailedException("Incorrect game password");
 							}
 							// The joining protocol is finished in the
 							// nextIteration() method
 						} catch (final AcceptingClientFailedException ae) {
 							if (connectionStub_ != null)
 								connectionStub_.close();
-						} catch (final IOException ie) {
-						}
+						} catch (final IOException ie) {}
 					} else
 						try {
 							Thread.sleep(10l);
 						} catch (final InterruptedException ie) {
+							ie.printStackTrace();
 						}
 				}
 				closed = true;
@@ -279,8 +253,9 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 		try {
 			// Not join(), because PlayerCollector is not a thread!
 			while (!closed)
-				Thread.sleep(1l);
+				Thread.sleep(10l);
 		} catch (final InterruptedException ie) {
+			ie.printStackTrace();
 		}
 	}
 
@@ -293,8 +268,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 	 * @param newOptions
 	 *            the new server options are about to become effective
 	 */
-	public void optionsChanged(final ServerOptions oldOptions,
-			final ServerOptions newOptions) {
+	public void optionsChanged(final ServerOptions oldOptions, final ServerOptions newOptions) {
 		if (oldOptions.gamePort != newOptions.gamePort) {
 			closeServerSocket();
 			createServerSocket(newOptions.gamePort);

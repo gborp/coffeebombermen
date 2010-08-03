@@ -192,7 +192,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			final int publicClientOptionsCount = Integer.parseInt(serverStub.receiveMessage());
 			for (int i = 0; i < publicClientOptionsCount; i++)
 				clientsPublicClientOptions.add(PublicClientOptions.parseFromString(serverStub.receiveMessage()));
-		} catch (final IOException ie) {}
+		} catch (final IOException ie) {
+			ie.printStackTrace();
+		}
 		// End of joining protocol
 		ourIndex = clientsPublicClientOptions.size() - 1; // We are placed
 		// always to the last
@@ -287,7 +289,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 
 			checkForNewCommands();
 			try {
-				sleep(1l);
+				sleep(10l);
 			} catch (final InterruptedException ie) {}
 		}
 	}
@@ -377,7 +379,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 				newClientActions += GENERAL_SEPARATOR_STRING;
 
 			serverStub.sendMessage(Server.Commands.READY_FOR_NEXT_ITERATION.ordinal() + GENERAL_SEPARATOR_STRING + newClientActions);
-		} catch (final IOException ie) {}
+		} catch (final IOException ie) {
+			ie.printStackTrace();
+		}
 	}
 
 	/**
@@ -393,7 +397,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		try {
 			serverStub.sendMessage(Server.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING
 			        + publicClientOptions.packToString(playersCount));
-		} catch (final IOException ie) {}
+		} catch (final IOException ie) {
+			ie.printStackTrace();
+		}
 	}
 
 	/**
@@ -405,7 +411,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	public void handleMessage(final String message) {
 		try {
 			serverStub.sendMessage(Server.Commands.MESSAGE.ordinal() + GENERAL_SEPARATOR_STRING + message);
-		} catch (final IOException ie) {}
+		} catch (final IOException ie) {
+			ie.printStackTrace();
+		}
 	}
 
 	/**
@@ -418,7 +426,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		else
 			try {
 				serverStub.sendMessage(Server.Commands.REQUESTING_SERVER_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING);
-			} catch (final IOException ie) {}
+			} catch (final IOException ie) {
+				ie.printStackTrace();
+			}
 	}
 
 	/**
@@ -461,7 +471,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			// be
 			// done
 			// last
-		} catch (final Exception e) {}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -561,7 +573,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		clientOptionsManager.unregisterOptionsChangeListener(this);
 		try {
 			serverStub.sendMessage(Server.Commands.QUIT.ordinal() + GENERAL_SEPARATOR_STRING);
-		} catch (final IOException ie) {}
+		} catch (final IOException ie) {
+			ie.printStackTrace();
+		}
 		serverStub.close();
 	}
 

@@ -337,11 +337,16 @@ public class Consts {
 				return "Short range";
 			}
 		},
-		/** The Position changing disease. */
 		BLACK_OUT {
 
 			public String toString() {
 				return "Black out";
+			}
+		},
+		REVERSE {
+
+			public String toString() {
+				return "Reverse";
 			}
 		}
 	}

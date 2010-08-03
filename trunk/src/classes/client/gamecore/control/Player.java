@@ -730,16 +730,21 @@ public class Player {
 						allWeight += w;
 					}
 
-					int whichDisease = MathHelper.randomInt(allWeight);
+					int numberOfMassDiseases = MathHelper.randomInt(2) + 1;
 
-					int i = 0;
-					for (int w : diseaseWeights) {
-						whichDisease -= w;
-						if (whichDisease <= 0) {
-							getModel().addDisease(Diseases.values()[i], modelProvider.getTick() + PlayerModel.SUPER_DISEASE_DURATION);
-							break;
+					for (int massDiseaseCounter = 0; massDiseaseCounter < numberOfMassDiseases; massDiseaseCounter++) {
+
+						int whichDisease = MathHelper.randomInt(allWeight);
+
+						int i = 0;
+						for (int w : diseaseWeights) {
+							whichDisease -= w;
+							if (whichDisease <= 0) {
+								getModel().addDisease(Diseases.values()[i], modelProvider.getTick() + PlayerModel.SUPER_DISEASE_DURATION);
+								break;
+							}
+							i++;
 						}
-						i++;
 					}
 					break;
 				}
