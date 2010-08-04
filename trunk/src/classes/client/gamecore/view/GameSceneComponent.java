@@ -141,6 +141,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		long now = System.currentTimeMillis();
 
 		boolean blackOut = false;
+		boolean colorBlind = false;
 
 		int ourIndex = client.getOurIndex();
 		List<PlayerModel[]> clientPlayerModels = modelProvider.getClientsPlayerModels();
@@ -148,10 +149,12 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		for (int i = 0; i < clientPlayerModels.size(); i++) {
 
 			if (ourIndex == i) {
-
 				for (PlayerModel playerModel : clientPlayerModels.get(i)) {
 					if (playerModel.getOwnedDiseases().containsKey(Diseases.BLACK_OUT)) {
 						blackOut = true;
+					}
+					if (playerModel.getOwnedDiseases().containsKey(Diseases.COLOR_BLIND)) {
+						colorBlind = true;
 					}
 				}
 			}
@@ -176,7 +179,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 		paintLevel(graphics);
 		paintBombs(graphics);
-		paintBombermen(graphics);
+		paintBombermen(graphics, colorBlind);
 
 		if (blackOut) {
 			paintBlackout(graphics);
@@ -442,7 +445,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 * @param graphics
 	 *            graphics context in which to paint
 	 */
-	private void paintBombermen(final Graphics graphics) {
+	private void paintBombermen(final Graphics graphics, boolean colorBlind) {
 		final List<PlayerModel[]> clientPlayerModels = modelProvider.getClientsPlayerModels();
 
 		final float scaleFactor = (float) levelComponentSize / playerGraphics.get(0).getOriginalWidth();
@@ -458,7 +461,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 			if (ourIndex != i) {
 				PublicClientOptions publicClientOptions = modelProvider.getClientsPublicClientOptions().get(i);
-				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor);
+				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor, colorBlind);
 			}
 
 			playerNumberForGfx += playerModels.length;
@@ -471,7 +474,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 			if (ourIndex == i) {
 				PublicClientOptions publicClientOptions = modelProvider.getClientsPublicClientOptions().get(i);
-				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor);
+				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor, colorBlind);
 			}
 
 			playerNumberForGfx += playerModels.length;
@@ -479,7 +482,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	}
 
 	public void paintOneBomberMan(Graphics graphics, ClientOptions clientOptions, PublicClientOptions publicClientOptions, PlayerModel[] playerModels,
-	        int playerNumberForGfx, float scaleFactor) {
+	        int playerNumberForGfx, float scaleFactor, boolean colorBlind) {
 
 		Graphics2D g2 = (Graphics2D) graphics;
 
@@ -498,6 +501,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				continue;
 			}
 
+			if (colorBlind) {
+				playerNumberForGfx = 0;
+			}
 			final Image bombermanImage = playerGraphics.get(playerNumberForGfx).getImage(playerModel, scaleFactor);
 
 			if (playerModel.hasDisease()) {
@@ -517,7 +523,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			// row over the position of bobmerman
 			graphics.drawImage(bombermanImage, playerX - levelComponentSize / 2, playerY + levelComponentSize / 2 - bombermanImage.getHeight(null), null);
 			g2.setComposite(normalComposit);
-			if (clientOptions.showPlayerNames) {
+			if (clientOptions.showPlayerNames && !colorBlind) {
 				final String playerName = publicClientOptions.playerNames[j];
 				final int stringPosX = playerX - graphics.getFontMetrics().stringWidth(playerName) / 2;
 				final int stringPosY = playerY + levelComponentSize / 2 - bombermanImage.getHeight(null);
