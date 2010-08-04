@@ -19,7 +19,6 @@ import classes.client.Client;
 import classes.options.OptionsChangeListener;
 import classes.options.OptionsManager;
 import classes.options.Consts.NetworkLatencies;
-import classes.options.model.LevelOptions;
 import classes.options.model.PublicClientOptions;
 import classes.options.model.ServerOptions;
 import classes.utils.GeneralStringTokenizer;
@@ -91,12 +90,12 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	}
 
 	/** Name of the server as a chat client whithout extra signs. */
-	public static final String                  BASE_SERVER_CHAT_NAME           = "<Server>";
+	public static final String                  BASE_SERVER_CHAT_NAME = "<Server>";
 	/**
 	 * Name of the server as a chat client included a ':' and a space at the
 	 * end.
 	 */
-	public static final String                  SERVER_CHAT_NAME                = BASE_SERVER_CHAT_NAME + ": ";
+	public static final String                  SERVER_CHAT_NAME      = BASE_SERVER_CHAT_NAME + ": ";
 
 	/** Reference to the server options manager. */
 	private final OptionsManager<ServerOptions> serverOptionsManager;
@@ -107,11 +106,11 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	/** The player collector. */
 	private volatile PlayerCollector            playerCollector;
 	/** Vector of client contacts. */
-	private final List<ClientContact>           clientContacts                  = new ArrayList<ClientContact>();
+	private final List<ClientContact>           clientContacts        = new ArrayList<ClientContact>();
 	/** Tells whether starting of game has been requested. */
-	private volatile boolean                    requestedToStartGame            = false;
+	private volatile boolean                    requestedToStartGame  = false;
 	/** Tells whether ending of game has been requested. */
-	private volatile boolean                    requestedToEndGame              = false;
+	private volatile boolean                    requestedToEndGame    = false;
 	/**
 	 * The state of the game. The clients state (stored at MainMenuBar) will be
 	 * synchronized to this by commands.
@@ -124,23 +123,6 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 * based on the network latency.
 	 */
 	private int                                 iterationCounter;
-
-	/** in ms */
-	private static final long                   DELAY_START_SHRINKING_GAME_AREA = 1000 * 30;
-	private static final long                   DELAY_SHRINKING_GAME_AREA       = 500;
-	private long                                gameStartedAt;
-	private long                                lastShrinkOperationAt;
-	private int                                 lastNewWallX;
-	private int                                 lastNewWallY;
-	private int                                 shrinkMinX;
-	private int                                 shrinkMinY;
-	private int                                 shrinkMaxX;
-	private int                                 shrinkMaxY;
-	private ShrinkDirection                     lastShrinkDirection;
-
-	private enum ShrinkDirection {
-		RIGHT, DOWN, LEFT, UP
-	}
 
 	/**
 	 * Creates a new Server.
@@ -229,11 +211,6 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 */
 	private void handleGame() {
 
-		lastShrinkDirection = ShrinkDirection.RIGHT;
-		lastNewWallX = 0;
-		lastNewWallY = 0;
-		lastShrinkOperationAt = 0;
-
 		// Game starting protocol
 		broadcastCommand(Client.Commands.STARTING_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
 
@@ -255,8 +232,6 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 
 		startNextRound();
 		broadcastStartingNextIterationCommand();
-
-		gameStartedAt = System.currentTimeMillis();
 
 		// If network latency is LOW, we send STARTING_NEXT_ITERATION command in
 		// every iteration, if it's HIGH, we send in every 2, and if it's
@@ -310,80 +285,6 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		StringBuilder newClientsActions = new StringBuilder();
 		newClientsActions.append(Integer.toString(Client.Commands.STARTING_NEXT_ITERATION.ordinal()));
 		newClientsActions.append(GENERAL_SEPARATOR_STRING);
-
-		long now = System.currentTimeMillis();
-		if (gameStartedAt != 0 && (now - gameStartedAt) > DELAY_START_SHRINKING_GAME_AREA) {
-			if (lastShrinkOperationAt == 0 || ((now - lastShrinkOperationAt) > DELAY_SHRINKING_GAME_AREA)) {
-
-				int newWallX = lastNewWallX;
-				int newWallY = lastNewWallY;
-
-				LevelOptions levelOptions = serverOptionsManager.getOptions().levelOptions;
-				int width = levelOptions.levelWidth;
-				int height = levelOptions.levelHeight;
-
-				if (lastShrinkOperationAt == 0) {
-
-					newWallX = 0;
-					newWallY = 0;
-					shrinkMinX = 0;
-					shrinkMinY = 1;
-					shrinkMaxX = width - 1;
-					shrinkMaxY = height - 1;
-				} else {
-
-					if (shrinkMaxX <= shrinkMinX && shrinkMaxY <= shrinkMinY) {
-						newWallX = -1;
-					} else {
-						switch (lastShrinkDirection) {
-							case RIGHT:
-								newWallX++;
-								if (newWallX == shrinkMaxX) {
-									lastShrinkDirection = ShrinkDirection.DOWN;
-									shrinkMaxX--;
-								}
-								break;
-							case DOWN:
-								newWallY++;
-								if (newWallY == shrinkMaxY) {
-									lastShrinkDirection = ShrinkDirection.LEFT;
-									shrinkMaxY--;
-								}
-								break;
-							case LEFT:
-								newWallX--;
-								if (newWallX == shrinkMinX) {
-									lastShrinkDirection = ShrinkDirection.UP;
-									shrinkMinX++;
-								}
-								break;
-							case UP:
-								newWallY--;
-								if (newWallY == shrinkMinY) {
-									lastShrinkDirection = ShrinkDirection.RIGHT;
-									shrinkMinY++;
-								}
-								break;
-						}
-					}
-				}
-
-				if (newWallX >= 0 && newWallX < width && newWallY >= 0 && newWallY < height) {
-					newClientsActions.append("wall ");
-					newClientsActions.append(Integer.toString(newWallX));
-					newClientsActions.append(' ');
-					newClientsActions.append(Integer.toString(newWallY));
-					newClientsActions.append(' ');
-					newClientsActions.append('d');
-					newClientsActions.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
-
-				}
-				lastShrinkOperationAt = now;
-
-				lastNewWallX = newWallX;
-				lastNewWallY = newWallY;
-			}
-		}
 
 		for (int i = 0; i < clientContacts.size(); i++) {
 			final ClientContact clientContact = clientContacts.get(i);
