@@ -93,7 +93,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 	private AlphaComposite                      normalComposit     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 	private AlphaComposite                      infectedComposite  = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .50f);
-	private AlphaComposite                      darknessComposite  = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .90f);
+	private AlphaComposite                      blackoutComposite  = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
 	private AlphaComposite                      fireLightComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
 
 	/**
@@ -188,7 +188,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		graphics.setColor(Color.BLACK);
 		Graphics2D g2 = (Graphics2D) graphics;
 
-		g2.setComposite(darknessComposite);
+		g2.setComposite(blackoutComposite);
 
 		if (!hasActualDetonation()) {
 			g2.fillRect(0, 0, modelProvider.getLevelModel().getWidth() * levelComponentSize, modelProvider.getLevelModel().getHeight() * levelComponentSize);
