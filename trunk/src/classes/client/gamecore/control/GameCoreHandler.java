@@ -104,6 +104,15 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private int                             shrinkMaxX;
 	private int                             shrinkMaxY;
 	private ShrinkDirection                 lastShrinkDirection;
+	private ShrinkType                      shrinkType;
+
+	private static enum ShrinkDirection {
+		RIGHT, DOWN, LEFT, UP
+	}
+
+	private static enum ShrinkType {
+		CLOCKWISE_SPIRAL, ANTICLOCKWISE_SPIRAL
+	}
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -209,6 +218,13 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		final ArrayList<int[]> generatedStartPositions = new ArrayList<int[]>();
 
 		tick = 0;
+
+		int shrinkTypeRandom = getRandom().nextInt(2);
+		if (shrinkTypeRandom == 0) {
+			shrinkType = ShrinkType.CLOCKWISE_SPIRAL;
+		} else if (shrinkTypeRandom == 1) {
+			shrinkType = ShrinkType.ANTICLOCKWISE_SPIRAL;
+		}
 
 		// This is the quality of how perfectly can the players be positioned on
 		// the level.
@@ -534,10 +550,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		playerModel.setActivity(Activities.DYING);
 	}
 
-	private static enum ShrinkDirection {
-		RIGHT, DOWN, LEFT, UP
-	}
-
 	private void deathWall() {
 
 		if (getTick() > globalServerOptions.roundTimeLimit * globalServerOptions.gameCycleFrequency) {
@@ -551,47 +563,94 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 				if (lastShrinkOperationAt == 0) {
 
-					newWallX = 0;
-					newWallY = 0;
-					shrinkMinX = 0;
-					shrinkMinY = 1;
-					shrinkMaxX = width - 1;
-					shrinkMaxY = height - 1;
-					lastShrinkDirection = ShrinkDirection.RIGHT;
-				} else {
+					switch (shrinkType) {
+						case CLOCKWISE_SPIRAL:
+							newWallX = 0;
+							newWallY = 0;
+							shrinkMinX = 0;
+							shrinkMinY = 1;
+							shrinkMaxX = width - 1;
+							shrinkMaxY = height - 1;
+							lastShrinkDirection = ShrinkDirection.RIGHT;
+							break;
 
+						case ANTICLOCKWISE_SPIRAL:
+							newWallX = 0;
+							newWallY = 0;
+							shrinkMinX = 1;
+							shrinkMinY = 0;
+							shrinkMaxX = width - 1;
+							shrinkMaxY = height - 1;
+							lastShrinkDirection = ShrinkDirection.DOWN;
+							break;
+					}
+
+				} else {
 					if (shrinkMaxX <= shrinkMinX && shrinkMaxY <= shrinkMinY) {
 						newWallX = -1;
 					} else {
-						switch (lastShrinkDirection) {
-							case RIGHT:
-								newWallX++;
-								if (newWallX == shrinkMaxX) {
-									lastShrinkDirection = ShrinkDirection.DOWN;
-									shrinkMaxX--;
-								}
-								break;
-							case DOWN:
-								newWallY++;
-								if (newWallY == shrinkMaxY) {
-									lastShrinkDirection = ShrinkDirection.LEFT;
-									shrinkMaxY--;
-								}
-								break;
-							case LEFT:
-								newWallX--;
-								if (newWallX == shrinkMinX) {
-									lastShrinkDirection = ShrinkDirection.UP;
-									shrinkMinX++;
-								}
-								break;
-							case UP:
-								newWallY--;
-								if (newWallY == shrinkMinY) {
-									lastShrinkDirection = ShrinkDirection.RIGHT;
-									shrinkMinY++;
-								}
-								break;
+						if (shrinkType == ShrinkType.CLOCKWISE_SPIRAL) {
+							switch (lastShrinkDirection) {
+								case RIGHT:
+									newWallX++;
+									if (newWallX == shrinkMaxX) {
+										lastShrinkDirection = ShrinkDirection.DOWN;
+										shrinkMaxX--;
+									}
+									break;
+								case DOWN:
+									newWallY++;
+									if (newWallY == shrinkMaxY) {
+										lastShrinkDirection = ShrinkDirection.LEFT;
+										shrinkMaxY--;
+									}
+									break;
+								case LEFT:
+									newWallX--;
+									if (newWallX == shrinkMinX) {
+										lastShrinkDirection = ShrinkDirection.UP;
+										shrinkMinX++;
+									}
+									break;
+								case UP:
+									newWallY--;
+									if (newWallY == shrinkMinY) {
+										lastShrinkDirection = ShrinkDirection.RIGHT;
+										shrinkMinY++;
+									}
+									break;
+							}
+						} else if (shrinkType == ShrinkType.ANTICLOCKWISE_SPIRAL) {
+							switch (lastShrinkDirection) {
+								case RIGHT:
+									newWallX++;
+									if (newWallX == shrinkMaxX) {
+										lastShrinkDirection = ShrinkDirection.UP;
+										shrinkMaxX--;
+									}
+									break;
+								case DOWN:
+									newWallY++;
+									if (newWallY == shrinkMaxY) {
+										lastShrinkDirection = ShrinkDirection.RIGHT;
+										shrinkMaxY--;
+									}
+									break;
+								case LEFT:
+									newWallX--;
+									if (newWallX == shrinkMinX) {
+										lastShrinkDirection = ShrinkDirection.DOWN;
+										shrinkMinX++;
+									}
+									break;
+								case UP:
+									newWallY--;
+									if (newWallY == shrinkMinY) {
+										lastShrinkDirection = ShrinkDirection.LEFT;
+										shrinkMinY++;
+									}
+									break;
+							}
 						}
 					}
 				}
