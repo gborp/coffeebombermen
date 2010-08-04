@@ -348,6 +348,12 @@ public class Consts {
 			public String toString() {
 				return "Reverse";
 			}
+		},
+		COLOR_BLIND {
+
+			public String toString() {
+				return "Color blind";
+			}
 		}
 	}
 
