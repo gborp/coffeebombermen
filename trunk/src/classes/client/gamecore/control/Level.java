@@ -24,14 +24,14 @@ import classes.utils.GeneralUtilities;
 public class Level {
 
 	/** The model of the level. */
-	private final LevelModel model;
+	private final LevelModel      model;
 	/**
 	 * References to the fires taking places on the level. There is a vector for
 	 * each component.
 	 */
-	private final List<Fire>[][] fireVectorss;
+	private final List<Fire>[][]  fireVectorss;
 	/** Reference to a model provider. */
-	private final ModelProvider modelProvider;
+	private final ModelProvider   modelProvider;
 	/** Reference to a model controller. */
 	private final ModelController modelController;
 
@@ -46,9 +46,7 @@ public class Level {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Level(final LevelOptions levelOptions,
-			final ModelProvider modelProvider,
-			final ModelController modelController) {
+	public Level(final LevelOptions levelOptions, final ModelProvider modelProvider, final ModelController modelController) {
 		this(new LevelModel(levelOptions), modelProvider, modelController);
 	}
 
@@ -62,20 +60,18 @@ public class Level {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Level(final LevelModel levelModel,
-			final ModelProvider modelProvider,
-			final ModelController modelController) {
+	public Level(final LevelModel levelModel, final ModelProvider modelProvider, final ModelController modelController) {
 		model = levelModel;
 		this.modelProvider = modelProvider;
 		this.modelController = modelController;
 
-		fireVectorss = (ArrayList<Fire>[][]) Array.newInstance(
-				new ArrayList<Fire>().getClass(), new int[] {
-						model.getComponents().length,
-						model.getComponents()[0].length });
-		for (final List<Fire>[] fireVectors : fireVectorss)
-			for (int i = 0; i < fireVectors.length; i++)
+		fireVectorss = (ArrayList<Fire>[][]) Array.newInstance(new ArrayList<Fire>().getClass(), new int[] { model.getComponents().length,
+		        model.getComponents()[0].length });
+		for (final List<Fire>[] fireVectors : fireVectorss) {
+			for (int i = 0; i < fireVectors.length; i++) {
 				fireVectors[i] = new ArrayList<Fire>();
+			}
+		}
 	}
 
 	/**
@@ -97,29 +93,25 @@ public class Level {
 	 * @param componentPosY
 	 *            y coordinate of the component to set the fire on
 	 */
-	public void addFireToComponentPos(final Fire fire, final int componentPosX,
-			final int componentPosY) {
+	public void addFireToComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		fireVectorss[componentPosY][componentPosX].add(fire);
 
-		final LevelComponent levelComponent = modelProvider.getLevelModel()
-				.getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX];
 		levelComponent.fireModelVector.add(fire.getModel());
 
 		// We decide what item and if there will be an item after the fire,
 		// cause it has to be appeared from the middle of the fire.
-		if (levelComponent.getWall() == Walls.BRICK
-				&& levelComponent.getItem() == null) // Item has to be generated
+		if (levelComponent.getWall() == Walls.BRICK && levelComponent.getItem() == null) // Item
+			// has
+			// to
+			// be
+			// generated
 			// once (see: time
 			// delayed multiple
 			// fire).
-			if (modelController.getGlobalServerOptions().gettingItemProbability > modelController
-					.getRandom().nextInt(100))
-				levelComponent
-						.setItem(Items.values()[GeneralUtilities
-								.pickWeightedRandom(
-										modelController
-												.getGlobalServerOptions().levelOptions.itemWeights,
-										modelController.getRandom())]);
+			if (modelController.getGlobalServerOptions().gettingItemProbability > modelController.getRandom().nextInt(100))
+				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(modelController.getGlobalServerOptions().levelOptions.itemWeights,
+				        modelController.getRandom())]);
 	}
 
 	/**
@@ -132,23 +124,22 @@ public class Level {
 	 * @param componentPosY
 	 *            y coordinate of the component to remove the fire from
 	 */
-	public void removeFireFromComponentPos(final Fire fire,
-			final int componentPosX, final int componentPosY) {
+	public void removeFireFromComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		fireVectorss[componentPosY][componentPosX].remove(fire);
-		model.getComponents()[componentPosY][componentPosX].fireModelVector
-				.remove(fire.getModel());
+		model.getComponents()[componentPosY][componentPosX].fireModelVector.remove(fire.getModel());
 	}
 
 	/**
-	 * Performs operations which are requried by passing the time.
+	 * Performs operations which are required by passing the time.
 	 */
 	public void nextIteration() {
 		for (final List<Fire>[] fireVectors : fireVectorss)
 			for (final List<Fire> fireVector : fireVectors)
-				for (int i = fireVector.size() - 1; i >= 0; i--)
+				for (int i = fireVector.size() - 1; i >= 0; i--) {
 					// Cannot be enhanced: fire can remove itself. And because
 					// it can remove itself, cycle must be downward...
 					fireVector.get(i).nextIteration();
+				}
 	}
 
 }

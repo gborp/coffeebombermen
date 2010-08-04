@@ -96,6 +96,15 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 	private long                            tick;
 
+	private long                            lastShrinkOperationAt;
+	private int                             lastNewWallX;
+	private int                             lastNewWallY;
+	private int                             shrinkMinX;
+	private int                             shrinkMinY;
+	private int                             shrinkMaxX;
+	private int                             shrinkMaxY;
+	private ShrinkDirection                 lastShrinkDirection;
+
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
 	 * new game (but used only one for the rounds of a game).<br>
@@ -253,11 +262,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 				// We clear the level around the player.
 				final int[][] DELTA_COORDS = new int[][] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }; // Delta
-				// coordinates
-				// of
-				// the
-				// clearable
-				// components
+				// coordinates of the clearable components
 				for (int i = 0; i < DELTA_COORDS.length; i++) {
 					final LevelComponent levelComponent = levelComponents[componentPosY + DELTA_COORDS[i][0]][componentPosX + DELTA_COORDS[i][1]];
 					if (levelComponent.getWall() != Walls.CONCRETE) {
@@ -496,6 +501,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			}
 		}
 
+		deathWall();
+
 		// Now we damage players being in fire.
 		for (final PlayerModel[] playerModels : clientsPlayerModels)
 			for (final PlayerModel playerModel : playerModels)
@@ -510,16 +517,96 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						// for ceiling (can't flooring, cause 100% damage might
 						// cause remainder, would let the player live!)
 						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
-						if (playerModel.getVitality() <= 0)
-							playerModel.setActivity(Activities.DYING);
+						if (playerModel.getVitality() <= 0) {
+							killPlayer(playerModel);
+						}
 					}
 
 					// the shrinking game area can cause the player die
 					if (comp.getWall() == Walls.DEATH) {
-						playerModel.setVitality(0);
-						playerModel.setActivity(Activities.DYING);
+						killPlayer(playerModel);
 					}
 				}
+	}
+
+	private void killPlayer(PlayerModel playerModel) {
+		playerModel.setVitality(0);
+		playerModel.setActivity(Activities.DYING);
+	}
+
+	private static enum ShrinkDirection {
+		RIGHT, DOWN, LEFT, UP
+	}
+
+	private void deathWall() {
+
+		if (getTick() > globalServerOptions.roundTimeLimit * globalServerOptions.gameCycleFrequency) {
+			if (lastShrinkOperationAt == 0 || ((getTick() - lastShrinkOperationAt) > (globalServerOptions.gameCycleFrequency / 2))) {
+
+				int newWallX = lastNewWallX;
+				int newWallY = lastNewWallY;
+
+				int width = level.getModel().getWidth();
+				int height = level.getModel().getHeight();
+
+				if (lastShrinkOperationAt == 0) {
+
+					newWallX = 0;
+					newWallY = 0;
+					shrinkMinX = 0;
+					shrinkMinY = 1;
+					shrinkMaxX = width - 1;
+					shrinkMaxY = height - 1;
+					lastShrinkDirection = ShrinkDirection.RIGHT;
+				} else {
+
+					if (shrinkMaxX <= shrinkMinX && shrinkMaxY <= shrinkMinY) {
+						newWallX = -1;
+					} else {
+						switch (lastShrinkDirection) {
+							case RIGHT:
+								newWallX++;
+								if (newWallX == shrinkMaxX) {
+									lastShrinkDirection = ShrinkDirection.DOWN;
+									shrinkMaxX--;
+								}
+								break;
+							case DOWN:
+								newWallY++;
+								if (newWallY == shrinkMaxY) {
+									lastShrinkDirection = ShrinkDirection.LEFT;
+									shrinkMaxY--;
+								}
+								break;
+							case LEFT:
+								newWallX--;
+								if (newWallX == shrinkMinX) {
+									lastShrinkDirection = ShrinkDirection.UP;
+									shrinkMinX++;
+								}
+								break;
+							case UP:
+								newWallY--;
+								if (newWallY == shrinkMinY) {
+									lastShrinkDirection = ShrinkDirection.RIGHT;
+									shrinkMinY++;
+								}
+								break;
+						}
+					}
+				}
+
+				if (newWallX >= 0 && newWallX < width && newWallY >= 0 && newWallY < height) {
+					level.getModel().getComponents()[newWallY][newWallX].setItem(null);
+					level.getModel().getComponents()[newWallY][newWallX].setWall(Walls.DEATH);
+					SoundEffect.DEATH_WALL.play();
+				}
+				lastShrinkOperationAt = getTick();
+
+				lastNewWallX = newWallX;
+				lastNewWallY = newWallY;
+			}
+		}
 	}
 
 	/**
@@ -538,23 +625,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			final StringTokenizer clientActionsTokenizer = new StringTokenizer(clientsActionsTokenizer.nextStringToken(), " ");
 
 			String commandTarget = clientActionsTokenizer.nextToken();
-
-			if ("wall".equals(commandTarget)) {
-
-				Integer x = Integer.valueOf(clientActionsTokenizer.nextToken());
-				Integer y = Integer.valueOf(clientActionsTokenizer.nextToken());
-				String command = clientActionsTokenizer.nextToken();
-
-				level.getModel().getComponents()[y][x].setItem(null);
-				level.getModel().getComponents()[y][x].setWall(Walls.DEATH);
-				SoundEffect.DEATH_WALL.play();
-
-				if (clientActionsTokenizer.hasMoreTokens()) {
-					commandTarget = clientActionsTokenizer.nextToken();
-				} else {
-					commandTarget = null;
-				}
-			}
 
 			if ("player".equals(commandTarget)) {
 
