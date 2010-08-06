@@ -30,6 +30,8 @@ public class PlayerModel extends PositionedIterableObject {
 	/** game core tick frequency is 30hz */
 	public static final long             SUPER_DISEASE_DURATION          = DISEASE_DURATION * 2;
 
+	private String                       name;
+
 	/** Vitality of the player. */
 	private int                          vitality;
 	/** The current activity of the player. */
@@ -285,6 +287,14 @@ public class PlayerModel extends PositionedIterableObject {
 			rollerSkates = -5;
 		}
 		return rollerSkates;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

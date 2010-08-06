@@ -548,6 +548,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private void killPlayer(PlayerModel playerModel) {
 		playerModel.setVitality(0);
 		playerModel.setActivity(Activities.DYING);
+		mainFrame.receiveMessage(playerModel.getName() + " died.");
 	}
 
 	private void deathWall() {
