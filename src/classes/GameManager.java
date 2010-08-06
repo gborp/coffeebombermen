@@ -106,7 +106,7 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 		mainFrame = new MainFrame(this);
 		mainMenuBar = mainFrame.getMainMenuBar();
 
-		mainFrame.receiveMessage("Contact: bomber.men@freemail.hu");
+		mainFrame.receiveMessage("http://coffeebombermen.googlecode.com");
 
 		loadOptions();
 		clientOptionsManager.registerOptionsChangeListener(this);
