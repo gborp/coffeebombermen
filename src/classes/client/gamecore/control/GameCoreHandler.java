@@ -293,6 +293,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
+		mainFrame.requestFocus();
 		SoundEffect.START_MATCH.play();
 	}
 
