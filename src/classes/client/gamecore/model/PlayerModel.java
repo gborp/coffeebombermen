@@ -123,6 +123,7 @@ public class PlayerModel extends PositionedIterableObject {
 				break;
 			case DYING:
 				SoundEffect.DIE.play();
+				mapOwnedDiseases.clear();
 				break;
 		}
 	}
