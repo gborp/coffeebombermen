@@ -284,9 +284,11 @@ public class Consts {
 		// Boxing Gloves neutralizes Trigger and Wall building
 		NEUTRALIZER_ITEMS_MAP.put(Items.BOXING_GLOVES, EnumSet.of(Items.TRIGGER, Items.WALL_BUILDING));
 		// Wall building neutralizes Trigger and Boxing Gloves
-		NEUTRALIZER_ITEMS_MAP.put(Items.WALL_BUILDING, EnumSet.of(Items.TRIGGER, Items.BOXING_GLOVES));
+		NEUTRALIZER_ITEMS_MAP.put(Items.WALL_BUILDING, EnumSet.of(Items.TRIGGER, Items.BOXING_GLOVES, Items.WALL_CLIMBING));
 		// Jelly neutralizes Trigger
 		NEUTRALIZER_ITEMS_MAP.put(Items.JELLY, EnumSet.of(Items.TRIGGER));
+
+		NEUTRALIZER_ITEMS_MAP.put(Items.WALL_CLIMBING, EnumSet.of(Items.WALL_BUILDING));
 	}
 
 	/**
