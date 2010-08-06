@@ -58,7 +58,6 @@ public class Player {
 	private final ModelController modelController;
 	private final boolean         ourClient;
 	private long                  lastSpiderBomb;
-	private final String          name;
 
 	/**
 	 * Creates a new Player.
@@ -79,11 +78,7 @@ public class Player {
 		this.playerIndex = playerIndex;
 		this.modelProvider = modelProvider;
 		this.modelController = modelController;
-		this.name = name;
-	}
-
-	public String getName() {
-		return name;
+		model.setName(name);
 	}
 
 	/**

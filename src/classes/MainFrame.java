@@ -8,7 +8,6 @@ import static classes.Consts.APPLICATION_NAME;
 import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
 
 import java.awt.BorderLayout;
-import java.awt.Label;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,11 +43,7 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 	 * horizontally.
 	 */
 	private final JSplitPane  splitPane1          = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-	/**
-	 * Split pane to slit the players table and the rest of the window
-	 * vertically.
-	 */
-	private final JSplitPane  splitPane2          = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
 	/** Text area for holding the players and system messages. */
 	private final JTextArea   messagesTextArea    = new JTextArea();
 	/** Text field to enter new messages. */
@@ -90,9 +85,7 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 	private void buildGUI() {
 		setJMenuBar(mainMenuBar);
 
-		splitPane2.setDividerSize(8);
 		setMainComponent(new JLabel("No graphical theme has been loaded...", JLabel.CENTER));
-		splitPane2.setRightComponent(new Label("Players table comes here"));
 
 		messagesTextArea.setEditable(false);
 		messagesTextArea.setLineWrap(true);
@@ -104,8 +97,8 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 		messagePanel.add(newMessageTextField, BorderLayout.SOUTH);
 
 		splitPane1.setDividerSize(8);
-		splitPane1.setTopComponent(splitPane2);
 		splitPane1.setBottomComponent(messagePanel);
+		splitPane1.setResizeWeight(1);
 
 		getContentPane().add(splitPane1, BorderLayout.CENTER);
 	}
@@ -122,13 +115,7 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 			this.mainComponent.removeMouseListener(this);
 		}
 		this.mainComponent = mainComponent;
-
-		final int splitPane2DividerLocation = splitPane2.getDividerLocation();
-		splitPane2.setLeftComponent(this.mainComponent);
-		// Component what had no dimension has been added... have to re-set the
-		// location of the divider of the JSplitPane
-		splitPane2.setDividerLocation(splitPane2DividerLocation);
-
+		splitPane1.setTopComponent(mainComponent);
 		this.mainComponent.addKeyListener(this);
 		this.mainComponent.addMouseListener(this);
 		this.mainComponent.requestFocusInWindow();
@@ -208,7 +195,7 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 	 *            details of the key event
 	 */
 	public void keyTyped(final KeyEvent ke) {
-		final Object source = (JComponent) ke.getSource();
+		final Object source = ke.getSource();
 		if (ke.getKeyChar() == KeyEvent.VK_ENTER)
 			if (source == mainComponent)
 				newMessageTextField.requestFocusInWindow();
@@ -302,7 +289,7 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 		if (isVisible() && getExtendedState() == NORMAL)
 			getBounds(windowModeBounds);
 
-		final StringBuilder buffer = new StringBuilder();
+		StringBuilder buffer = new StringBuilder();
 
 		buffer.append(windowModeBounds.x);
 		buffer.append(GENERAL_SEPARATOR_CHAR);
@@ -315,7 +302,7 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 
 		buffer.append(splitPane1.getDividerLocation());
 		buffer.append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(splitPane2.getDividerLocation());
+		buffer.append("N/A");
 		buffer.append(GENERAL_SEPARATOR_CHAR);
 
 		return buffer.toString();
@@ -335,7 +322,9 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 		windowModeBounds.setBounds(x, y, width, height);
 
 		splitPane1.setDividerLocation(optionsTokenizer.nextIntToken());
-		splitPane2.setDividerLocation(optionsTokenizer.nextIntToken());
+
+		// unused
+		optionsTokenizer.nextStringToken();
 	}
 
 	/**
