@@ -12,9 +12,9 @@ import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NA
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 
 import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
@@ -32,6 +32,13 @@ import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
 import classes.client.graphics.AnimationDatas;
 import classes.client.graphics.GraphicsManager;
+import classes.client.shrink.BinaryShrinkPerformer;
+import classes.client.shrink.BombAndWallShrinkPerformer;
+import classes.client.shrink.BombShrinkPerformer;
+import classes.client.shrink.DefaultShrinkPerformer;
+import classes.client.shrink.MassKillShrinkPerformer;
+import classes.client.shrink.ShrinkPerformer;
+import classes.client.shrink.SpiderBombShrinkPerformer;
 import classes.client.sound.SoundEffect;
 import classes.options.Consts.Diseases;
 import classes.options.Consts.Items;
@@ -95,24 +102,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private final MainComponentHandler      winningAnimationMainComponentHandler;
 
 	private long                            tick;
-
-	private long                            lastShrinkOperationAt;
-	private int                             lastNewWallX;
-	private int                             lastNewWallY;
-	private int                             shrinkMinX;
-	private int                             shrinkMinY;
-	private int                             shrinkMaxX;
-	private int                             shrinkMaxY;
-	private ShrinkDirection                 lastShrinkDirection;
-	private ShrinkType                      shrinkType;
-
-	private static enum ShrinkDirection {
-		RIGHT, DOWN, LEFT, UP
-	}
-
-	private static enum ShrinkType {
-		CLOCKWISE_SPIRAL, ANTICLOCKWISE_SPIRAL
-	}
+	private ShrinkPerformer[] shrinkPerformers;
+	private ShrinkPerformer shrinkPerformer;
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -145,7 +136,15 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-
+		this.shrinkPerformers = new ShrinkPerformer[] {
+				new DefaultShrinkPerformer(this),
+//				new BombShrinkPerformer(this),
+//				new BombAndWallShrinkPerformer(this),
+//				new BinaryShrinkPerformer(this),
+//				new SpiderBombShrinkPerformer(this),
+//				new MassKillShrinkPerformer(this)
+				};
+		
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
@@ -219,13 +218,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		tick = 0;
 
-		int shrinkTypeRandom = getRandom().nextInt(2);
-		if (shrinkTypeRandom == 0) {
-			shrinkType = ShrinkType.CLOCKWISE_SPIRAL;
-		} else if (shrinkTypeRandom == 1) {
-			shrinkType = ShrinkType.ANTICLOCKWISE_SPIRAL;
-		}
-
 		// This is the quality of how perfectly can the players be positioned on
 		// the level.
 		// 0 is the best, and if the algorithm increases, will demand less and
@@ -293,6 +285,9 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
+		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
+//		shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
+		shrinkPerformer.initNextRound();
 		mainFrame.requestFocus();
 		SoundEffect.START_MATCH.play();
 	}
@@ -518,7 +513,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			}
 		}
 
-		deathWall();
+		shrinkPerformer.nextIteration();
 
 		// Now we damage players being in fire.
 		for (final PlayerModel[] playerModels : clientsPlayerModels)
@@ -550,124 +545,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		playerModel.setVitality(0);
 		playerModel.setActivity(Activities.DYING);
 		mainFrame.receiveMessage(playerModel.getName() + " died.");
-	}
-
-	private void deathWall() {
-
-		if (getTick() > globalServerOptions.roundTimeLimit * globalServerOptions.gameCycleFrequency) {
-			if (lastShrinkOperationAt == 0 || ((getTick() - lastShrinkOperationAt) > (globalServerOptions.gameCycleFrequency / 2))) {
-
-				int newWallX = lastNewWallX;
-				int newWallY = lastNewWallY;
-
-				int width = level.getModel().getWidth();
-				int height = level.getModel().getHeight();
-
-				if (lastShrinkOperationAt == 0) {
-
-					switch (shrinkType) {
-						case CLOCKWISE_SPIRAL:
-							newWallX = 0;
-							newWallY = 0;
-							shrinkMinX = 0;
-							shrinkMinY = 1;
-							shrinkMaxX = width - 1;
-							shrinkMaxY = height - 1;
-							lastShrinkDirection = ShrinkDirection.RIGHT;
-							break;
-
-						case ANTICLOCKWISE_SPIRAL:
-							newWallX = 0;
-							newWallY = 0;
-							shrinkMinX = 1;
-							shrinkMinY = 0;
-							shrinkMaxX = width - 1;
-							shrinkMaxY = height - 1;
-							lastShrinkDirection = ShrinkDirection.DOWN;
-							break;
-					}
-
-				} else {
-					if (shrinkMaxX <= shrinkMinX && shrinkMaxY <= shrinkMinY) {
-						newWallX = -1;
-					} else {
-						if (shrinkType == ShrinkType.CLOCKWISE_SPIRAL) {
-							switch (lastShrinkDirection) {
-								case RIGHT:
-									newWallX++;
-									if (newWallX == shrinkMaxX) {
-										lastShrinkDirection = ShrinkDirection.DOWN;
-										shrinkMaxX--;
-									}
-									break;
-								case DOWN:
-									newWallY++;
-									if (newWallY == shrinkMaxY) {
-										lastShrinkDirection = ShrinkDirection.LEFT;
-										shrinkMaxY--;
-									}
-									break;
-								case LEFT:
-									newWallX--;
-									if (newWallX == shrinkMinX) {
-										lastShrinkDirection = ShrinkDirection.UP;
-										shrinkMinX++;
-									}
-									break;
-								case UP:
-									newWallY--;
-									if (newWallY == shrinkMinY) {
-										lastShrinkDirection = ShrinkDirection.RIGHT;
-										shrinkMinY++;
-									}
-									break;
-							}
-						} else if (shrinkType == ShrinkType.ANTICLOCKWISE_SPIRAL) {
-							switch (lastShrinkDirection) {
-								case RIGHT:
-									newWallX++;
-									if (newWallX == shrinkMaxX) {
-										lastShrinkDirection = ShrinkDirection.UP;
-										shrinkMaxX--;
-									}
-									break;
-								case DOWN:
-									newWallY++;
-									if (newWallY == shrinkMaxY) {
-										lastShrinkDirection = ShrinkDirection.RIGHT;
-										shrinkMaxY--;
-									}
-									break;
-								case LEFT:
-									newWallX--;
-									if (newWallX == shrinkMinX) {
-										lastShrinkDirection = ShrinkDirection.DOWN;
-										shrinkMinX++;
-									}
-									break;
-								case UP:
-									newWallY--;
-									if (newWallY == shrinkMinY) {
-										lastShrinkDirection = ShrinkDirection.LEFT;
-										shrinkMinY++;
-									}
-									break;
-							}
-						}
-					}
-				}
-
-				if (newWallX >= 0 && newWallX < width && newWallY >= 0 && newWallY < height) {
-					level.getModel().getComponents()[newWallY][newWallX].setItem(null);
-					level.getModel().getComponents()[newWallY][newWallX].setWall(Walls.DEATH);
-					SoundEffect.DEATH_WALL.play();
-				}
-				lastShrinkOperationAt = getTick();
-
-				lastNewWallX = newWallX;
-				lastNewWallY = newWallY;
-			}
-		}
 	}
 
 	/**
@@ -810,6 +687,10 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 */
 	public LevelModel getLevelModel() {
 		return level == null ? null : level.getModel();
+	}
+
+	public Level getLevel() {
+		return level;
 	}
 
 	/**
