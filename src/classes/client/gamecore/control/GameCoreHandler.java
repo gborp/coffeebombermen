@@ -32,6 +32,7 @@ import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
 import classes.client.graphics.AnimationDatas;
 import classes.client.graphics.GraphicsManager;
+import classes.client.shrink.BombShrinkPerformer;
 import classes.client.shrink.DefaultShrinkPerformer;
 import classes.client.shrink.ShrinkPerformer;
 import classes.client.sound.SoundEffect;
@@ -131,14 +132,15 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this),
-		// new BombShrinkPerformer(this),
-		// new BombAndWallShrinkPerformer(this),
-		// new BinaryShrinkPerformer(this),
-		// new SpiderBombShrinkPerformer(this),
-		// new MassKillShrinkPerformer(this)
-		};
-
+		this.shrinkPerformers = new ShrinkPerformer[] {
+				new DefaultShrinkPerformer(this),
+				new BombShrinkPerformer(this),
+//				new BombAndWallShrinkPerformer(this),
+//				new BinaryShrinkPerformer(this),
+//				new SpiderBombShrinkPerformer(this),
+//				new MassKillShrinkPerformer(this)
+				};
+		
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
@@ -499,10 +501,13 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		for (int i = bombs.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
 			if (bombModels.get(i).isDetonated()) {
-				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+				if (bombModel.getOwnerPlayer() != null) {
+					bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
 				        .get(Items.BOMB) + 1);
+				}
 				bombs.remove(i);
 				bombModels.remove(i);
+				
 			}
 		}
 
