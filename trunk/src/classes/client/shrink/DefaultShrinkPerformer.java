@@ -5,9 +5,14 @@ import classes.client.gamecore.control.Level;
 import classes.client.sound.SoundEffect;
 import classes.options.Consts.Walls;
 import classes.options.model.ServerOptions;
+import classes.utils.MathHelper;
 
-public class DefaultShrinkPerformer implements ShrinkPerformer{
+public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
+	private static final int MAX_SPEEDUP_STEPS = 20;
+	private static final int SPEEDUP_RATIO = 20;
+	private static final float SPEEDUP_POSSIBILITY = 0.02f;
+	
 	private ShrinkDirection lastShrinkDirection;
 	private int lastNewWallX;
 	private int lastNewWallY;
@@ -16,9 +21,8 @@ public class DefaultShrinkPerformer implements ShrinkPerformer{
 	private int shrinkMinY;
 	private int shrinkMaxX;
 	private int shrinkMaxY;
-	private Level level;
 	private ShrinkType shrinkType;
-	private final GameCoreHandler gameCoreHandler;
+	private int speedupSteps;
 
 	private enum ShrinkDirection {
 		RIGHT, DOWN, LEFT, UP
@@ -29,16 +33,15 @@ public class DefaultShrinkPerformer implements ShrinkPerformer{
 	}
 
 	public DefaultShrinkPerformer(GameCoreHandler gameCoreHandler) {
-		this.gameCoreHandler = gameCoreHandler;
+		super(gameCoreHandler);
 	}
 	
-	public void initNextRound() {
-		this.level = gameCoreHandler.getLevel();
+	protected void initNextRoundImpl() {
 		lastShrinkDirection = ShrinkDirection.RIGHT;
 		lastNewWallX = 0;
 		lastNewWallY = 0;
 		lastShrinkOperationAt = 0;
-		int shrinkTypeRandom = gameCoreHandler.getRandom().nextInt(2);
+		int shrinkTypeRandom = getRandom().nextInt(2);
 		if (shrinkTypeRandom == 0) {
 			shrinkType = ShrinkType.CLOCKWISE_SPIRAL;
 		} else if (shrinkTypeRandom == 1) {
@@ -46,16 +49,16 @@ public class DefaultShrinkPerformer implements ShrinkPerformer{
 		}
 	}
 
-	public void nextIteration() {
-		ServerOptions gso = gameCoreHandler.getGlobalServerOptions();
-		if (gameCoreHandler.getTick() > gso.roundTimeLimit * gso.gameCycleFrequency) {
-			if (lastShrinkOperationAt == 0 || ((gameCoreHandler.getTick() - lastShrinkOperationAt) > (gso.gameCycleFrequency))) {
-
+	protected void nextIterationImpl() {
+		ServerOptions gso = getGlobalServerOptions();
+		if (getTick() > gso.roundTimeLimit * gso.gameCycleFrequency) {
+			if (lastShrinkOperationAt == 0 || ((getTick() - lastShrinkOperationAt) > (gso.gameCycleFrequency / (speedupSteps > 0 ? SPEEDUP_RATIO : 1)))) {
+				if (speedupSteps <= 0 && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
+					speedupSteps = MAX_SPEEDUP_STEPS;
+				}
+				speedupSteps--;
 				int newWallX = lastNewWallX;
 				int newWallY = lastNewWallY;
-
-				int width = level.getModel().getWidth();
-				int height = level.getModel().getHeight();
 
 				if (lastShrinkOperationAt == 0) {
 
@@ -65,8 +68,8 @@ public class DefaultShrinkPerformer implements ShrinkPerformer{
 							newWallY = 0;
 							shrinkMinX = 0;
 							shrinkMinY = 1;
-							shrinkMaxX = width - 1;
-							shrinkMaxY = height - 1;
+							shrinkMaxX = getWidth() - 1;
+							shrinkMaxY = getHeight() - 1;
 							lastShrinkDirection = ShrinkDirection.RIGHT;
 							break;
 
@@ -75,8 +78,8 @@ public class DefaultShrinkPerformer implements ShrinkPerformer{
 							newWallY = 0;
 							shrinkMinX = 1;
 							shrinkMinY = 0;
-							shrinkMaxX = width - 1;
-							shrinkMaxY = height - 1;
+							shrinkMaxX = getWidth() - 1;
+							shrinkMaxY = getHeight() - 1;
 							lastShrinkDirection = ShrinkDirection.DOWN;
 							break;
 					}
@@ -151,17 +154,18 @@ public class DefaultShrinkPerformer implements ShrinkPerformer{
 					}
 				}
 
-				if (newWallX >= 0 && newWallX < width && newWallY >= 0 && newWallY < height) {
-					level.getModel().getComponents()[newWallY][newWallX].setItem(null);
-					level.getModel().getComponents()[newWallY][newWallX].setWall(Walls.DEATH);
+				if (newWallX >= 0 && newWallX < getWidth() && newWallY >= 0 && newWallY < getHeight()) {
+					getLevel().getModel().getComponents()[newWallY][newWallX].setItem(null);
+					getLevel().getModel().getComponents()[newWallY][newWallX].setWall(Walls.DEATH);
 					SoundEffect.DEATH_WALL.play();
 				}
-				lastShrinkOperationAt = gameCoreHandler.getTick();
+				lastShrinkOperationAt = getTick();
 
 				lastNewWallX = newWallX;
 				lastNewWallY = newWallY;
 			}
 		}
 	}
+
 }
 
