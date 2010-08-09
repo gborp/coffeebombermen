@@ -12,9 +12,9 @@ import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NA
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
@@ -97,8 +97,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private final MainComponentHandler      winningAnimationMainComponentHandler;
 
 	private long                            tick;
-	private ShrinkPerformer[] shrinkPerformers;
-	private ShrinkPerformer shrinkPerformer;
+	private ShrinkPerformer[]               shrinkPerformers;
+	private ShrinkPerformer                 shrinkPerformer;
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -131,15 +131,14 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-		this.shrinkPerformers = new ShrinkPerformer[] {
-				new DefaultShrinkPerformer(this),
-//				new BombShrinkPerformer(this),
-//				new BombAndWallShrinkPerformer(this),
-//				new BinaryShrinkPerformer(this),
-//				new SpiderBombShrinkPerformer(this),
-//				new MassKillShrinkPerformer(this)
-				};
-		
+		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this),
+		// new BombShrinkPerformer(this),
+		// new BombAndWallShrinkPerformer(this),
+		// new BinaryShrinkPerformer(this),
+		// new SpiderBombShrinkPerformer(this),
+		// new MassKillShrinkPerformer(this)
+		};
+
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
@@ -281,9 +280,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
 		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
-//		shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
+		// shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
 		shrinkPerformer.initNextRound();
-		mainFrame.requestFocus();
 		SoundEffect.START_MATCH.play();
 	}
 
