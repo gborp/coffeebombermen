@@ -4,6 +4,8 @@
 
 package classes.client.gamecore.view;
 
+import javax.swing.SwingUtilities;
+
 import classes.MainComponentHandler;
 import classes.MainFrame;
 import classes.client.Client;
@@ -18,10 +20,10 @@ import classes.options.model.ClientOptions;
 public class GameSceneMainComponentHandler implements MainComponentHandler {
 
 	/** Reference to the main frame. */
-	private final MainFrame mainFrame;
+	private final MainFrame          mainFrame;
 	/** Component for the game scene. */
 	private final GameSceneComponent gameSceneComponent;
-	private final Client client;
+	private final Client             client;
 
 	/**
 	 * Creates a new GameSceneMainComponentHandler.
@@ -32,13 +34,10 @@ public class GameSceneMainComponentHandler implements MainComponentHandler {
 	 * @param clientOptionsManager
 	 *            reference to the client options manager
 	 */
-	public GameSceneMainComponentHandler(Client client,
-			final MainFrame mainFrame,
-			final OptionsManager<ClientOptions> clientOptionsManager) {
+	public GameSceneMainComponentHandler(Client client, final MainFrame mainFrame, final OptionsManager<ClientOptions> clientOptionsManager) {
 		this.client = client;
 		this.mainFrame = mainFrame;
-		gameSceneComponent = new GameSceneComponent(client,
-				clientOptionsManager);
+		gameSceneComponent = new GameSceneComponent(client, clientOptionsManager);
 	}
 
 	/**
@@ -55,6 +54,12 @@ public class GameSceneMainComponentHandler implements MainComponentHandler {
 	 */
 	public void reinitMainComponent() {
 		mainFrame.setMainComponent(gameSceneComponent);
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				gameSceneComponent.requestFocus();
+			}
+		});
 	}
 
 	/**
@@ -70,7 +75,6 @@ public class GameSceneMainComponentHandler implements MainComponentHandler {
 	 * Called when handler of main component is being replaced. There is nothing
 	 * to do.
 	 */
-	public void releaseMainComponent() {
-	}
+	public void releaseMainComponent() {}
 
 }
