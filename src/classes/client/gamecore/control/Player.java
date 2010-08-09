@@ -45,7 +45,7 @@ public class Player {
 
 	private static final int      PLACEABLE_WALLS     = 5;
 	private static final int      MAX_REGEN           = 500;
-	private static final long     SPIDER_BOMB_LATENCY = 200000000;
+	private static final long     SPIDER_BOMB_LATENCY = 6;
 	/** The client index where this player belogns to. */
 	private int                   clientIndex;
 	/** The player index inside of its client. */
@@ -173,7 +173,7 @@ public class Player {
 	}
 
 	private void handleSpiderBomb() {
-		long now = System.nanoTime();
+		long now = modelProvider.getTick();
 		if (!model.isSpiderBombEnabled() || (lastSpiderBomb + SPIDER_BOMB_LATENCY > now)) {
 			return;
 		}

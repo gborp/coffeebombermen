@@ -118,8 +118,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		refreshGraphicDatas();
 	}
 
-	private long blackOutDuration = 1000;
-	private long flashDuration    = 100;
+	private long blackOutDuration = 30;
+	private long flashDuration    = 3;
 	private long nextFlashStart   = -1;
 
 	/**
@@ -138,7 +138,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		if (modelProvider.getLevelModel() == null) // No level created yet
 			return;
 
-		long now = System.currentTimeMillis();
+		long now = modelProvider.getTick();
 
 		boolean blackOut = false;
 		boolean colorBlind = false;
