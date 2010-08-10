@@ -134,7 +134,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] {
 				new DefaultShrinkPerformer(this),
-				new BombShrinkPerformer(this),
+//				new BombShrinkPerformer(this),
 //				new BombAndWallShrinkPerformer(this),
 //				new BinaryShrinkPerformer(this),
 //				new SpiderBombShrinkPerformer(this),
