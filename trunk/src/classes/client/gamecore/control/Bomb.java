@@ -10,6 +10,7 @@ import static classes.client.gamecore.Consts.BOMB_FLYING_SPEED;
 import static classes.client.gamecore.Consts.BOMB_ITERATIONS;
 import static classes.client.gamecore.Consts.BOMB_ROLLING_SPEED;
 import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 import classes.client.gamecore.Consts.BombPhases;
 import classes.client.gamecore.Consts.BombTypes;
 import classes.client.gamecore.Consts.Directions;
@@ -172,21 +173,32 @@ public class Bomb {
 				
 			case ROLLING:
 				if ( modelController.canBombRollToComponentPosition( model, model.getComponentPosX() + model.getDirectionXMultiplier(), model.getComponentPosY() + model.getDirectionYMultiplier() ) ) {
+					if (model.isCrazy() && modelController.getRandom().nextInt(10) == 0) {
+						Directions newDirection = Directions.values()[ modelController.getRandom().nextInt( Directions.values().length ) ];
+						if (!newDirection.equals(model.getDirection()) && !newDirection.equals(model.getDirection().getOpposite())) {
+							if ( modelController.canBombRollToComponentPosition( model, model.getComponentPosX() + newDirection.getXMultiplier(), model.getComponentPosY() + newDirection.getYMultiplier() ) ) {
+								model.setDirection( newDirection );
+							}
+						}
+					}
 					model.setPosX( model.getPosX() + BOMB_ROLLING_SPEED * model.getDirectionXMultiplier() );
 					model.setPosY( model.getPosY() + BOMB_ROLLING_SPEED * model.getDirectionYMultiplier() );
 					
 					final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[ model.getComponentPosY() ][ model.getComponentPosX() ];
 					if ( levelComponent.getItem() != null )
 						levelComponent.setItem( null );
-				}
-				else {
-					model.alignPosXToComponentCenter();
-					model.alignPosYToComponentCenter();
-
-					if ( model.getType() == BombTypes.JELLY )
-						model.setDirection( model.getDirection().getOpposite() );
-					else
-						model.setPhase( BombPhases.STANDING );
+				} else {
+					if (model.isDetonatingOnHit()) {
+						model.setAboutToDetonate(true);
+					} else {
+						model.alignPosXToComponentCenter();
+						model.alignPosYToComponentCenter();
+	
+						if ( model.getType() == BombTypes.JELLY )
+							model.setDirection( model.getDirection().getOpposite() );
+						else
+							model.setPhase( BombPhases.STANDING );
+					}
 				}
 				break;
 		}
