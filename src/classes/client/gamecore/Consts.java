@@ -87,6 +87,26 @@ public class Consts {
 			throw new RuntimeException( "WTF?!? Check added new directions!!!" );
 		}
 
+		public Directions getTurnLeft() {
+			switch ( this ) {
+				case DOWN  : return RIGHT;
+				case UP    : return LEFT ;
+				case RIGHT : return UP ;
+				case LEFT  : return DOWN ;
+			}
+			throw new RuntimeException( "WTF?!? Check added new directions!!!" );
+		}
+
+		public Directions getTurnRight() {
+			switch ( this ) {
+				case DOWN  : return LEFT ;
+				case UP    : return RIGHT;
+				case RIGHT : return DOWN ;
+				case LEFT  : return UP   ;
+			}
+			throw new RuntimeException( "WTF?!? Check added new directions!!!" );
+		}
+
 		/**
 		 * Returns an integer which can be used to identify the horizontal component of the direction,
 		 * and can be used to calculate positions ahead in the direction.
@@ -162,7 +182,7 @@ public class Consts {
 	public enum BombTypes {
 		/** Normal bomb.    */
 		NORMAL,
-		/** Jelly bomb.     */
+		/** Bouncing bomb.     */
 		JELLY,
 		/** Triggered bomb. */
 		TRIGGERED
@@ -193,5 +213,4 @@ public class Consts {
 		/** Crossing fire shape.   */
 		CROSSING
 	}
-	
 }
