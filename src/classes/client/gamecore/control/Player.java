@@ -195,16 +195,20 @@ public class Player {
 	}
 
 	private void throwSpiderBomb(Directions direction) {
-		if ((model.getDirection() == direction) || (model.getDirection() == direction.getOpposite())) {
-			return;
-		}
-
-		if (direction.equals(Directions.DOWN) || direction.equals(Directions.LEFT)) {
-			if (model.getSpiderBombRounds() % 2 == 1) {
+		if (direction.equals(Directions.UP)) {
+			if (model.getSpiderBombRounds() % 4 != 0) {
 				return;
 			}
-		} else {
-			if (model.getSpiderBombRounds() % 2 == 0) {
+		} else if (direction.equals(Directions.RIGHT)) {
+			if (model.getSpiderBombRounds() % 4 != 1) {
+				return;
+			}
+		} else if (direction.equals(Directions.DOWN)) {
+			if (model.getSpiderBombRounds() % 4 != 2) {
+				return;
+			}
+		} else if (direction.equals(Directions.LEFT)) {
+			if (model.getSpiderBombRounds() % 4 != 3) {
 				return;
 			}
 		}
