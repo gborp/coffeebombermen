@@ -1,1 +1,1 @@
-java -cp . -jar coffeebombermen.jar -Xmx 128m
+java -cp . -jar coffeebombermen.jar -Xmx256m
