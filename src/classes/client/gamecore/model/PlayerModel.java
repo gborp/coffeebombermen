@@ -30,6 +30,8 @@ public class PlayerModel extends PositionedIterableObject {
 	/** game core tick frequency is 30hz */
 	public static final long             SUPER_DISEASE_DURATION          = DISEASE_DURATION * 2;
 
+	private static final int             SPIDER_BOMB_ROUNDS              = 4;
+
 	private String                       name;
 
 	/** Vitality of the player. */
@@ -241,7 +243,7 @@ public class PlayerModel extends PositionedIterableObject {
 
 	public void setSpiderBombEnabled(boolean spiderBombEnabled) {
 		this.spiderBombEnabled = spiderBombEnabled;
-		spiderBombRounds = spiderBombEnabled ? spiderBombRounds + 9 : 0;
+		spiderBombRounds = spiderBombEnabled ? spiderBombRounds + SPIDER_BOMB_ROUNDS : 0;
 	}
 
 	public boolean isSpiderBombEnabled() {
