@@ -609,7 +609,7 @@ public class Player {
 				model.setPosY(model.getPosY() + model.getDirectionYMultiplier() * speed);
 				checkAndHandleItemPickingUp();
 			} // ...else we check for kick
-			else if (model.hasNonAccumulateableItemsMap.get(Items.BOOTS)) {
+			else if (model.hasNonAccumulateableItemsMap.get(Items.BOOTS) || model.hasNonAccumulateableItemsMap.get(Items.CRAZY_BOOTS)) {
 				tryToKick();
 			}
 		}
