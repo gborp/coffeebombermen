@@ -280,8 +280,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
-//		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
-		 shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
+		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
+//		 shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
 		shrinkPerformer.initNextRound();
 		SoundEffect.START_MATCH.play();
 	}
