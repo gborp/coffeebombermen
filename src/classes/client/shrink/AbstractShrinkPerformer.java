@@ -13,6 +13,7 @@ import classes.client.gamecore.model.BombModel;
 import classes.client.sound.SoundEffect;
 import classes.options.Consts.Walls;
 import classes.options.model.ServerOptions;
+import classes.utils.MathHelper;
 
 public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 
@@ -86,4 +87,61 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		newBombModel.setDirection(direction);
 		getGameCoreHandler().addNewBomb(newBomb);
 	}
+
+	protected void addCrazyBomb(int x, int y, int range) {
+		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
+		final BombModel newBombModel = newBomb.getModel();
+		newBombModel.setType(BombTypes.JELLY);
+		newBombModel.setCrazyPercent(0.5f);
+		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY
+				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY
+				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setRange(range);
+		newBombModel.setPhase(BombPhases.ROLLING);
+		getGameCoreHandler().addNewBomb(newBomb);
+
+		// search for a direction open for roll
+		int direction = getRandom().nextInt(4); 
+		GameCoreHandler mc = getGameCoreHandler();
+		int directionDif = 0;
+		while (directionDif < 4) {
+			Directions d = Directions.get((direction + directionDif) % 4);
+			if (mc.canBombRollToComponentPosition( newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY() + d.getYMultiplier() )) {
+				newBombModel.setDirection(d);
+				return;
+			}
+			directionDif++;
+		}
+		newBombModel.setDirection(Directions.get(direction));
+	}
+
+	protected void addDetonatingOnHitBomb(int x, int y, int range) {
+		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
+		final BombModel newBombModel = newBomb.getModel();
+		newBombModel.setType(BombTypes.JELLY);
+		newBombModel.setDetonatingOnHit(true);
+		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY
+				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY
+				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setRange(range);
+		newBombModel.setPhase(BombPhases.ROLLING);
+		getGameCoreHandler().addNewBomb(newBomb);
+
+		// search for a direction open for roll
+		int direction = getRandom().nextInt(4); 
+		GameCoreHandler mc = getGameCoreHandler();
+		int directionDif = 0;
+		while (directionDif < 4) {
+			Directions d = Directions.get((direction + directionDif) % 4);
+			if (mc.canBombRollToComponentPosition( newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY() + d.getYMultiplier() )) {
+				newBombModel.setDirection(d);
+				return;
+			}
+			directionDif++;
+		}
+		newBombModel.setDirection(Directions.get(direction));
+	}
+
 }

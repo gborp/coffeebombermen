@@ -1,12 +1,7 @@
 package classes.client.shrink;
 
-import classes.client.gamecore.Consts.BombPhases;
-import classes.client.gamecore.Consts.Directions;
 import classes.client.gamecore.control.GameCoreHandler;
-import classes.client.gamecore.control.Level;
-import classes.options.model.LevelOptions;
 import classes.options.model.ServerOptions;
-import classes.server.Server;
 import classes.utils.MathHelper;
 
 public class BombShrinkPerformer extends AbstractShrinkPerformer {
@@ -29,20 +24,17 @@ public class BombShrinkPerformer extends AbstractShrinkPerformer {
 
 	protected void nextIterationImpl() {
 		ServerOptions gso = getGlobalServerOptions();
-		if (getTick() > gso.roundTimeLimit
-				* gso.gameCycleFrequency) {
+		if (getTick() > gso.roundTimeLimit	* gso.gameCycleFrequency) {
 			if (lastShrinkOperationAt == 0
 					|| ((getTick() - lastShrinkOperationAt) > (gso.gameCycleFrequency * GAME_CYCLE_FREQUENCY_MULTIPLIER))) {
 				for (int i = 0; i < numberOfBombs; i++) {
-					int x = (int) Math.round(Math.random() * (getWidth() - 3) + 1);
-					int y = (int) Math.round(Math.random() * (getHeight() - 3) + 1);
-					int direction = 0;
-					direction = MathHelper.randomInt(3);
-					addBomb(x, y, MathHelper.randomInt(1, maxRange), BombPhases.ROLLING, Directions.values()[direction]);
+					int x = getRandom().nextInt(getWidth() - 3) + 1;
+					int y = getRandom().nextInt(getHeight() - 3) + 1;
+					addCrazyBomb(x, y, MathHelper.randomInt(1, maxRange));
 				}
 				lastShrinkOperationAt = getTick();
 				if (numberOfBombs < getWidth() * getHeight()) {
-					numberOfBombs = numberOfBombs * 1.2f;
+					numberOfBombs = numberOfBombs * 1.3f;
 				}
 
 				if (MathHelper.randomBoolean()) {

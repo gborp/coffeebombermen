@@ -107,6 +107,10 @@ public class Consts {
 			throw new RuntimeException( "WTF?!? Check added new directions!!!" );
 		}
 
+		public static Directions get(int direction) {
+			return Directions.values()[ direction];
+		}
+		
 		/**
 		 * Returns an integer which can be used to identify the horizontal component of the direction,
 		 * and can be used to calculate positions ahead in the direction.
