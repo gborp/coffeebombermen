@@ -995,9 +995,9 @@ public class Player {
 		bombModel.setDirection(model.getDirection()); // We punch in our
 		// direction
 		if (getModel().hasNonAccumItem(Items.CRAZY_BOOTS)) {
-			bombModel.setCrazy(true);
+			bombModel.setCrazyPercent(0.2f);
 		} else {
-			bombModel.setCrazy(false);
+			bombModel.setCrazyPercent(0);
 		}
 
 		// We align the bomb to the center based on the kicking direction

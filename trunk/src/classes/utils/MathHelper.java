@@ -2,6 +2,8 @@ package classes.utils;
 
 import java.util.Random;
 
+import classes.client.gamecore.Consts.Directions;
+
 public class MathHelper {
 
 	private static final float HALF = 0.5f;
@@ -33,6 +35,10 @@ public class MathHelper {
 		return HALF + dif;
 	}
 
+	public static Directions getRandomDirection() {
+		return Directions.get(random.nextInt( Directions.values().length ));
+	}
+	
 	public static void setRandom(Random random) {
 		MathHelper.random = random;
 	}

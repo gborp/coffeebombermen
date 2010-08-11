@@ -67,8 +67,8 @@ public class BombModel extends PositionedIterableObject {
 	public final ArrayList<Directions> excludedDetonationDirections = new ArrayList<Directions>(2);
 	/** The triggerer player of the bomb. */
 	private PlayerModel                triggererPlayer;
-	private boolean                    crazy;
 	private boolean                    detonatingOnHit;
+	private float crazyPercent;
 
 	/**
 	 * Creates a new Bomb.
@@ -79,7 +79,7 @@ public class BombModel extends PositionedIterableObject {
 	public BombModel(final PlayerModel ownerPlayer) {
 		this.ownerPlayer = ownerPlayer;
 		setPhase(BombPhases.STANDING);
-		setCrazy(false);
+		setCrazyPercent(0);
 	}
 
 	/**
@@ -305,12 +305,12 @@ public class BombModel extends PositionedIterableObject {
 		this.triggererPlayer = triggererPlayer;
 	}
 
-	public boolean isCrazy() {
-		return crazy;
+	public float getCrazyPercent() {
+		return crazyPercent;
 	}
 
-	public void setCrazy(boolean crazy) {
-		this.crazy = crazy;
+	public void setCrazyPercent(float crazyPercent) {
+		this.crazyPercent = crazyPercent;
 	}
 
 	public boolean isDetonatingOnHit() {

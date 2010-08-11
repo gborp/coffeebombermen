@@ -17,6 +17,7 @@ import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.options.Consts.Walls;
+import classes.utils.MathHelper;
 
 /**
  * The control layer of the bombs.
@@ -198,22 +199,36 @@ public class Bomb {
 				break;
 
 			case ROLLING:
-				if (modelController.canBombRollToComponentPosition(model, model.getComponentPosX() + model.getDirectionXMultiplier(), model.getComponentPosY()
-				        + model.getDirectionYMultiplier())) {
-					if (model.isCrazy() && modelController.getRandom().nextInt(10) == 0) {
-						Directions newDirection = Directions.values()[modelController.getRandom().nextInt(Directions.values().length)];
-						if (!newDirection.equals(model.getDirection()) && !newDirection.equals(model.getDirection().getOpposite())) {
-							if (modelController.canBombRollToComponentPosition(model, model.getComponentPosX() + newDirection.getXMultiplier(), model
-							        .getComponentPosY()
-							        + newDirection.getYMultiplier())) {
-								model.setDirection(newDirection);
-							}
-						}
+			if (modelController.canBombRollToComponentPosition(model,
+					model.getComponentPosX() + model.getDirectionXMultiplier(),
+					model.getComponentPosY() + model.getDirectionYMultiplier())) {
+				if (MathHelper.checkRandomEvent(model.getCrazyPercent()
+						/ (LEVEL_COMPONENT_GRANULARITY / BOMB_ROLLING_SPEED))) {
+					Directions newDirection = Directions.values()[modelController
+							.getRandom().nextInt(Directions.values().length)];
+					if (newDirection.equals(model.getDirection())
+							|| newDirection.equals(model.getDirection()
+									.getOpposite())) {
+						newDirection = newDirection.getTurnLeft();
 					}
-					model.setPosX(model.getPosX() + BOMB_ROLLING_SPEED * model.getDirectionXMultiplier());
-					model.setPosY(model.getPosY() + BOMB_ROLLING_SPEED * model.getDirectionYMultiplier());
+					if (modelController.canBombRollToComponentPosition(
+							model,
+							model.getComponentPosX()
+									+ newDirection.getXMultiplier(),
+							model.getComponentPosY()
+									+ newDirection.getYMultiplier())) {
+						model.setDirection(newDirection);
+					}
+				}
 
-					final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
+				model.setPosX(model.getPosX() + BOMB_ROLLING_SPEED
+						* model.getDirectionXMultiplier());
+				model.setPosY(model.getPosY() + BOMB_ROLLING_SPEED
+						* model.getDirectionYMultiplier());
+
+				final LevelComponent levelComponent = modelProvider
+						.getLevelModel().getComponents()[model
+						.getComponentPosY()][model.getComponentPosX()];
 					if (levelComponent.getItem() != null)
 						levelComponent.setItem(null);
 				} else {
@@ -232,5 +247,4 @@ public class Bomb {
 				break;
 		}
 	}
-
 }
