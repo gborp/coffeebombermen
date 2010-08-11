@@ -58,7 +58,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
 			if (lastShrinkOperationAt == 0 || ((getTick() - lastShrinkOperationAt) > (gso.gameCycleFrequency / (speedupSteps > 0 ? SPEEDUP_RATIO : 1)))) {
 
-				if (speedupSteps <= 0 && preSpeedupWarn <= 0 && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
+				if (speedupSteps <= 0 && preSpeedupWarn <= 0 && lastNewWallX != -1 && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
 					preSpeedupWarn = PRE_SPEEDUP_TICKS;
 				}
 				if (preSpeedupWarn > 0) {
