@@ -267,7 +267,9 @@ public class Consts {
 		/** Brick wall. */
 		BRICK,
 		/** the shrinking game area's wall */
-		DEATH
+		DEATH,
+		/** the shrinking game area's wall */
+		DEATH_WARN
 	}
 
 	/** Items from which we can pick up more than one, we can accumulate them. */

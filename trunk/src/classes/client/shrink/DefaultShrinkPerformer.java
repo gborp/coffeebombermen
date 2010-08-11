@@ -1,7 +1,6 @@
 package classes.client.shrink;
 
 import classes.client.gamecore.control.GameCoreHandler;
-import classes.client.gamecore.control.Level;
 import classes.client.sound.SoundEffect;
 import classes.options.Consts.Walls;
 import classes.options.model.ServerOptions;
@@ -9,20 +8,22 @@ import classes.utils.MathHelper;
 
 public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
-	private static final int MAX_SPEEDUP_STEPS = 20;
-	private static final int SPEEDUP_RATIO = 20;
-	private static final float SPEEDUP_POSSIBILITY = 0.02f;
-	
-	private ShrinkDirection lastShrinkDirection;
-	private int lastNewWallX;
-	private int lastNewWallY;
-	private long lastShrinkOperationAt;
-	private int shrinkMinX;
-	private int shrinkMinY;
-	private int shrinkMaxX;
-	private int shrinkMaxY;
-	private ShrinkType shrinkType;
-	private int speedupSteps;
+	private static final int   MAX_SPEEDUP_STEPS   = 8;
+	private static final int   SPEEDUP_RATIO       = 30;
+	private static final float SPEEDUP_POSSIBILITY = 0.1f;
+	private static final int   PRE_SPEEDUP_TICKS   = 2;
+
+	private ShrinkDirection    lastShrinkDirection;
+	private int                lastNewWallX;
+	private int                lastNewWallY;
+	private long               lastShrinkOperationAt;
+	private int                shrinkMinX;
+	private int                shrinkMinY;
+	private int                shrinkMaxX;
+	private int                shrinkMaxY;
+	private ShrinkType         shrinkType;
+	private int                speedupSteps;
+	private int                preSpeedupWarn;
 
 	private enum ShrinkDirection {
 		RIGHT, DOWN, LEFT, UP
@@ -35,7 +36,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 	public DefaultShrinkPerformer(GameCoreHandler gameCoreHandler) {
 		super(gameCoreHandler);
 	}
-	
+
 	protected void initNextRoundImpl() {
 		lastShrinkDirection = ShrinkDirection.RIGHT;
 		lastNewWallX = 0;
@@ -47,16 +48,33 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 		} else if (shrinkTypeRandom == 1) {
 			shrinkType = ShrinkType.ANTICLOCKWISE_SPIRAL;
 		}
+		speedupSteps = -1;
+		preSpeedupWarn = -1;
 	}
 
 	protected void nextIterationImpl() {
 		ServerOptions gso = getGlobalServerOptions();
 		if (getTick() > gso.roundTimeLimit * gso.gameCycleFrequency) {
+
 			if (lastShrinkOperationAt == 0 || ((getTick() - lastShrinkOperationAt) > (gso.gameCycleFrequency / (speedupSteps > 0 ? SPEEDUP_RATIO : 1)))) {
-				if (speedupSteps <= 0 && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
-					speedupSteps = MAX_SPEEDUP_STEPS;
+
+				if (speedupSteps <= 0 && preSpeedupWarn <= 0 && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
+					preSpeedupWarn = PRE_SPEEDUP_TICKS;
 				}
-				speedupSteps--;
+				if (preSpeedupWarn > 0) {
+					getLevel().getModel().getComponents()[lastNewWallY][lastNewWallX].setWall(Walls.DEATH_WARN);
+					preSpeedupWarn--;
+					if (preSpeedupWarn == 0) {
+						speedupSteps = MAX_SPEEDUP_STEPS;
+					}
+					lastShrinkOperationAt = getTick();
+					return;
+				}
+
+				if (speedupSteps > 0) {
+					speedupSteps--;
+				}
+
 				int newWallX = lastNewWallX;
 				int newWallY = lastNewWallY;
 
@@ -168,4 +186,3 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 	}
 
 }
-
