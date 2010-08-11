@@ -32,7 +32,6 @@ import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
 import classes.client.graphics.AnimationDatas;
 import classes.client.graphics.GraphicsManager;
-import classes.client.shrink.BombShrinkPerformer;
 import classes.client.shrink.DefaultShrinkPerformer;
 import classes.client.shrink.ShrinkPerformer;
 import classes.client.sound.SoundEffect;
@@ -132,15 +131,14 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-		this.shrinkPerformers = new ShrinkPerformer[] {
-				new DefaultShrinkPerformer(this),
-//				new BombShrinkPerformer(this),
-//				new BombAndWallShrinkPerformer(this),
-//				new BinaryShrinkPerformer(this),
-//				new SpiderBombShrinkPerformer(this),
-//				new MassKillShrinkPerformer(this)
-				};
-		
+		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this),
+		// new BombShrinkPerformer(this),
+		// new BombAndWallShrinkPerformer(this),
+		// new BinaryShrinkPerformer(this),
+		// new SpiderBombShrinkPerformer(this),
+		// new MassKillShrinkPerformer(this)
+		};
+
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
@@ -503,11 +501,11 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			if (bombModels.get(i).isDetonated()) {
 				if (bombModel.getOwnerPlayer() != null) {
 					bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-				        .get(Items.BOMB) + 1);
+					        .get(Items.BOMB) + 1);
 				}
 				bombs.remove(i);
 				bombModels.remove(i);
-				
+
 			}
 		}
 
@@ -612,22 +610,16 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 					break;
 				}
 
-			for (int i = 0; i < detonatableBombModels.size(); i++) { // Not
-				// enhanced
-				// for: we
-				// may add
-				// new
-				// detonatable
-				// bombs
-				// inside
-				// the
-				// cycle
-				// (so it
-				// must be
-				// upward)!
+			for (int i = 0; i < detonatableBombModels.size(); i++) {
+				// Not enhanced for: we may add new detonatable bombs inside the
+				// cycle (so it must be upward)!
 				final BombModel detonatedBombModel = detonatableBombModels.get(i);
 				final int detonatedBombComponentPosX = detonatedBombModel.getComponentPosX();
 				final int detonatedBombComponentPosY = detonatedBombModel.getComponentPosY();
+
+				if (detonatedBombComponentPosX == -1 || detonatedBombComponentPosY == -1) {
+					continue;
+				}
 
 				for (final Directions direction : Directions.values())
 					for (int range = direction == Directions.values()[0] ? 0 : 1; range < detonatedBombModel.getRange(); range++) {
