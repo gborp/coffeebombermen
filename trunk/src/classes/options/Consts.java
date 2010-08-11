@@ -181,6 +181,7 @@ public class Consts {
 				return "Boots";
 			}
 		},
+
 		/** The Blue Gloves item. */
 		BLUE_GLOVES {
 
@@ -243,7 +244,14 @@ public class Consts {
 			public String toString() {
 				return "Wall building";
 			}
-		}
+		},
+		/** The Crazy Boots item. */
+		CRAZY_BOOTS {
+
+			public String toString() {
+				return "Crazy boots";
+			}
+		},
 	}
 
 	/**
@@ -289,6 +297,10 @@ public class Consts {
 		NEUTRALIZER_ITEMS_MAP.put(Items.JELLY, EnumSet.of(Items.TRIGGER));
 
 		NEUTRALIZER_ITEMS_MAP.put(Items.WALL_CLIMBING, EnumSet.of(Items.WALL_BUILDING));
+
+		NEUTRALIZER_ITEMS_MAP.put(Items.CRAZY_BOOTS, EnumSet.of(Items.BOOTS));
+
+		NEUTRALIZER_ITEMS_MAP.put(Items.BOOTS, EnumSet.of(Items.CRAZY_BOOTS));
 	}
 
 	/**
