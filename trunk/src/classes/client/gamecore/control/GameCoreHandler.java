@@ -132,8 +132,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this),
-		new BombShrinkPerformer(this),
+		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this),
 		// new BombAndWallShrinkPerformer(this),
 		// new BinaryShrinkPerformer(this),
 		// new SpiderBombShrinkPerformer(this),
@@ -281,7 +280,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
 		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
-//		 shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
+		// shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
 		shrinkPerformer.initNextRound();
 		SoundEffect.START_MATCH.play();
 	}
@@ -618,10 +617,6 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				final int detonatedBombComponentPosX = detonatedBombModel.getComponentPosX();
 				final int detonatedBombComponentPosY = detonatedBombModel.getComponentPosY();
 
-				if (detonatedBombComponentPosX == -1 || detonatedBombComponentPosY == -1) {
-					continue;
-				}
-
 				for (final Directions direction : Directions.values())
 					for (int range = direction == Directions.values()[0] ? 0 : 1; range < detonatedBombModel.getRange(); range++) {
 						if (range > 0 && detonatedBombModel.excludedDetonationDirections.contains(direction))
@@ -629,9 +624,14 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 						final int componentPosX = detonatedBombComponentPosX + direction.getXMultiplier() * range;
 						final int componentPosY = detonatedBombComponentPosY + direction.getYMultiplier() * range;
+
+						if (componentPosX == -1 || componentPosY == -1) {
+							continue;
+						}
 						final LevelComponent levelComponent = levelComponents[componentPosY][componentPosX];
 
-						if (levelComponent.getWall() == Walls.CONCRETE || levelComponent.getWall() == Walls.DEATH)
+						if (levelComponent.getWall() == Walls.CONCRETE || levelComponent.getWall() == Walls.DEATH
+						        || levelComponent.getWall() == Walls.DEATH_WARN)
 							break;
 
 						final Integer bombIndexAtComponentPos = range == 0 ? null : getBombIndexAtComponentPosition(componentPosX, componentPosY);
