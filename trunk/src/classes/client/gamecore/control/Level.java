@@ -97,7 +97,7 @@ public class Level {
 		fireVectorss[componentPosY][componentPosX].add(fire);
 
 		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX];
-		levelComponent.fireModelVector.add(fire.getModel());
+		levelComponent.addFire(fire.getModel());
 
 		// We decide what item and if there will be an item after the fire,
 		// cause it has to be appeared from the middle of the fire.
@@ -126,7 +126,7 @@ public class Level {
 	 */
 	public void removeFireFromComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		fireVectorss[componentPosY][componentPosX].remove(fire);
-		model.getComponents()[componentPosY][componentPosX].fireModelVector.remove(fire.getModel());
+		model.getComponents()[componentPosY][componentPosX].removeFire(fire.getModel());
 	}
 
 	/**

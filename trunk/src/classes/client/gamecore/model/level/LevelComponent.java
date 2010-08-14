@@ -19,14 +19,14 @@ import classes.options.Consts.Walls;
 public class LevelComponent extends IterableObject {
 
 	/** What kind of wall is associated to the component. */
-	private Walls wall = Walls.EMPTY;
+	private Walls                wall         = Walls.EMPTY;
 	/**
 	 * What kind of item is optionally contained by the component. Accessible
 	 * only if wall is Walls.EMPTY (null means no item is on the component).
 	 */
-	private Items item;
+	private Items                item;
 	/** The vector of fire models taking place on this component. */
-	public final ArrayList<FireModel> fireModelVector = new ArrayList<FireModel>();
+	private ArrayList<FireModel> lstFireModel = new ArrayList<FireModel>();
 
 	/**
 	 * Sets the wall of the component.
@@ -64,6 +64,26 @@ public class LevelComponent extends IterableObject {
 	 */
 	public Items getItem() {
 		return item;
+	}
+
+	public boolean hasFire() {
+		return !lstFireModel.isEmpty();
+	}
+
+	public int getFireCount() {
+		return lstFireModel.size();
+	}
+
+	public void addFire(FireModel fire) {
+		lstFireModel.add(fire);
+	}
+
+	public void removeFire(FireModel fire) {
+		lstFireModel.remove(fire);
+	}
+
+	public FireModel getLastFire() {
+		return lstFireModel.get(lstFireModel.size() - 1);
 	}
 
 }

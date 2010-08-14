@@ -13,14 +13,10 @@ import classes.options.model.LevelOptions;
  */
 public class LevelModel {
 
-	private static long              BLACKOUT_DURATION = 1000 * 5;
-
 	/** Options of this level. */
 	private final LevelOptions       levelOptions;
 	/** The components of the level. */
 	private final LevelComponent[][] components;
-
-	private long                     blackOutStarted   = 0;
 
 	/**
 	 * Creates a new Level.
@@ -46,11 +42,11 @@ public class LevelModel {
 	}
 
 	public int getWidth() {
-		return components[0].length;
+		return levelOptions.levelWidth;
 	}
 
 	public int getHeight() {
-		return components.length;
+		return levelOptions.levelHeight;
 	}
 
 	/**
@@ -60,6 +56,14 @@ public class LevelModel {
 	 */
 	public LevelComponent[][] getComponents() {
 		return components;
+	}
+
+	public LevelComponent getComponent(int x, int y) {
+		return components[y][x];
+	}
+
+	public void setComponent(LevelComponent component, int x, int y) {
+		components[y][x] = component;
 	}
 
 	/**

@@ -516,9 +516,10 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			for (final PlayerModel playerModel : playerModels)
 				if (playerModel.getActivity() != Activities.DYING) {
 					LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
-					int firesCount = comp.fireModelVector.size();
-					if (!globalServerOptions.multipleFire && firesCount > 1)
+					int firesCount = comp.getFireCount();
+					if (!globalServerOptions.multipleFire && firesCount > 1) {
 						firesCount = 1;
+					}
 					if (firesCount > 0) {
 						final int damage = firesCount
 						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.damageOfWholeBombFire / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
@@ -589,12 +590,12 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		// First we check the fire triggered bombs...
 		for (final BombModel bombModel : bombModels)
 			if (bombModel.getPhase() != BombPhases.FLYING && !bombModel.isAboutToDetonate()
-			        && !levelComponents[bombModel.getComponentPosY()][bombModel.getComponentPosX()].fireModelVector.isEmpty()) {
+			        && levelComponents[bombModel.getComponentPosY()][bombModel.getComponentPosX()].hasFire()) {
 				bombModel.setAboutToDetonate(true);
 
 				LevelComponent levelComp = levelComponents[bombModel.getComponentPosY()][bombModel.getComponentPosX()];
 
-				bombModel.setTriggererPlayer(levelComp.fireModelVector.get(levelComp.fireModelVector.size() - 1).getTriggererPlayer());
+				bombModel.setTriggererPlayer(levelComp.getLastFire().getTriggererPlayer());
 			}
 
 		do {
