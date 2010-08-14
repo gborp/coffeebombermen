@@ -631,7 +631,7 @@ public class Player {
 	private void checkAndHandleItemPickingUp() {
 		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
 
-		if ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null) && levelComponent.fireModelVector.isEmpty()) {
+		if ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null) && !levelComponent.hasFire()) {
 			final Items item = levelComponent.getItem();
 
 			if (ourClient) {

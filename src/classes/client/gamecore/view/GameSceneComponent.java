@@ -205,7 +205,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			final LevelComponent[] levelComponentLine = levelComponents[i];
 			for (int j = 0, x = 0; j < levelComponentLine.length; j++, x += levelComponentSize) {
 				LevelComponent levelComponent = levelComponentLine[j];
-				if (!levelComponent.fireModelVector.isEmpty()) {
+				if (levelComponent.hasFire()) {
 					continue;
 				}
 
@@ -219,18 +219,18 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				int fwWidth = levelComponentSize;
 				int fwHeight = levelComponentSize;
 
-				if (i < levelComponents.length - 1 && !levelComponents[i + 1][j].fireModelVector.isEmpty()) {
+				if (i < levelComponents.length - 1 && levelComponents[i + 1][j].hasFire()) {
 					fwHeight -= levelComponentSize / 4;
 				}
-				if (i > 0 && !levelComponents[i - 1][j].fireModelVector.isEmpty()) {
+				if (i > 0 && levelComponents[i - 1][j].hasFire()) {
 					fwTop = true;
 					fwHeight -= levelComponentSize / 4;
 				}
-				if (j < levelComponentLine.length - 1 && !levelComponents[i][j + 1].fireModelVector.isEmpty()) {
+				if (j < levelComponentLine.length - 1 && levelComponents[i][j + 1].hasFire()) {
 					fwWidth -= levelComponentSize / 4;
 				}
 
-				if (j > 1 && !levelComponents[i][j - 1].fireModelVector.isEmpty()) {
+				if (j > 1 && levelComponents[i][j - 1].hasFire()) {
 					fwLeft = true;
 					fwWidth -= levelComponentSize / 4;
 				}
@@ -250,7 +250,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			for (int j = 0, x = 0; j < levelComponentLine.length; j++, x += levelComponentSize) {
 				final LevelComponent levelComponent = levelComponentLine[j];
 
-				if (!levelComponent.fireModelVector.isEmpty()) {
+				if (levelComponent.hasFire()) {
 					return true;
 				}
 			}
@@ -268,19 +268,19 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 *            graphics context which will be used to paint in
 	 */
 	private void setWorkingParameters(final Graphics graphics) {
-		final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
-		final int originalLevelComponentSize = wallImageHandlers[0].getOriginalWidth(); // Equals
+		LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+		int originalLevelComponentSize = wallImageHandlers[0].getOriginalWidth(); // Equals
 		// to
 		// wallImageHandlers[
 		// 0
 		// ].getOriginalHeight()
 
-		final int sceneWidth = getWidth();
-		final int sceneHeight = getHeight();
+		int sceneWidth = getWidth();
+		int sceneHeight = getHeight();
 
-		final int levelWidth = levelComponents[0].length;
-		final int levelHeight = levelComponents.length;
-		final float zoomFactor = Math.min((float) sceneWidth / (levelWidth * originalLevelComponentSize), (float) sceneHeight
+		int levelWidth = levelComponents[0].length;
+		int levelHeight = levelComponents.length;
+		float zoomFactor = Math.min((float) sceneWidth / (levelWidth * originalLevelComponentSize), (float) sceneHeight
 		        / (levelHeight * originalLevelComponentSize));
 
 		levelComponentSize = (int) (originalLevelComponentSize * zoomFactor);
@@ -307,7 +307,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			for (int j = 0, x = 0; j < levelComponentLine.length; j++, x += levelComponentSize) {
 				final LevelComponent levelComponent = levelComponentLine[j];
 
-				if (levelComponent.fireModelVector.isEmpty()) {
+				if (!levelComponent.hasFire()) {
 					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) {
 						// item
 						g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
@@ -322,21 +322,21 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 							int fwLeftHeight = levelComponentSize;
 							int fwRightHeight = levelComponentSize;
 
-							if (i < levelComponents.length - 1 && !levelComponents[i + 1][j].fireModelVector.isEmpty()) {
+							if (i < levelComponents.length - 1 && levelComponents[i + 1][j].hasFire()) {
 								fwTop = true;
 								fwLeftHeight -= levelComponentSize / 4;
 								fwRightHeight -= levelComponentSize / 4;
 							}
-							if (i > 0 && !levelComponents[i - 1][j].fireModelVector.isEmpty()) {
+							if (i > 0 && levelComponents[i - 1][j].hasFire()) {
 								fwBottom = true;
 								fwLeftHeight -= levelComponentSize / 4;
 								fwRightHeight -= levelComponentSize / 4;
 							}
-							if (j < levelComponentLine.length - 1 && !levelComponents[i][j + 1].fireModelVector.isEmpty()) {
+							if (j < levelComponentLine.length - 1 && levelComponents[i][j + 1].hasFire()) {
 								fwRight = true;
 							}
 
-							if (j > 1 && !levelComponents[i][j - 1].fireModelVector.isEmpty()) {
+							if (j > 1 && levelComponents[i][j - 1].hasFire()) {
 								fwLeft = true;
 							}
 
@@ -361,7 +361,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 						}
 					}
 				} else {
-					final FireModel fireModel = levelComponent.fireModelVector.get(levelComponent.fireModelVector.size() - 1);
+					final FireModel fireModel = levelComponent.getLastFire();
 					final int firePhasesCount = firePhaseHandlers[fireModel.getShape().ordinal()].length;
 
 					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() == null) {
