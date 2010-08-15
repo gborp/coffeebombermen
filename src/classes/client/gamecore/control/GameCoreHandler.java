@@ -32,12 +32,8 @@ import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
 import classes.client.graphics.AnimationDatas;
 import classes.client.graphics.GraphicsManager;
-import classes.client.shrink.BinaryShrinkPerformer;
-import classes.client.shrink.BombShrinkPerformer;
 import classes.client.shrink.DefaultShrinkPerformer;
-import classes.client.shrink.MassKillShrinkPerformer;
 import classes.client.shrink.ShrinkPerformer;
-import classes.client.shrink.SpiderBombShrinkPerformer;
 import classes.client.sound.SoundEffect;
 import classes.options.Diseases;
 import classes.options.Consts.Items;
@@ -133,8 +129,10 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
-		        new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this) };
+		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this) };
+
+		// , new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),new
+		// SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this)
 
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
@@ -506,33 +504,60 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			}
 		}
 
-		shrinkPerformer.nextIteration();
+		if (hasMaxOneAlivePlayer()) {
+			shrinkPerformer.nextIteration();
+		}
 
 		// Now we damage players being in fire.
-		for (final PlayerModel[] playerModels : clientsPlayerModels)
-			for (final PlayerModel playerModel : playerModels)
-				if (playerModel.getActivity() != Activities.DYING) {
-					LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
-					int firesCount = comp.getFireCount();
-					if (!globalServerOptions.isMultipleFire() && firesCount > 1) {
-						firesCount = 1;
-					}
-					if (firesCount > 0) {
-						final int damage = firesCount
-						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
-						// for ceiling (can't flooring, cause 100% damage might
-						// cause remainder, would let the player live!)
-						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
-						if (playerModel.getVitality() <= 0) {
-							killPlayer(playerModel);
-						}
-					}
-
-					// the shrinking game area can cause the player die
-					if (comp.getWall() == Walls.DEATH) {
+		for (PlayerModel playerModel : getAllPlayerModels())
+			if (playerModel.getActivity() != Activities.DYING) {
+				LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
+				int firesCount = comp.getFireCount();
+				if (!globalServerOptions.isMultipleFire() && firesCount > 1) {
+					firesCount = 1;
+				}
+				if (firesCount > 0) {
+					int damage = firesCount * (int) (MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
+					// for ceiling (can't flooring, cause 100% damage might
+					// cause remainder, would let the player live!)
+					playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
+					if (playerModel.getVitality() <= 0) {
 						killPlayer(playerModel);
 					}
 				}
+
+				// the shrinking game area can cause the player die
+				if (comp.getWall() == Walls.DEATH) {
+					killPlayer(playerModel);
+				}
+			}
+	}
+
+	private List<PlayerModel> getAllPlayerModels() {
+		ArrayList<PlayerModel> result = new ArrayList<PlayerModel>();
+		for (PlayerModel[] playerModels : clientsPlayerModels) {
+			for (PlayerModel playerModel : playerModels) {
+				result.add(playerModel);
+			}
+		}
+
+		return result;
+	}
+
+	private boolean hasMaxOneAlivePlayer() {
+		int aliveCount = 0;
+		for (PlayerModel[] playerModels : clientsPlayerModels) {
+			for (PlayerModel playerModel : playerModels) {
+				if (playerModel.isAlive()) {
+					aliveCount++;
+					if (aliveCount > 1) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	private void killPlayer(PlayerModel playerModel) {
