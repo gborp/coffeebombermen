@@ -21,33 +21,36 @@ import classes.utils.MathHelper;
  * the static variable SoundEffect.volume to mute the sound.
  */
 public enum SoundEffect {
-	BOOM("boom"), PICKUP("pickup"), WOUND("wound"), KICK("kick"), HEAL("heal"), THROW("throw"), DIE("die"), PLACE_BOMB("placebomb"), START_MATCH("startmatch"), DEATH_WALL(
-	        "deathwall"), PLACE_WALL("placewall");
+	BOOM("boom", true), PICKUP("pickup", true), WOUND("wound", false), KICK("kick", true), HEAL("heal", false), THROW(
+			"throw", true), DIE("die", true), PLACE_BOMB("placebomb", true), START_MATCH(
+			"startmatch", true), DEATH_WALL("deathwall", false), PLACE_WALL("placewall", true);
 
 	// Nested class for specifying volume
 	public static enum Volume {
 		MUTE, LOW, MEDIUM, HIGH
 	}
 
-	public static Volume volume      = Volume.HIGH;
+	public static Volume volume = Volume.HIGH;
 
 	/**
 	 * If some effect should be played very frequent, then some must be ignored.
 	 * its in milisec
 	 */
-	private static int   MIN_LATENCY = 100;
+	private static int MIN_LATENCY = 1000000000;
 
 	// Each sound effect has its own clip, loaded with its own sound file.
-	private List<Clip>   lstClip;
-	private long         lastPlayTime;
+	private List<Clip> lstClip;
+	private long lastPlayTime;
 
-	private String       soundDirName;
-	private int          lastPlayIndex;
+	private String soundDirName;
+	private int lastPlayIndex;
+
+	private final boolean allowParalell;
 
 	// Constructor to construct each element of the enum with its own sound
 	// file.
-	SoundEffect(String soundDirName) {
-		this(soundDirName, true);
+	SoundEffect(String soundDirName, boolean allowParalell) {
+		this(soundDirName, allowParalell, true);
 	}
 
 	/**
@@ -56,8 +59,9 @@ public enum SoundEffect {
 	 *            Some sounds like wall are not cool when changing. Some like
 	 *            wound are cool.
 	 */
-	SoundEffect(String soundDirName, boolean roundRobin) {
+	SoundEffect(String soundDirName, boolean allowParalell, boolean roundRobin) {
 		this.soundDirName = soundDirName;
+		this.allowParalell = allowParalell;
 		lstClip = new ArrayList<Clip>();
 		lastPlayIndex = -1;
 		addClips();
@@ -65,9 +69,10 @@ public enum SoundEffect {
 
 	// Play or Re-play the sound effect from the beginning, by rewinding.
 	public void play() {
-		if (lastPlayTime + MIN_LATENCY > System.nanoTime()) {
+		if (!allowParalell && (lastPlayTime + MIN_LATENCY > System.nanoTime())) {
 			return;
 		}
+		lastPlayTime = System.nanoTime();
 		// no sound loaded
 		if (lstClip == null || lstClip.isEmpty()) {
 			return;
@@ -102,7 +107,6 @@ public enum SoundEffect {
 			if (!c.isRunning()) {
 				// clip.stop();
 				c.setFramePosition(0);
-				lastPlayTime = System.nanoTime();
 				c.start();
 				return;
 			}
@@ -115,10 +119,12 @@ public enum SoundEffect {
 	}
 
 	private void addClips() {
-		String path = classes.Consts.SOUND_DIRECTORY_NAME + SoundManager.getActiveSoundTheme() + "/" + soundDirName + "/";
+		String path = classes.Consts.SOUND_DIRECTORY_NAME
+				+ SoundManager.getActiveSoundTheme() + "/" + soundDirName + "/";
 		String[] fileNames = GeneralUtilities.getFileNames(path);
 		if (fileNames.length == 0) {
-			System.err.println("No file found while loading sound files from: " + path);
+			System.err.println("No file found while loading sound files from: "
+					+ path);
 			return;
 		}
 		for (String fileName : fileNames) {
@@ -129,18 +135,22 @@ public enum SoundEffect {
 				// URL url = this.getClass().getClassLoader().getResource(
 				// soundFileName);
 				// Set up an audio input stream piped from the sound file.
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(file));
+				AudioInputStream audioInputStream = AudioSystem
+						.getAudioInputStream(new File(file));
 				// Get a clip resource.
 				Clip clip = AudioSystem.getClip();
 				// Open audio clip and load samples from the audio input stream.
 				clip.open(audioInputStream);
 				lstClip.add(clip);
 			} catch (Exception ex) {
-				System.err.println("Cannot load sound file: " + file + " (" + ex.getLocalizedMessage() + ")");
+				System.err.println("Cannot load sound file: " + file + " ("
+						+ ex.getLocalizedMessage() + ")");
 			}
 		}
 		if (lstClip.size() == 0) {
-			System.err.println("All files ignored while loading sound files from: " + path);
+			System.err
+					.println("All files ignored while loading sound files from: "
+							+ path);
 			return;
 		}
 		if (lastPlayIndex < 0) {
