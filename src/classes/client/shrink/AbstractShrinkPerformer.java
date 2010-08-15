@@ -14,12 +14,11 @@ import classes.client.sound.SoundEffect;
 import classes.options.Consts.Items;
 import classes.options.Consts.Walls;
 import classes.options.model.ServerOptions;
-import classes.utils.MathHelper;
 
 public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 
 	private GameCoreHandler gameCoreHandler;
-	private long               lastShrinkOperationAt;
+	private long            lastShrinkOperationAt;
 
 	public AbstractShrinkPerformer(GameCoreHandler gameCoreHandler) {
 		this.gameCoreHandler = gameCoreHandler;
@@ -31,21 +30,21 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	}
 
 	public void nextIteration() {
-		nextIterationImpl();		
+		nextIterationImpl();
 	}
-	
+
 	protected void setLastShrinkOperationAt() {
 		lastShrinkOperationAt = getTick();
 	}
-	
+
 	public long getLastShrinkOperationAt() {
 		return lastShrinkOperationAt;
 	}
-	
+
 	protected GameCoreHandler getGameCoreHandler() {
 		return gameCoreHandler;
 	}
-	
+
 	protected ServerOptions getGlobalServerOptions() {
 		return gameCoreHandler.getGlobalServerOptions();
 	}
@@ -53,15 +52,15 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	protected Level getLevel() {
 		return gameCoreHandler.getLevel();
 	}
-	
+
 	protected int getWidth() {
 		return getLevel().getModel().getWidth();
 	}
-	
+
 	protected int getHeight() {
 		return getLevel().getModel().getHeight();
 	}
-	
+
 	protected Random getRandom() {
 		return getGameCoreHandler().getRandom();
 	}
@@ -75,7 +74,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	}
 
 	protected boolean isTimeToNextShrink(int frequency) {
-		return  ((getTick() - getLastShrinkOperationAt()) > frequency);
+		return ((getTick() - getLastShrinkOperationAt()) > frequency);
 	}
 
 	protected boolean isTimeToShrink() {
@@ -103,10 +102,8 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
-		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY
-				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
-		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY
-				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
 		newBombModel.setRange(range);
 		newBombModel.setPhase(phase);
 		newBombModel.setDirection(direction);
@@ -118,21 +115,20 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
 		newBombModel.setCrazyPercent(0.5f);
-		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY
-				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
-		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY
-				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
 		newBombModel.setRange(range);
 		newBombModel.setPhase(BombPhases.ROLLING);
 		getGameCoreHandler().addNewBomb(newBomb);
 
 		// search for a direction open for roll
-		int direction = getRandom().nextInt(4); 
+		int direction = getRandom().nextInt(4);
 		GameCoreHandler mc = getGameCoreHandler();
 		int directionDif = 0;
 		while (directionDif < 4) {
 			Directions d = Directions.get((direction + directionDif) % 4);
-			if (mc.canBombRollToComponentPosition( newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY() + d.getYMultiplier() )) {
+			if (mc.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY()
+			        + d.getYMultiplier())) {
 				newBombModel.setDirection(d);
 				return;
 			}
@@ -148,27 +144,26 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	protected void setItem(Items item) {
 		getGameCoreHandler().replaceItemOnLevel(item);
 	}
-	
+
 	protected void addDetonatingOnHitBomb(int x, int y, int range) {
 		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
 		newBombModel.setDetonatingOnHit(true);
-		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY
-				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
-		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY
-				+ Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
 		newBombModel.setRange(range);
 		newBombModel.setPhase(BombPhases.ROLLING);
 		getGameCoreHandler().addNewBomb(newBomb);
 
 		// search for a direction open for roll
-		int direction = getRandom().nextInt(4); 
+		int direction = getRandom().nextInt(4);
 		GameCoreHandler mc = getGameCoreHandler();
 		int directionDif = 0;
 		while (directionDif < 4) {
 			Directions d = Directions.get((direction + directionDif) % 4);
-			if (mc.canBombRollToComponentPosition( newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY() + d.getYMultiplier() )) {
+			if (mc.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY()
+			        + d.getYMultiplier())) {
 				newBombModel.setDirection(d);
 				return;
 			}
