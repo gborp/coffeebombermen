@@ -301,4 +301,8 @@ public class PlayerModel extends PositionedIterableObject {
 		this.name = name;
 	}
 
+	public boolean isAlive() {
+		return vitality > 0;
+	}
+
 }
