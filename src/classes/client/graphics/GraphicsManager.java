@@ -365,9 +365,9 @@ public class GraphicsManager {
 			}
 		}
 
-		for (int player = 0; player < 6; player++) {
+		for (int player = 0; player < 7; player++) {
 
-			ImageHandler[][] phaseHandlers = getOnePlayerGraphic(fileName + Integer.toString(player + 1) + BOMBERMAN_PHASES_FILE_NAME_POSTFIX, width, height,
+			ImageHandler[][] phaseHandlers = getOnePlayerGraphic(fileName + Integer.toString(player) + BOMBERMAN_PHASES_FILE_NAME_POSTFIX, width, height,
 			        phasesCounts, player);
 			ImageHandler[][][] bombermanPhaseHandlers = new ImageHandler[activityPhasesCounts.length][DIRECTIONS_COUNT][];
 

@@ -43,7 +43,13 @@ import classes.options.model.PublicClientOptions;
 public class GameSceneComponent extends JComponent implements KeyListener, OptionsChangeListener<ClientOptions> {
 
 	/** A string containing only a space. Used several times on keyboard events. */
-	private static final String                 SPACE_STRING       = " ";
+	private static final String                 SPACE_STRING             = " ";
+
+	private static final int                    PLAYER_GFX_FLASH         = 0;
+	private static final int                    PLAYER_GFX_COLOR_BLIND   = 1;
+	private static final int                    PLAYER_GFX_NORMAL_OFFSET = 2;
+
+	private static final long                   FLASH_EVERY_NTH_TICK     = 4;
 
 	/** Reference to the client options manager. */
 	private final OptionsManager<ClientOptions> clientOptionsManager;
@@ -85,10 +91,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 	private final Client                        client;
 
-	private AlphaComposite                      normalComposit     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
-	private AlphaComposite                      infectedComposite  = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .50f);
-	private AlphaComposite                      blackoutComposite  = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
-	private AlphaComposite                      fireLightComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
+	private AlphaComposite                      normalComposit           = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+	private AlphaComposite                      infectedComposite        = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+	private AlphaComposite                      blackoutComposite        = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
+	private AlphaComposite                      fireLightComposite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
 
 	/**
 	 * Creates a new GameSceneComponent.
@@ -481,10 +487,12 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		Graphics2D g2 = (Graphics2D) graphics;
 
 		for (int j = 0; j < playerModels.length; j++) {
-			playerNumberForGfx++;
 			if (playerNumberForGfx == playerGraphics.size()) {
 				playerNumberForGfx = 0;
 			}
+			int effectivePlayerNumberForGx = playerNumberForGfx + PLAYER_GFX_NORMAL_OFFSET;
+			playerNumberForGfx++;
+
 			final PlayerModel playerModel = playerModels[j];
 			if (playerModel.getActivity() == Activities.DYING && playerModel.getIterationCounter() + 1 >= playerModel.getActivity().activityIterations) {
 				// This is a dead player, must not be painted.
@@ -496,19 +504,19 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			}
 
 			if (colorBlind) {
-				playerNumberForGfx = 0;
+				effectivePlayerNumberForGx = PLAYER_GFX_COLOR_BLIND;
 			}
-			final Image bombermanImage = playerGraphics.get(playerNumberForGfx).getImage(playerModel, scaleFactor);
 
 			if (playerModel.hasDiseases()) {
-				if ((modelProvider.getTick() & 8) == 0) {
+				if ((modelProvider.getTick() % FLASH_EVERY_NTH_TICK) == 0) {
 					g2.setComposite(infectedComposite);
-				} else {
-					g2.setComposite(normalComposit);
+					effectivePlayerNumberForGx = PLAYER_GFX_FLASH;
 				}
-			} else {
-				g2.setComposite(normalComposit);
 			}
+
+			Image bombermanImage = playerGraphics.get(effectivePlayerNumberForGx).getImage(playerModel, scaleFactor);
+
+			g2.setComposite(normalComposit);
 
 			int playerX = playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
 			int playerY = playerModel.getPosY() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
