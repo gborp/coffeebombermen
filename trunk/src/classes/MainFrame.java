@@ -30,7 +30,7 @@ import classes.utils.GeneralStringTokenizer;
  * This is the main window, the main frame of the game. It contains references
  * to the components of the main frame.
  */
-public class MainFrame extends JFrame implements ActionListener, MessageConsole, KeyListener, MouseListener {
+public class MainFrame extends JFrame implements ActionListener, KeyListener, MouseListener {
 
 	/**
 	 * Split pane to slit the messages text area and the rest of the window
@@ -81,6 +81,7 @@ public class MainFrame extends JFrame implements ActionListener, MessageConsole,
 
 		setMainComponent(new JLabel("No graphical theme has been loaded...", JLabel.CENTER));
 
+		messagesTextArea.setRows(5);
 		messagesTextArea.setEditable(false);
 		messagesTextArea.setLineWrap(true);
 		newMessageTextField.addActionListener(this);
