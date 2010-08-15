@@ -52,8 +52,6 @@ import classes.utils.MathHelper;
 /**
  * The class which handles the core of the game: manages rounds and the running
  * of a game.
- * 
- * @author Andras Belicza
  */
 public class GameCoreHandler implements ModelProvider, ModelController {
 

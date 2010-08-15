@@ -12,8 +12,6 @@ import classes.options.model.ServerOptions;
 
 /**
  * Interface that defines methods to control and operate on the game model.
- * 
- * @author Andras Belicza
  */
 interface ModelController {
 

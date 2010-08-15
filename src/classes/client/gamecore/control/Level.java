@@ -18,8 +18,6 @@ import classes.utils.GeneralUtilities;
 
 /**
  * The control layer of the level.
- * 
- * @author Andras Belicza
  */
 public class Level {
 
@@ -110,8 +108,8 @@ public class Level {
 			// delayed multiple
 			// fire).
 			if (modelController.getGlobalServerOptions().getGettingItemProbability() > modelController.getRandom().nextInt(100))
-				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(modelController.getGlobalServerOptions().getLevelOptions().getItemWeights(),
-				        modelController.getRandom())]);
+				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(modelController.getGlobalServerOptions().getLevelOptions()
+				        .getItemWeights(), modelController.getRandom())]);
 	}
 
 	/**

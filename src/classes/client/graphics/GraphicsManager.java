@@ -1,7 +1,3 @@
-/*
- * Created on August 29, 2004
- */
-
 package classes.client.graphics;
 
 import static classes.Consts.GRAPHICS_DIRECTORY_NAME;
@@ -32,8 +28,6 @@ import classes.utils.GeneralUtilities;
 /**
  * Manages the graphic resources of the game.<br>
  * Provides a list of available graphic themes, and can load them.
- * 
- * @author Andras Belicza
  */
 public class GraphicsManager {
 

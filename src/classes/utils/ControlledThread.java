@@ -1,7 +1,3 @@
-/*
- * Created on August 3, 2004
- */
-
 package classes.utils;
 
 /**
@@ -11,8 +7,6 @@ package classes.utils;
  * The run method of the inharitar classes must be constructed to listen to the
  * requestedToCancel attribute, and when it's true, must terminate running as
  * soon as possible.
- * 
- * @author Andras Belicza
  */
 public abstract class ControlledThread extends Thread {
 

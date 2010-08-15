@@ -38,8 +38,6 @@ import classes.utils.MathHelper;
 /**
  * The class implements the control of a player of the GAME (NOT the the
  * application): its calculation, simulation during working and playing.
- * 
- * @author Andras Belicza
  */
 public class Player {
 

@@ -1,7 +1,3 @@
-/*
- * Created on July 3, 2004
- */
-
 package classes;
 
 import static classes.Consts.LEVELS_DIRECTORY_NAME;
@@ -44,8 +40,6 @@ import classes.utils.DataTextFileReader;
  * <LI>Handles the game corses and states, and connects the GUI of game and the
  * game core (game logic) (to each other)
  * </UL>
- * 
- * @author Andras Belicza
  */
 public class GameManager implements MainMenuHandler, OptionsChangeListener<ClientOptions> {
 

@@ -1,7 +1,3 @@
-/*
- * Created on July 9, 2004
- */
-
 package classes;
 
 import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
@@ -18,15 +14,11 @@ import classes.utils.GeneralStringTokenizer;
 
 /**
  * This is the main menu bar of the game.
- * 
- * @author Andras Belicza
  */
 public class MainMenuBar extends JMenuBar implements ActionListener {
 
 	/**
 	 * This is a menu item descriptor class.
-	 * 
-	 * @author Andras Belicza
 	 */
 	private static class MID {
 
@@ -119,8 +111,6 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 	/**
 	 * The list of menu items.
-	 * 
-	 * @author Andras Belicza
 	 */
 	protected enum MenuItems {
 		/** Create menu item. */
@@ -165,8 +155,6 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 	/**
 	 * The states of the game.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum GameStates {
 		/** Idle state, no game running. */

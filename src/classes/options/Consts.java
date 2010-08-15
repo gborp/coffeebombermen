@@ -10,8 +10,6 @@ import java.util.EnumSet;
 
 /**
  * Holds constants needed for the options and can be public.
- * 
- * @author Andras Belicza
  */
 public class Consts {
 
@@ -108,8 +106,6 @@ public class Consts {
 
 	/**
 	 * Keys which can be used to control a bomberman.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum PlayerControlKeys {
 		/** Control key to move bomberman up. */
@@ -128,8 +124,6 @@ public class Consts {
 
 	/**
 	 * The available items in the game.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum Items {
 		/** The Fire item. */
@@ -256,8 +250,6 @@ public class Consts {
 
 	/**
 	 * The walls of the level.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum Walls {
 		/** Empty wall. */
@@ -307,8 +299,6 @@ public class Consts {
 
 	/**
 	 * The available diseases in the game.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum Diseases {
 		/** The Ceasefire disease. */
@@ -381,8 +371,6 @@ public class Consts {
 
 	/**
 	 * The available game types in the game.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum GameTypes {
 		/** Free for all game type. */
@@ -403,8 +391,6 @@ public class Consts {
 
 	/**
 	 * Possibilities for distributing the killing points when bombermen die.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum KillsBelongTos {
 		/** Kills belong to the owner of killer bomb. */
@@ -425,8 +411,6 @@ public class Consts {
 
 	/**
 	 * Possible network latencies.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum NetworkLatencies {
 		/** Low network latency. */
@@ -454,8 +438,6 @@ public class Consts {
 
 	/**
 	 * Game scene refresh modes.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum SceneRefreshModes {
 		/** Low network latency. */
@@ -483,8 +465,6 @@ public class Consts {
 
 	/**
 	 * Image scaling algorithms.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum ImageScalingAlgorithms {
 		/** Fast image scaling algorithm. */

@@ -1,7 +1,3 @@
-/*
- * Created on July 17, 2004
- */
-
 package classes.options;
 
 import static classes.options.Consts.NEUTRALIZER_ITEMS_MAP;
@@ -24,8 +20,6 @@ import classes.options.model.LevelOptions;
  * This class makes the level options available for viewing and changing on the
  * screen.<br>
  * The manageable level options is passed to the constructor.
- * 
- * @author Andras Belicza
  */
 public class LevelComponentOptions extends ComponentOptions<LevelOptions> implements ItemListener {
 

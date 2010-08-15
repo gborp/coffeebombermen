@@ -1,7 +1,3 @@
-/*
- * Created on March 30, 2005
- */
-
 package classes.client.gamecore.view;
 
 import javax.swing.SwingUtilities;
@@ -14,8 +10,6 @@ import classes.options.model.ClientOptions;
 
 /**
  * A main component handler where the main comonent is the game scene component.
- * 
- * @author Andras Belicza
  */
 public class GameSceneMainComponentHandler implements MainComponentHandler {
 

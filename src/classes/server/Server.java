@@ -1,7 +1,3 @@
-/*
- * Created on August 3, 2004
- */
-
 package classes.server;
 
 import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
@@ -61,15 +57,11 @@ import classes.utils.TimedIterableControlledThread;
  * sends the level.
  * <li>The server sends the Client.Commands.STARTING_NEXT_ROUND command.
  * </ol>
- * 
- * @author Andras Belicza
  */
 public class Server extends TimedIterableControlledThread implements OptionsChangeListener<ServerOptions> {
 
 	/**
 	 * Commands to be sent to the server, interpreted by us.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum Commands {
 		/** Message command. */

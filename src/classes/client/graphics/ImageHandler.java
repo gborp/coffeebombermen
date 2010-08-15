@@ -1,7 +1,3 @@
-/*
- * Created on August 28, 2004
- */
-
 package classes.client.graphics;
 
 import java.awt.Graphics2D;
@@ -24,8 +20,6 @@ import classes.options.model.ClientOptions;
  * picture is required between 2 requests. Also handles the minimal image loss
  * between the several scaling by storing the original image, and making scaled
  * version from it.
- * 
- * @author Andras Belicza
  */
 public class ImageHandler {
 

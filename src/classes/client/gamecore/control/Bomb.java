@@ -21,8 +21,6 @@ import classes.utils.MathHelper;
 
 /**
  * The control layer of the bombs.
- * 
- * @author Andras Belicza
  */
 public class Bomb {
 
@@ -199,36 +197,24 @@ public class Bomb {
 				break;
 
 			case ROLLING:
-			if (modelController.canBombRollToComponentPosition(model,
-					model.getComponentPosX() + model.getDirectionXMultiplier(),
-					model.getComponentPosY() + model.getDirectionYMultiplier())) {
-				if (MathHelper.checkRandomEvent(model.getCrazyPercent()
-						/ (LEVEL_COMPONENT_GRANULARITY / BOMB_ROLLING_SPEED))) {
-					Directions newDirection = Directions.values()[modelController
-							.getRandom().nextInt(Directions.values().length)];
-					if (newDirection.equals(model.getDirection())
-							|| newDirection.equals(model.getDirection()
-									.getOpposite())) {
-						newDirection = newDirection.getTurnLeft();
+				if (modelController.canBombRollToComponentPosition(model, model.getComponentPosX() + model.getDirectionXMultiplier(), model.getComponentPosY()
+				        + model.getDirectionYMultiplier())) {
+					if (MathHelper.checkRandomEvent(model.getCrazyPercent() / (LEVEL_COMPONENT_GRANULARITY / BOMB_ROLLING_SPEED))) {
+						Directions newDirection = Directions.values()[modelController.getRandom().nextInt(Directions.values().length)];
+						if (newDirection.equals(model.getDirection()) || newDirection.equals(model.getDirection().getOpposite())) {
+							newDirection = newDirection.getTurnLeft();
+						}
+						if (modelController.canBombRollToComponentPosition(model, model.getComponentPosX() + newDirection.getXMultiplier(), model
+						        .getComponentPosY()
+						        + newDirection.getYMultiplier())) {
+							model.setDirection(newDirection);
+						}
 					}
-					if (modelController.canBombRollToComponentPosition(
-							model,
-							model.getComponentPosX()
-									+ newDirection.getXMultiplier(),
-							model.getComponentPosY()
-									+ newDirection.getYMultiplier())) {
-						model.setDirection(newDirection);
-					}
-				}
 
-				model.setPosX(model.getPosX() + BOMB_ROLLING_SPEED
-						* model.getDirectionXMultiplier());
-				model.setPosY(model.getPosY() + BOMB_ROLLING_SPEED
-						* model.getDirectionYMultiplier());
+					model.setPosX(model.getPosX() + BOMB_ROLLING_SPEED * model.getDirectionXMultiplier());
+					model.setPosY(model.getPosY() + BOMB_ROLLING_SPEED * model.getDirectionYMultiplier());
 
-				final LevelComponent levelComponent = modelProvider
-						.getLevelModel().getComponents()[model
-						.getComponentPosY()][model.getComponentPosX()];
+					final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
 					if (levelComponent.getItem() != null)
 						levelComponent.setItem(null);
 				} else {
