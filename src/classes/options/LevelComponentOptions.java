@@ -100,9 +100,9 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 	private final EnumMap<Items, JCheckBox> hasNonAccumulateableItemsMap_cs      = new EnumMap<Items, JCheckBox>(Items.class);
 
 	/** Components for item weights. */
-	private final JSpinner[]                itemWeights_cs                       = new JSpinner[options.itemWeights.length];
+	private final JSpinner[]                itemWeights_cs                       = new JSpinner[options.getItemWeights().length];
 	/** Components for disease weights. */
-	private final JSpinner[]                diseaseWeights_cs                    = new JSpinner[options.diseaseWeights.length];
+	private final JSpinner[]                diseaseWeights_cs                    = new JSpinner[options.getDiseaseWeights().length];
 
 	/**
 	 * Creates a new LevelComponentOptions.<br>
@@ -127,7 +127,7 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 	public LevelComponentOptions(final LevelOptions levelOptions, final boolean viewOnly) {
 		super(levelOptions);
 
-		for (final Items item : options.accumulateableItemQuantitiesMap.keySet()) {
+		for (final Items item : options.getAccumulateableItemQuantitiesMap().keySet()) {
 			int defaultQuantity = MINIMUM_ACCUMULATEABLE_ITEM_QUANTITY;
 			int maximumQuantity = MAXIMUM_ACCUMULATEABLE_ITEM_QUANTITY;
 			switch (item) {
@@ -145,7 +145,7 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 			        maximumQuantity, 1)));
 		}
 
-		for (final Items item : options.hasNonAccumulateableItemsMap.keySet()) {
+		for (final Items item : options.getHasNonAccumulateableItemsMap().keySet()) {
 			final JCheckBox checkBox = new JCheckBox(item.toString());
 			checkBox.addItemListener(this);
 			hasNonAccumulateableItemsMap_cs.put(item, checkBox);
@@ -269,18 +269,18 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 	public LevelOptions getOptionsFromComponents() {
 		final LevelOptions levelOptions = new LevelOptions();
 
-		levelOptions.levelWidth = (Integer) levelWidth_c.getValue();
-		levelOptions.levelHeight = (Integer) levelHeight_c.getValue();
+		levelOptions.setLevelWidth((Integer) levelWidth_c.getValue());
+		levelOptions.setLevelHeight((Integer) levelHeight_c.getValue());
 
-		for (final Items item : levelOptions.accumulateableItemQuantitiesMap.keySet())
-			levelOptions.accumulateableItemQuantitiesMap.put(item, (Integer) accumulateableItemQuantitiesMap_cs.get(item).getValue());
-		for (final Items item : levelOptions.hasNonAccumulateableItemsMap.keySet())
-			levelOptions.hasNonAccumulateableItemsMap.put(item, hasNonAccumulateableItemsMap_cs.get(item).isSelected());
+		for (final Items item : levelOptions.getAccumulateableItemQuantitiesMap().keySet())
+			levelOptions.getAccumulateableItemQuantitiesMap().put(item, (Integer) accumulateableItemQuantitiesMap_cs.get(item).getValue());
+		for (final Items item : levelOptions.getHasNonAccumulateableItemsMap().keySet())
+			levelOptions.getHasNonAccumulateableItemsMap().put(item, hasNonAccumulateableItemsMap_cs.get(item).isSelected());
 
-		for (int i = 0; i < levelOptions.itemWeights.length; i++)
-			levelOptions.itemWeights[i] = (Integer) itemWeights_cs[i].getValue();
-		for (int i = 0; i < levelOptions.diseaseWeights.length; i++)
-			levelOptions.diseaseWeights[i] = (Integer) diseaseWeights_cs[i].getValue();
+		for (int i = 0; i < levelOptions.getItemWeights().length; i++)
+			levelOptions.getItemWeights()[i] = (Integer) itemWeights_cs[i].getValue();
+		for (int i = 0; i < levelOptions.getDiseaseWeights().length; i++)
+			levelOptions.getDiseaseWeights()[i] = (Integer) diseaseWeights_cs[i].getValue();
 
 		return levelOptions;
 	}
@@ -290,18 +290,18 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 	 * components.
 	 */
 	public void synchronizeComponentsToOptions() {
-		levelWidth_c.setValue(options.levelWidth);
-		levelHeight_c.setValue(options.levelHeight);
+		levelWidth_c.setValue(options.getLevelWidth());
+		levelHeight_c.setValue(options.getLevelHeight());
 
 		for (final Items item : accumulateableItemQuantitiesMap_cs.keySet())
-			accumulateableItemQuantitiesMap_cs.get(item).setValue(options.accumulateableItemQuantitiesMap.get(item));
+			accumulateableItemQuantitiesMap_cs.get(item).setValue(options.getAccumulateableItemQuantitiesMap().get(item));
 		for (final Items item : hasNonAccumulateableItemsMap_cs.keySet())
-			hasNonAccumulateableItemsMap_cs.get(item).setSelected(options.hasNonAccumulateableItemsMap.get(item));
+			hasNonAccumulateableItemsMap_cs.get(item).setSelected(options.getHasNonAccumulateableItemsMap().get(item));
 
 		for (int i = 0; i < itemWeights_cs.length; i++)
-			itemWeights_cs[i].setValue(options.itemWeights[i]);
+			itemWeights_cs[i].setValue(options.getItemWeights()[i]);
 		for (int i = 0; i < diseaseWeights_cs.length; i++)
-			diseaseWeights_cs[i].setValue(options.diseaseWeights[i]);
+			diseaseWeights_cs[i].setValue(options.getDiseaseWeights()[i]);
 	}
 
 	/**
