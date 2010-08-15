@@ -2,6 +2,7 @@ package classes.client.shrink;
 
 import classes.client.gamecore.control.GameCoreHandler;
 import classes.client.sound.SoundEffect;
+import classes.options.Shrinkers;
 import classes.options.Consts.Walls;
 import classes.options.model.ServerOptions;
 import classes.utils.MathHelper;
@@ -34,6 +35,10 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
 	public DefaultShrinkPerformer(GameCoreHandler gameCoreHandler) {
 		super(gameCoreHandler);
+	}
+
+	public Shrinkers getType() {
+		return Shrinkers.Default;
 	}
 
 	protected void initNextRoundImpl() {

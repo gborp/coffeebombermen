@@ -222,7 +222,6 @@ public class GraphicsManager {
 		});
 
 		int r = (int) (Math.random() * files.length);
-		System.out.println("GraphicsManager.getRandomGraphicsFileName() " + r);
 		return files[r].getPath();
 	}
 

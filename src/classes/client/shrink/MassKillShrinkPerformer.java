@@ -1,6 +1,7 @@
 package classes.client.shrink;
 
 import classes.client.gamecore.control.GameCoreHandler;
+import classes.options.Shrinkers;
 
 public class MassKillShrinkPerformer extends AbstractShrinkPerformer {
 
@@ -8,8 +9,11 @@ public class MassKillShrinkPerformer extends AbstractShrinkPerformer {
 		super(gameCoreHandler);
 	}
 
-	protected void initNextRoundImpl() {
+	public Shrinkers getType() {
+		return Shrinkers.MassKill;
 	}
+
+	protected void initNextRoundImpl() {}
 
 	protected void nextIterationImpl() {
 		if (isTimeToShrink() && isTimeToFirstShrink()) {

@@ -242,7 +242,7 @@ public class Player {
 	}
 
 	private void processDiseaseEffects() {
-		if (model.getOwnedDiseases().keySet().contains(Diseases.BOMB_SHITTING)) {
+		if (model.hasDisease(Diseases.BOMB_SHITTING)) {
 			handleFunction1WithoutBomb();
 		}
 	}
@@ -332,7 +332,7 @@ public class Player {
 	 * Items.BLUE_GLOVES, then we pick up the bomb being under us.
 	 */
 	private void handleFunction1WithoutBomb() {
-		if (model.getOwnedDiseases().containsKey(Diseases.CEASEFIRE)) {
+		if (model.hasDisease(Diseases.CEASEFIRE)) {
 			return;
 		}
 
