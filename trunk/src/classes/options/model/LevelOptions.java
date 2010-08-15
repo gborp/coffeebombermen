@@ -20,19 +20,19 @@ import classes.utils.MathHelper;
 public class LevelOptions extends Options<LevelOptions> {
 
 	/** Width of level in level component. */
-	public int                     levelWidth;
+	private int                     levelWidth;
 	/** Height of level in level component. */
-	public int                     levelHeight;
+	private int                     levelHeight;
 
 	/** Quantities of the accumulateable items at the beginning. */
-	public EnumMap<Items, Integer> accumulateableItemQuantitiesMap = new EnumMap<Items, Integer>(Items.class);
+	private EnumMap<Items, Integer> accumulateableItemQuantitiesMap = new EnumMap<Items, Integer>(Items.class);
 	/** Tells whether we have the non-accumulateable items at the beginning. */
-	public EnumMap<Items, Boolean> hasNonAccumulateableItemsMap    = new EnumMap<Items, Boolean>(Items.class);
+	private EnumMap<Items, Boolean> hasNonAccumulateableItemsMap    = new EnumMap<Items, Boolean>(Items.class);
 
 	/** The weights of the items. */
-	public int[]                   itemWeights                     = new int[Items.values().length];
+	private int[]                   itemWeights                     = new int[Items.values().length];
 	/** The weights of the diseases. */
-	public int[]                   diseaseWeights                  = new int[Diseases.values().length];
+	private int[]                   diseaseWeights                  = new int[Diseases.values().length];
 
 	/**
 	 * Creates a new LevelOptions. Adds entries to
@@ -40,23 +40,23 @@ public class LevelOptions extends Options<LevelOptions> {
 	 */
 	public LevelOptions() {
 		for (final Items accumulateableItem : ACCUMULATEABLE_ITEMS)
-			accumulateableItemQuantitiesMap.put(accumulateableItem, new Integer(0));
+			getAccumulateableItemQuantitiesMap().put(accumulateableItem, new Integer(0));
 
 		for (final Items item : Items.values())
 			if (!ACCUMULATEABLE_ITEMS.contains(item))
-				hasNonAccumulateableItemsMap.put(item, new Boolean(false));
+				getHasNonAccumulateableItemsMap().put(item, new Boolean(false));
 	}
 
 	public Diseases getRandomDisease() {
 		int allWeight = 0;
-		for (int w : diseaseWeights) {
+		for (int w : getDiseaseWeights()) {
 			allWeight += w;
 		}
 
 		int whichDisease = MathHelper.randomInt(allWeight);
 
 		int i = 0;
-		for (int w : diseaseWeights) {
+		for (int w : getDiseaseWeights()) {
 			whichDisease -= w;
 			if (whichDisease <= 0) {
 				return Diseases.values()[i];
@@ -74,22 +74,22 @@ public class LevelOptions extends Options<LevelOptions> {
 	public String packToString() {
 		final StringBuilder buffer = new StringBuilder();
 
-		buffer.append(levelWidth).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(levelHeight).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(getLevelWidth()).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(getLevelHeight()).append(GENERAL_SEPARATOR_CHAR);
 
-		for (final Integer accumulateableItemQuantity : accumulateableItemQuantitiesMap.values()) {
+		for (final Integer accumulateableItemQuantity : getAccumulateableItemQuantitiesMap().values()) {
 			buffer.append(accumulateableItemQuantity.intValue()).append(GENERAL_SEPARATOR_CHAR);
 		}
 
-		for (final Boolean hasNonAccumulateableItem : hasNonAccumulateableItemsMap.values()) {
+		for (final Boolean hasNonAccumulateableItem : getHasNonAccumulateableItemsMap().values()) {
 			buffer.append(hasNonAccumulateableItem.booleanValue()).append(GENERAL_SEPARATOR_CHAR);
 		}
 
-		for (final int itemWeight : itemWeights) {
+		for (final int itemWeight : getItemWeights()) {
 			buffer.append(itemWeight).append(GENERAL_SEPARATOR_CHAR);
 		}
 
-		for (final int diseaseWeight : diseaseWeights) {
+		for (final int diseaseWeight : getDiseaseWeights()) {
 			buffer.append(diseaseWeight).append(GENERAL_SEPARATOR_CHAR);
 		}
 
@@ -107,22 +107,22 @@ public class LevelOptions extends Options<LevelOptions> {
 		final LevelOptions levelOptions = new LevelOptions();
 		final GeneralStringTokenizer optionsTokenizer = new GeneralStringTokenizer(source);
 
-		levelOptions.levelWidth = optionsTokenizer.nextIntToken();
-		levelOptions.levelHeight = optionsTokenizer.nextIntToken();
+		levelOptions.setLevelWidth(optionsTokenizer.nextIntToken());
+		levelOptions.setLevelHeight(optionsTokenizer.nextIntToken());
 
 		for (final Items accumulateableItem : ACCUMULATEABLE_ITEMS)
-			levelOptions.accumulateableItemQuantitiesMap.put(accumulateableItem, optionsTokenizer.nextIntToken());
+			levelOptions.getAccumulateableItemQuantitiesMap().put(accumulateableItem, optionsTokenizer.nextIntToken());
 
 		for (final Items item : Items.values())
 			if (!ACCUMULATEABLE_ITEMS.contains(item))
-				levelOptions.hasNonAccumulateableItemsMap.put(item, optionsTokenizer.nextBooleanToken());
+				levelOptions.getHasNonAccumulateableItemsMap().put(item, optionsTokenizer.nextBooleanToken());
 
-		for (int i = 0; i < levelOptions.itemWeights.length; i++)
-			levelOptions.itemWeights[i] = optionsTokenizer.nextIntToken();
+		for (int i = 0; i < levelOptions.getItemWeights().length; i++)
+			levelOptions.getItemWeights()[i] = optionsTokenizer.nextIntToken();
 
-		for (int i = 0; i < levelOptions.diseaseWeights.length; i++) {
+		for (int i = 0; i < levelOptions.getDiseaseWeights().length; i++) {
 			if (optionsTokenizer.hasRemainingString()) {
-				levelOptions.diseaseWeights[i] = optionsTokenizer.nextIntToken();
+				levelOptions.getDiseaseWeights()[i] = optionsTokenizer.nextIntToken();
 			}
 		}
 
@@ -140,5 +140,53 @@ public class LevelOptions extends Options<LevelOptions> {
 	public LevelOptions dynamicParseFromString(final String source) {
 		return parseFromString(source);
 	}
+
+	public void setLevelWidth(int levelWidth) {
+	    this.levelWidth = levelWidth;
+    }
+
+	public int getLevelWidth() {
+	    return levelWidth;
+    }
+
+	public void setLevelHeight(int levelHeight) {
+	    this.levelHeight = levelHeight;
+    }
+
+	public int getLevelHeight() {
+	    return levelHeight;
+    }
+
+	public void setAccumulateableItemQuantitiesMap(EnumMap<Items, Integer> accumulateableItemQuantitiesMap) {
+	    this.accumulateableItemQuantitiesMap = accumulateableItemQuantitiesMap;
+    }
+
+	public EnumMap<Items, Integer> getAccumulateableItemQuantitiesMap() {
+	    return accumulateableItemQuantitiesMap;
+    }
+
+	public void setHasNonAccumulateableItemsMap(EnumMap<Items, Boolean> hasNonAccumulateableItemsMap) {
+	    this.hasNonAccumulateableItemsMap = hasNonAccumulateableItemsMap;
+    }
+
+	public EnumMap<Items, Boolean> getHasNonAccumulateableItemsMap() {
+	    return hasNonAccumulateableItemsMap;
+    }
+
+	public void setItemWeights(int[] itemWeights) {
+	    this.itemWeights = itemWeights;
+    }
+
+	public int[] getItemWeights() {
+	    return itemWeights;
+    }
+
+	public void setDiseaseWeights(int[] diseaseWeights) {
+	    this.diseaseWeights = diseaseWeights;
+    }
+
+	public int[] getDiseaseWeights() {
+	    return diseaseWeights;
+    }
 
 }

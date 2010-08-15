@@ -117,8 +117,8 @@ public class Player {
 		model.setVitality(MAX_PLAYER_VITALITY);
 		model.setPickedUpBombModel(null);
 
-		model.accumulateableItemQuantitiesMap.putAll(modelProvider.getLevelModel().getLevelOptions().accumulateableItemQuantitiesMap);
-		model.hasNonAccumulateableItemsMap.putAll(modelProvider.getLevelModel().getLevelOptions().hasNonAccumulateableItemsMap);
+		model.accumulateableItemQuantitiesMap.putAll(modelProvider.getLevelModel().getLevelOptions().getAccumulateableItemQuantitiesMap());
+		model.hasNonAccumulateableItemsMap.putAll(modelProvider.getLevelModel().getLevelOptions().getHasNonAccumulateableItemsMap());
 		model.pickedUpAccumulateableItems.clear();
 		model.pickedUpNonAccumulateableItems.clear();
 		model.setPlaceableWalls(0);
