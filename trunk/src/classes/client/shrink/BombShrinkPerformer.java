@@ -23,7 +23,7 @@ public class BombShrinkPerformer extends AbstractShrinkPerformer {
 	protected void nextIterationImpl() {
 		if (isTimeToShrink()) {
 			if (isTimeToFirstShrink()
-					|| isTimeToNextShrink(getGlobalServerOptions().gameCycleFrequency
+					|| isTimeToNextShrink(getGlobalServerOptions().getGameCycleFrequency()
 							* GAME_CYCLE_FREQUENCY_MULTIPLIER)) {
 				for (int i = 0; i < numberOfBombs; i++) {
 					int x = getRandom().nextInt(getWidth() - 3) + 1;

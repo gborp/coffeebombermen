@@ -225,7 +225,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		final ClientOptions clientOptions = clientOptionsManager.getOptions();
 		Socket socket;
 		try {
-			socket = serverOptions == null ? new Socket(clientOptions.serverURL, clientOptions.gamePort) : new Socket("localhost", serverOptions.gamePort);
+			socket = serverOptions == null ? new Socket(clientOptions.serverURL, clientOptions.gamePort) : new Socket("localhost", serverOptions.getGamePort());
 		} catch (final UnknownHostException ue) {
 			throw new ConnectingToServerFailedException("Unknown server host!");
 		} catch (final IOException ie) {
@@ -242,7 +242,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 				final String serverVersion = serverStub.receiveMessage();
 				if (!serverVersion.equals(APPLICATION_VERSION))
 					throw new ConnectingToServerFailedException("Incompatible " + APPLICATION_NAME + " server (ver. " + serverVersion + ")!");
-				serverStub.sendMessage(serverOptions == null ? clientOptions.password : serverOptions.password);
+				serverStub.sendMessage(serverOptions == null ? clientOptions.password : serverOptions.getPassword());
 				if (!serverStub.receiveMessage().equals(PlayerCollector.PASSWORD_ACCEPTED))
 					throw new ConnectingToServerFailedException("Incorrect game password!");
 
@@ -442,7 +442,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			final ServerOptions globalServerOptions = ServerOptions.parseFromString(serverStub.receiveMessage());
 			globalServerOptionsManager.setOptions(globalServerOptions);
 			LevelModel levelModel = null;
-			if (!globalServerOptions.levelName.equals(RANDOMLY_GENERATED_LEVEL_NAME))
+			if (!globalServerOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME))
 				levelModel = LevelModel.parseFromString(serverStub.receiveMessage());
 
 			// We received all required informations... we can create game core
@@ -456,11 +456,11 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			// If network latency is LOW, we wait for STARTING_NEXT_ITERATION
 			// command in every iteration, if it's HIGH, we wait for it in every
 			// 2, and if it's EXTRA_HIGH, we wait for it in every 4.
-			ITERATION_NETWORK_LATENCY_MASK = globalServerOptions.networkLatency == NetworkLatencies.LOW ? 0
-			        : (globalServerOptions.networkLatency == NetworkLatencies.HIGH ? 1 : 3);
+			ITERATION_NETWORK_LATENCY_MASK = globalServerOptions.getNetworkLatency() == NetworkLatencies.LOW ? 0
+			        : (globalServerOptions.getNetworkLatency() == NetworkLatencies.HIGH ? 1 : 3);
 			iterationCounter = 0;
 			nextIterationMayBegin = false;
-			iterationTimer.setFrequency(globalServerOptions.gameCycleFrequency);
+			iterationTimer.setFrequency(globalServerOptions.getGameCycleFrequency());
 
 			// We dont have to call iterationTimer.setReadyForNextIteration()
 			// here, because first iteration is always timed by the server

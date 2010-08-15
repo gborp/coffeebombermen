@@ -166,7 +166,7 @@ public class ServerComponentOptions extends ComponentOptions< ServerOptions > {
         
         // Must be instantiated before calling buildOptionsTabbedPane(), because that method
         // uses the options tabbed pane of the level component options!
-        levelComponentOptions = new LevelComponentOptions( options.levelOptions, viewOnly );
+        levelComponentOptions = new LevelComponentOptions( options.getLevelOptions(), viewOnly );
         
         levelName_c.insertItemAt( RANDOMLY_GENERATED_LEVEL_NAME, RANDOMLY_GENERATED_LEVEL_INDEX );
         levelName_c.setSelectedIndex( RANDOMLY_GENERATED_LEVEL_INDEX );
@@ -366,31 +366,31 @@ public class ServerComponentOptions extends ComponentOptions< ServerOptions > {
     public ServerOptions getOptionsFromComponents() {
         final ServerOptions serverOptions = new ServerOptions();
         
-        serverOptions.levelOptions                         = levelComponentOptions.getOptionsFromComponents();
+        serverOptions.setLevelOptions(levelComponentOptions.getOptionsFromComponents());
         
-        serverOptions.levelName                            = (String) levelName_c.getSelectedItem();
-        serverOptions.gameType                             = (GameTypes) gameType_c.getSelectedItem();
-        serverOptions.roundTimeLimit                       = (Integer) roundTimeLimit_c.getValue();
-        serverOptions.gamePointLimit                       = (Integer) gamePointLimit_c.getValue();
-        serverOptions.password                             = password_c.getText();
+        serverOptions.setLevelName((String) levelName_c.getSelectedItem());
+        serverOptions.setGameType((GameTypes) gameType_c.getSelectedItem());
+        serverOptions.setRoundTimeLimit((Integer) roundTimeLimit_c.getValue());
+        serverOptions.setGamePointLimit((Integer) gamePointLimit_c.getValue());
+        serverOptions.setPassword(password_c.getText());
         
-        serverOptions.damageOfWholeBombFire                = (Integer) damageOfWholeBombFire_c.getValue();
-        serverOptions.explosionAnnihilatesDiseases         = explosionAnnihilatesDiseases_c.isSelected();
-        serverOptions.fireDoesntHurtTeammates              = fireDoesntHurtTeammates_c.isSelected();
-        serverOptions.newRandomPositionsAfterRounds        = newRandomPositionsAfterRounds_c.isSelected();
-        serverOptions.bombsExplodeAfterOneRemained         = bombsExplodeAfterOneRemained_c.isSelected();
-        serverOptions.buildingUpWallsStopsAfterOneRemained = buildingUpWallsStopsAfterOneRemained_c.isSelected();
-        serverOptions.itemsStopRollingBombs                = itemsStopRollingBombs_c.isSelected();
-        serverOptions.punchedBombsComeBackAtTheOppositeEnd = punchedBombsComeBackAtTheOppositeEnd_c.isSelected();
-        serverOptions.multipleFire                         = multipleFire_c.isSelected();
-        serverOptions.killsBelongTo                        = KillsBelongTos.valueOf( killsBelongTo_c.getSelection().getActionCommand() );
+        serverOptions.setDamageOfWholeBombFire((Integer) damageOfWholeBombFire_c.getValue());
+        serverOptions.setExplosionAnnihilatesDiseases(explosionAnnihilatesDiseases_c.isSelected());
+        serverOptions.setFireDoesntHurtTeammates(fireDoesntHurtTeammates_c.isSelected());
+        serverOptions.setNewRandomPositionsAfterRounds(newRandomPositionsAfterRounds_c.isSelected());
+        serverOptions.setBombsExplodeAfterOneRemained(bombsExplodeAfterOneRemained_c.isSelected());
+        serverOptions.setBuildingUpWallsStopsAfterOneRemained(buildingUpWallsStopsAfterOneRemained_c.isSelected());
+        serverOptions.setItemsStopRollingBombs(itemsStopRollingBombs_c.isSelected());
+        serverOptions.setPunchedBombsComeBackAtTheOppositeEnd(punchedBombsComeBackAtTheOppositeEnd_c.isSelected());
+        serverOptions.setMultipleFire(multipleFire_c.isSelected());
+        serverOptions.setKillsBelongTo(KillsBelongTos.valueOf( killsBelongTo_c.getSelection().getActionCommand() ));
         
-        serverOptions.amountOfBrickWalls                   = (Integer) amountOfBrickWalls_c.getValue();
-        serverOptions.gettingItemProbability               = (Integer) gettingItemProbability_c.getValue();
+        serverOptions.setAmountOfBrickWalls((Integer) amountOfBrickWalls_c.getValue());
+        serverOptions.setGettingItemProbability((Integer) gettingItemProbability_c.getValue());
 
-        serverOptions.gameCycleFrequency                   = (Integer) gameCycleFrequency_c.getValue();
-        serverOptions.gamePort                             = (Integer) gamePort_c.getValue();
-        serverOptions.networkLatency                       = (NetworkLatencies) networkLatency_c.getSelectedItem();
+        serverOptions.setGameCycleFrequency((Integer) gameCycleFrequency_c.getValue());
+        serverOptions.setGamePort((Integer) gamePort_c.getValue());
+        serverOptions.setNetworkLatency((NetworkLatencies) networkLatency_c.getSelectedItem());
 
         return serverOptions;
     }
@@ -401,35 +401,35 @@ public class ServerComponentOptions extends ComponentOptions< ServerOptions > {
     public void synchronizeComponentsToOptions() {
         levelComponentOptions.synchronizeComponentsToOptions();
         
-        levelName_c                           .setSelectedItem( options.levelName );
-        gameType_c                            .setSelectedItem( options.gameType );
-        roundTimeLimit_c                      .setValue       ( options.roundTimeLimit );
-        gamePointLimit_c                      .setValue       ( options.gamePointLimit );
-        password_c                            .setText        ( options.password );
+        levelName_c                           .setSelectedItem( options.getLevelName() );
+        gameType_c                            .setSelectedItem( options.getGameType() );
+        roundTimeLimit_c                      .setValue       ( options.getRoundTimeLimit() );
+        gamePointLimit_c                      .setValue       ( options.getGamePointLimit() );
+        password_c                            .setText        ( options.getPassword() );
         
-        damageOfWholeBombFire_c               .setValue       ( options.damageOfWholeBombFire );
-        explosionAnnihilatesDiseases_c        .setSelected    ( options.explosionAnnihilatesDiseases );
-        fireDoesntHurtTeammates_c             .setSelected    ( options.fireDoesntHurtTeammates );
-        newRandomPositionsAfterRounds_c       .setSelected    ( options.newRandomPositionsAfterRounds );
-        bombsExplodeAfterOneRemained_c        .setSelected    ( options.bombsExplodeAfterOneRemained );
-        buildingUpWallsStopsAfterOneRemained_c.setSelected    ( options.buildingUpWallsStopsAfterOneRemained );
-        itemsStopRollingBombs_c               .setSelected    ( options.itemsStopRollingBombs );
-        punchedBombsComeBackAtTheOppositeEnd_c.setSelected    ( options.punchedBombsComeBackAtTheOppositeEnd );
-        multipleFire_c                        .setSelected    ( options.multipleFire );
+        damageOfWholeBombFire_c               .setValue       ( options.getDamageOfWholeBombFire() );
+        explosionAnnihilatesDiseases_c        .setSelected    ( options.isExplosionAnnihilatesDiseases() );
+        fireDoesntHurtTeammates_c             .setSelected    ( options.isFireDoesntHurtTeammates() );
+        newRandomPositionsAfterRounds_c       .setSelected    ( options.isNewRandomPositionsAfterRounds() );
+        bombsExplodeAfterOneRemained_c        .setSelected    ( options.isBombsExplodeAfterOneRemained() );
+        buildingUpWallsStopsAfterOneRemained_c.setSelected    ( options.isBuildingUpWallsStopsAfterOneRemained() );
+        itemsStopRollingBombs_c               .setSelected    ( options.isItemsStopRollingBombs() );
+        punchedBombsComeBackAtTheOppositeEnd_c.setSelected    ( options.isPunchedBombsComeBackAtTheOppositeEnd() );
+        multipleFire_c                        .setSelected    ( options.isMultipleFire() );
         for ( final Enumeration< AbstractButton > abstractButtons = killsBelongTo_c.getElements(); abstractButtons.hasMoreElements(); ) {
             final AbstractButton abstractButton = abstractButtons.nextElement();
-            if ( abstractButton.getActionCommand().equals( options.killsBelongTo.name() ) ) {
+            if ( abstractButton.getActionCommand().equals( options.getKillsBelongTo().name() ) ) {
                 abstractButton.setSelected( true );
                 break;
             }
         }
 
-        amountOfBrickWalls_c                  .setValue       ( options.amountOfBrickWalls );
-        gettingItemProbability_c              .setValue       ( options.gettingItemProbability );
+        amountOfBrickWalls_c                  .setValue       ( options.getAmountOfBrickWalls() );
+        gettingItemProbability_c              .setValue       ( options.getGettingItemProbability() );
 
-        gameCycleFrequency_c                  .setValue       ( options.gameCycleFrequency );
-        gamePort_c                            .setValue       ( options.gamePort );
-		networkLatency_c                      .setSelectedItem( options.networkLatency );
+        gameCycleFrequency_c                  .setValue       ( options.getGameCycleFrequency() );
+        gamePort_c                            .setValue       ( options.getGamePort() );
+		networkLatency_c                      .setSelectedItem( options.getNetworkLatency() );
     }
     
 
@@ -440,7 +440,7 @@ public class ServerComponentOptions extends ComponentOptions< ServerOptions > {
      */
     public void setOptions( final ServerOptions options ) {
         super.setOptions( options );
-        levelComponentOptions.setOptions( options.levelOptions );
+        levelComponentOptions.setOptions( options.getLevelOptions() );
     }
 
 }

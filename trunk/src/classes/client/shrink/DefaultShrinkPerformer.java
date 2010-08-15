@@ -56,7 +56,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 		if (isTimeToShrink()) {
 
 			if (isTimeToFirstShrink()
-					|| isTimeToNextShrink((gso.gameCycleFrequency / (speedupSteps > 0 ? SPEEDUP_RATIO
+					|| isTimeToNextShrink((gso.getGameCycleFrequency() / (speedupSteps > 0 ? SPEEDUP_RATIO
 							: 1)))) {
 
 				if (speedupSteps <= 0 && preSpeedupWarn <= 0

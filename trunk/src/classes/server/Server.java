@@ -218,10 +218,10 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		broadcastCommand("" + new Random().nextLong());
 		final ServerOptions serverOptions = serverOptionsManager.getOptions();
 		broadcastCommand(serverOptions.packToString());
-		if (!serverOptions.levelName.equals(RANDOMLY_GENERATED_LEVEL_NAME))
+		if (!serverOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME))
 			broadcastCommand(gameManager.getLevel().packToString());
 
-		iterationTimer.setFrequency(serverOptions.gameCycleFrequency);
+		iterationTimer.setFrequency(serverOptions.getGameCycleFrequency());
 		nextIterationMayBegin = false;
 		iterationTimer.setReadyForNextIteration();
 
@@ -236,8 +236,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		// If network latency is LOW, we send STARTING_NEXT_ITERATION command in
 		// every iteration, if it's HIGH, we send in every 2, and if it's
 		// EXTRA_HIGH, we send in every 4.
-		final int ITERATION_NETWORK_LATENCY_MASK = serverOptions.networkLatency == NetworkLatencies.LOW ? 0
-		        : (serverOptions.networkLatency == NetworkLatencies.HIGH ? 1 : 3);
+		final int ITERATION_NETWORK_LATENCY_MASK = serverOptions.getNetworkLatency() == NetworkLatencies.LOW ? 0
+		        : (serverOptions.getNetworkLatency() == NetworkLatencies.HIGH ? 1 : 3);
 		while (!requestedToCancel && !requestedToEndGame) {
 
 			if (nextIterationMayBegin) {

@@ -268,8 +268,8 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 *            the new options are about to become effective
 	 */
 	public void optionsChanged(final ServerOptions oldOptions, final ServerOptions newOptions) {
-		if (!newOptions.levelName.equals(oldOptions.levelName))
-			loadLevel(oldOptions.levelName);
+		if (!newOptions.getLevelName().equals(oldOptions.getLevelName()))
+			loadLevel(oldOptions.getLevelName());
 	}
 
 	/**
@@ -298,7 +298,7 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 *            the old level name to restore if loading fails
 	 */
 	public void loadLevel(final String oldLevelName) {
-		final String levelName = serverOptionsManager.getOptions().levelName;
+		final String levelName = serverOptionsManager.getOptions().getLevelName();
 		if (levelName.equals(RANDOMLY_GENERATED_LEVEL_NAME))
 			level = null;
 		else {
@@ -309,10 +309,10 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 				levelFile.close();
 			} catch (final FileNotFoundException fe) {
 				JOptionPane.showMessageDialog(mainFrame, "Level file not found: " + levelFileName, "Error loading level", JOptionPane.ERROR_MESSAGE);
-				serverOptionsManager.getOptions().levelName = oldLevelName;
+				serverOptionsManager.getOptions().setLevelName(oldLevelName);
 			} catch (final Exception e) {
 				JOptionPane.showMessageDialog(mainFrame, "Corrupt level file: " + levelFileName, "Error loading level", JOptionPane.ERROR_MESSAGE);
-				serverOptionsManager.getOptions().levelName = oldLevelName;
+				serverOptionsManager.getOptions().setLevelName(oldLevelName);
 			}
 		}
 	}

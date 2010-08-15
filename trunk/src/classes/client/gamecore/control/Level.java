@@ -109,8 +109,8 @@ public class Level {
 			// once (see: time
 			// delayed multiple
 			// fire).
-			if (modelController.getGlobalServerOptions().gettingItemProbability > modelController.getRandom().nextInt(100))
-				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(modelController.getGlobalServerOptions().levelOptions.itemWeights,
+			if (modelController.getGlobalServerOptions().getGettingItemProbability() > modelController.getRandom().nextInt(100))
+				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(modelController.getGlobalServerOptions().getLevelOptions().itemWeights,
 				        modelController.getRandom())]);
 	}
 

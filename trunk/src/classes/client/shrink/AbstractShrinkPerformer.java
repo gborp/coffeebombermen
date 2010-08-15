@@ -80,7 +80,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 
 	protected boolean isTimeToShrink() {
 		ServerOptions gso = getGlobalServerOptions();
-		return getTick() > gso.roundTimeLimit * gso.gameCycleFrequency;
+		return getTick() > gso.getRoundTimeLimit() * gso.getGameCycleFrequency();
 	}
 
 	protected abstract void nextIterationImpl();
