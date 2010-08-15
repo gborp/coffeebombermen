@@ -902,11 +902,29 @@ public class Player {
 		return false; // No movement correction have to be used
 	}
 
+	private void pushWall(int cx, int cy, int wx, int wy, int dx, int dy) {
+		LevelComponent compToPush = modelProvider.getLevelModel().getComponent(wx, wy);
+
+		boolean explosionsAtPos = compToPush.hasFire();
+		boolean bombAtPos = modelProvider.isBombAtComponentPosition(wx, wy);
+		boolean playerAtPos = modelProvider.isPlayerAtComponentPositionExcludePlayer(wx, wy, model);
+
+		if (!bombAtPos && !playerAtPos && !explosionsAtPos) {
+			if (compToPush.getWall() == Walls.EMPTY) {
+				LevelComponent oldComp = modelProvider.getLevelModel().getComponent(cx, cy);
+				modelProvider.getLevelModel().setComponent(oldComp, wx, wy);
+				modelProvider.getLevelModel().setComponent(compToPush, cx, cy);
+			} else if (compToPush.getWall() == Walls.BRICK) {
+				pushWall(cx, cy, wx + dx, wy + dy, dx, dy);
+			}
+		}
+	}
+
 	/**
 	 * Checks whether the player can step onto a component of the level
 	 * specified by position.<br>
 	 * Implementation is simply calling the canPlayerStepOntoComponent() with
-	 * the component coordiantes specified by the position.
+	 * the component coordinates specified by the position.
 	 * 
 	 * @param posX
 	 *            x coordinate of the position
@@ -922,20 +940,15 @@ public class Player {
 		Walls wall = modelProvider.getLevelModel().getComponent(componentPosX, componentPosY).getWall();
 
 		if (model.hasDisease(Diseases.BODY_BUILDER)) {
-			if (wall == Walls.BRICK && componentPosX > 1 && componentPosY > 1 && componentPosX < modelProvider.getLevelModel().getWidth() - 2
-			        && componentPosY < modelProvider.getLevelModel().getHeight() - 2) {
-				int dX = componentPosX - model.getComponentPosX();
-				int dY = componentPosY - model.getComponentPosY();
-				int wX = componentPosX + dX;
-				int wY = componentPosY + dY;
-				LevelComponent compToPush = modelProvider.getLevelModel().getComponent(wX, wY);
-				if (compToPush.getWall() == Walls.EMPTY && !modelProvider.isBombAtComponentPosition(wX, wY)
-				        && !modelProvider.isPlayerAtComponentPositionExcludePlayer(wX, wY, model)) {
-					LevelComponent oldComp = modelProvider.getLevelModel().getComponent(componentPosX, componentPosY);
-					modelProvider.getLevelModel().setComponent(oldComp, wX, wY);
-					modelProvider.getLevelModel().setComponent(compToPush, componentPosX, componentPosY);
-					return true;
-				}
+			int dx = componentPosX - model.getComponentPosX();
+			int dy = componentPosY - model.getComponentPosY();
+
+			if ((dx != 0 || dy != 0) && wall == Walls.BRICK && componentPosX > 1 && componentPosY > 1
+			        && componentPosX < modelProvider.getLevelModel().getWidth() - 2 && componentPosY < modelProvider.getLevelModel().getHeight() - 2) {
+
+				int wx = componentPosX + dx;
+				int wy = componentPosY + dy;
+				pushWall(componentPosX, componentPosY, wx, wy, dx, dy);
 			}
 		}
 
