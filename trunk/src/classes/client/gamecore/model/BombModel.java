@@ -18,8 +18,6 @@ import classes.client.sound.SoundEffect;
  * picture, but we still need to know how long the bomb is flying. The iteration
  * counter inherited from PositionedIterableObject determines the picture phase
  * of the bomb.
- * 
- * @author Andras Belicza
  */
 public class BombModel extends PositionedIterableObject {
 
@@ -68,7 +66,7 @@ public class BombModel extends PositionedIterableObject {
 	/** The triggerer player of the bomb. */
 	private PlayerModel                triggererPlayer;
 	private boolean                    detonatingOnHit;
-	private float crazyPercent;
+	private float                      crazyPercent;
 
 	/**
 	 * Creates a new Bomb.

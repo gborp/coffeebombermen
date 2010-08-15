@@ -8,8 +8,6 @@ import classes.options.model.LevelOptions;
 
 /**
  * The model of the level where bombermen take their fight.
- * 
- * @author Andras Belicza
  */
 public class LevelModel {
 

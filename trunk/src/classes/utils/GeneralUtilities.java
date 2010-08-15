@@ -1,7 +1,3 @@
-/*
- * Created on August 28, 2004
- */
-
 package classes.utils;
 
 import java.awt.GraphicsEnvironment;
@@ -16,8 +12,6 @@ import java.util.Random;
 
 /**
  * Provides general utilities.
- * 
- * @author Andras Belicza
  */
 public class GeneralUtilities {
 

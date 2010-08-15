@@ -1,7 +1,3 @@
-/*
- * Created on August 4, 2004
- */
-
 package classes.server;
 
 import static classes.Consts.APPLICATION_NAME;
@@ -49,8 +45,6 @@ import classes.utils.GeneralStringTokenizer;
  * <li>The client is now officially an accepted Bombermen client of the game.
  * Can send and receive commands, messages and can participate in games.
  * </ol>
- * 
- * @author Andras Belicza
  */
 public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 

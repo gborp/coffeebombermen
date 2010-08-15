@@ -1,7 +1,3 @@
-/*
- * Created on August 28, 2004
- */
-
 package classes.utils;
 
 /**
@@ -18,8 +14,6 @@ package classes.utils;
  * signalingNextIteration(). When all is said and done: calls of
  * signalingNextIteration() will be not more frequently than f, but as
  * frequently as possible, as frequently as the timeable object is ready for it.
- * 
- * @author Andras Belicza
  */
 public class ControlledTimer extends ControlledThread {
 

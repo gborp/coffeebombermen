@@ -1,7 +1,3 @@
-/*
- * Created on July 7, 2004
- */
-
 package classes;
 
 import static classes.Consts.APPLICATION_NAME;
@@ -33,8 +29,6 @@ import classes.utils.GeneralStringTokenizer;
 /**
  * This is the main window, the main frame of the game. It contains references
  * to the components of the main frame.
- * 
- * @author Andras Belicza
  */
 public class MainFrame extends JFrame implements ActionListener, MessageConsole, KeyListener, MouseListener {
 

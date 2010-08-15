@@ -1,7 +1,3 @@
-/*
- * Created on August 3, 2004
- */
-
 package classes.client;
 
 import static classes.Consts.APPLICATION_NAME;
@@ -60,15 +56,11 @@ import classes.utils.TimedIterableControlledThread;
  * network latency client times a few iterations by himself.<br>
  * <br>
  * The joining protocol is described at the PlayerCollector javadoc.
- * 
- * @author Andras Belicza
  */
 public class Client extends TimedIterableControlledThread implements MessageHandler, OptionsChangeListener<ClientOptions> {
 
 	/**
 	 * Commands to be sent to the client, interpreted by us.
-	 * 
-	 * @author Andras Belicza
 	 */
 	public enum Commands {
 		/** Message command. */

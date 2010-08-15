@@ -1,7 +1,3 @@
-/*
- * Created on September 5, 2004
- */
-
 package classes.utils;
 
 import java.io.BufferedReader;
@@ -11,8 +7,6 @@ import java.io.IOException;
 
 /**
  * A text file reader where datas are stored.<br>
- * 
- * @author Andras Belicza
  */
 public class DataTextFileReader {
 

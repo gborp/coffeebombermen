@@ -13,8 +13,6 @@ import classes.options.Consts.Walls;
 
 /**
  * A component of the level (the level consists of level components).
- * 
- * @author Andras Belicza
  */
 public class LevelComponent extends IterableObject {
 

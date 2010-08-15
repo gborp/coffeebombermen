@@ -1,14 +1,8 @@
 package classes;
 
-/*
- * Created on July 3, 2004
- */
-
 /**
  * The main class of Bombermen. Holds the public static main method, and does
  * nothing else but creates a classes.GameManager object.
- * 
- * @author Andras Belicza
  */
 public class Bombermen {
 

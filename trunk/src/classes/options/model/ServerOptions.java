@@ -1,7 +1,3 @@
-/*
- * Created on July 5, 2004
- */
-
 package classes.options.model;
 
 import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
@@ -12,8 +8,6 @@ import classes.utils.GeneralStringTokenizer;
 
 /**
  * Holds all the server options; contains a reference to a level options object.
- * 
- * @author Andras Belicza
  */
 public class ServerOptions extends Options<ServerOptions> {
 
@@ -179,171 +173,171 @@ public class ServerOptions extends Options<ServerOptions> {
 	}
 
 	public void setGamePort(int gamePort) {
-	    this.gamePort = gamePort;
-    }
+		this.gamePort = gamePort;
+	}
 
 	public int getGamePort() {
-	    return gamePort;
-    }
+		return gamePort;
+	}
 
 	public void setGameCycleFrequency(int gameCycleFrequency) {
-	    this.gameCycleFrequency = gameCycleFrequency;
-    }
+		this.gameCycleFrequency = gameCycleFrequency;
+	}
 
 	public int getGameCycleFrequency() {
-	    return gameCycleFrequency;
-    }
+		return gameCycleFrequency;
+	}
 
 	public void setGettingItemProbability(int gettingItemProbability) {
-	    this.gettingItemProbability = gettingItemProbability;
-    }
+		this.gettingItemProbability = gettingItemProbability;
+	}
 
 	public int getGettingItemProbability() {
-	    return gettingItemProbability;
-    }
+		return gettingItemProbability;
+	}
 
 	public void setLevelOptions(LevelOptions levelOptions) {
-	    this.levelOptions = levelOptions;
-    }
+		this.levelOptions = levelOptions;
+	}
 
 	public LevelOptions getLevelOptions() {
-	    return levelOptions;
-    }
+		return levelOptions;
+	}
 
 	public void setLevelName(String levelName) {
-	    this.levelName = levelName;
-    }
+		this.levelName = levelName;
+	}
 
 	public String getLevelName() {
-	    return levelName;
-    }
+		return levelName;
+	}
 
 	public void setGameType(GameTypes gameType) {
-	    this.gameType = gameType;
-    }
+		this.gameType = gameType;
+	}
 
 	public GameTypes getGameType() {
-	    return gameType;
-    }
+		return gameType;
+	}
 
 	public void setRoundTimeLimit(int roundTimeLimit) {
-	    this.roundTimeLimit = roundTimeLimit;
-    }
+		this.roundTimeLimit = roundTimeLimit;
+	}
 
 	public int getRoundTimeLimit() {
-	    return roundTimeLimit;
-    }
+		return roundTimeLimit;
+	}
 
 	public void setGamePointLimit(int gamePointLimit) {
-	    this.gamePointLimit = gamePointLimit;
-    }
+		this.gamePointLimit = gamePointLimit;
+	}
 
 	public int getGamePointLimit() {
-	    return gamePointLimit;
-    }
+		return gamePointLimit;
+	}
 
 	public void setPassword(String password) {
-	    this.password = password;
-    }
+		this.password = password;
+	}
 
 	public String getPassword() {
-	    return password;
-    }
+		return password;
+	}
 
 	public void setDamageOfWholeBombFire(int damageOfWholeBombFire) {
-	    this.damageOfWholeBombFire = damageOfWholeBombFire;
-    }
+		this.damageOfWholeBombFire = damageOfWholeBombFire;
+	}
 
 	public int getDamageOfWholeBombFire() {
-	    return damageOfWholeBombFire;
-    }
+		return damageOfWholeBombFire;
+	}
 
 	public void setExplosionAnnihilatesDiseases(boolean explosionAnnihilatesDiseases) {
-	    this.explosionAnnihilatesDiseases = explosionAnnihilatesDiseases;
-    }
+		this.explosionAnnihilatesDiseases = explosionAnnihilatesDiseases;
+	}
 
 	public boolean isExplosionAnnihilatesDiseases() {
-	    return explosionAnnihilatesDiseases;
-    }
+		return explosionAnnihilatesDiseases;
+	}
 
 	public void setFireDoesntHurtTeammates(boolean fireDoesntHurtTeammates) {
-	    this.fireDoesntHurtTeammates = fireDoesntHurtTeammates;
-    }
+		this.fireDoesntHurtTeammates = fireDoesntHurtTeammates;
+	}
 
 	public boolean isFireDoesntHurtTeammates() {
-	    return fireDoesntHurtTeammates;
-    }
+		return fireDoesntHurtTeammates;
+	}
 
 	public void setNewRandomPositionsAfterRounds(boolean newRandomPositionsAfterRounds) {
-	    this.newRandomPositionsAfterRounds = newRandomPositionsAfterRounds;
-    }
+		this.newRandomPositionsAfterRounds = newRandomPositionsAfterRounds;
+	}
 
 	public boolean isNewRandomPositionsAfterRounds() {
-	    return newRandomPositionsAfterRounds;
-    }
+		return newRandomPositionsAfterRounds;
+	}
 
 	public void setBombsExplodeAfterOneRemained(boolean bombsExplodeAfterOneRemained) {
-	    this.bombsExplodeAfterOneRemained = bombsExplodeAfterOneRemained;
-    }
+		this.bombsExplodeAfterOneRemained = bombsExplodeAfterOneRemained;
+	}
 
 	public boolean isBombsExplodeAfterOneRemained() {
-	    return bombsExplodeAfterOneRemained;
-    }
+		return bombsExplodeAfterOneRemained;
+	}
 
 	public void setBuildingUpWallsStopsAfterOneRemained(boolean buildingUpWallsStopsAfterOneRemained) {
-	    this.buildingUpWallsStopsAfterOneRemained = buildingUpWallsStopsAfterOneRemained;
-    }
+		this.buildingUpWallsStopsAfterOneRemained = buildingUpWallsStopsAfterOneRemained;
+	}
 
 	public boolean isBuildingUpWallsStopsAfterOneRemained() {
-	    return buildingUpWallsStopsAfterOneRemained;
-    }
+		return buildingUpWallsStopsAfterOneRemained;
+	}
 
 	public void setItemsStopRollingBombs(boolean itemsStopRollingBombs) {
-	    this.itemsStopRollingBombs = itemsStopRollingBombs;
-    }
+		this.itemsStopRollingBombs = itemsStopRollingBombs;
+	}
 
 	public boolean isItemsStopRollingBombs() {
-	    return itemsStopRollingBombs;
-    }
+		return itemsStopRollingBombs;
+	}
 
 	public void setPunchedBombsComeBackAtTheOppositeEnd(boolean punchedBombsComeBackAtTheOppositeEnd) {
-	    this.punchedBombsComeBackAtTheOppositeEnd = punchedBombsComeBackAtTheOppositeEnd;
-    }
+		this.punchedBombsComeBackAtTheOppositeEnd = punchedBombsComeBackAtTheOppositeEnd;
+	}
 
 	public boolean isPunchedBombsComeBackAtTheOppositeEnd() {
-	    return punchedBombsComeBackAtTheOppositeEnd;
-    }
+		return punchedBombsComeBackAtTheOppositeEnd;
+	}
 
 	public void setMultipleFire(boolean multipleFire) {
-	    this.multipleFire = multipleFire;
-    }
+		this.multipleFire = multipleFire;
+	}
 
 	public boolean isMultipleFire() {
-	    return multipleFire;
-    }
+		return multipleFire;
+	}
 
 	public void setKillsBelongTo(KillsBelongTos killsBelongTo) {
-	    this.killsBelongTo = killsBelongTo;
-    }
+		this.killsBelongTo = killsBelongTo;
+	}
 
 	public KillsBelongTos getKillsBelongTo() {
-	    return killsBelongTo;
-    }
+		return killsBelongTo;
+	}
 
 	public void setAmountOfBrickWalls(int amountOfBrickWalls) {
-	    this.amountOfBrickWalls = amountOfBrickWalls;
-    }
+		this.amountOfBrickWalls = amountOfBrickWalls;
+	}
 
 	public int getAmountOfBrickWalls() {
-	    return amountOfBrickWalls;
-    }
+		return amountOfBrickWalls;
+	}
 
 	public void setNetworkLatency(NetworkLatencies networkLatency) {
-	    this.networkLatency = networkLatency;
-    }
+		this.networkLatency = networkLatency;
+	}
 
 	public NetworkLatencies getNetworkLatency() {
-	    return networkLatency;
-    }
+		return networkLatency;
+	}
 
 }

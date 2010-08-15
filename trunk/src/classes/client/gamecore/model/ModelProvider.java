@@ -1,7 +1,3 @@
-/*
- * Created on November 24, 2005
- */
-
 package classes.client.gamecore.model;
 
 import java.util.List;
@@ -12,8 +8,6 @@ import classes.options.model.PublicClientOptions;
 /**
  * Interface that defines methods to access the components of the game core
  * model.
- * 
- * @author Andras Belicza
  */
 public interface ModelProvider {
 

@@ -1,7 +1,3 @@
-/*
- * Created on August 4, 2004
- */
-
 package classes.utils;
 
 import java.io.BufferedReader;
@@ -12,8 +8,6 @@ import java.net.Socket;
 
 /**
  * Represents a stub which is used to communicate with another computer.
- * 
- * @author Andras Belicza
  */
 public class ConnectionStub {
 
@@ -59,9 +53,9 @@ public class ConnectionStub {
 	public boolean hasNewMessage() {
 		try {
 			return input.ready(); // Well... this would return true if we don't
-								  // have a new line just a few characters
-								  // without '\n'... but this implementation is
-								  // the simpliest
+			// have a new line just a few characters
+			// without '\n'... but this implementation is
+			// the simpliest
 		} catch (final IOException ie) {
 			return false;
 		}

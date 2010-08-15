@@ -1,7 +1,3 @@
-/*
- * Created on October 10, 2005
- */
-
 package classes.client.gamecore.model;
 
 import java.util.ArrayList;
@@ -19,8 +15,6 @@ import classes.options.Consts.PlayerControlKeys;
  * The class represents the model of a player of the GAME (NOT the the
  * application): the figure controlled by a player called bomberman and all the
  * informations needed to calculate, simulate its working and its playing.
- * 
- * @author Andras Belicza
  */
 public class PlayerModel extends PositionedIterableObject {
 

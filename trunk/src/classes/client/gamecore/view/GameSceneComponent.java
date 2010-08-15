@@ -1,7 +1,3 @@
-/*
- * Created on April 1, 2005
- */
-
 package classes.client.gamecore.view;
 
 import static classes.client.gamecore.Consts.BOMB_FLYING_ASCENDENCE_PRIMARY;
@@ -43,8 +39,6 @@ import classes.options.model.PublicClientOptions;
 
 /**
  * This is the game scene. Game will be displayed on this component.
- * 
- * @author Andras Belicza
  */
 public class GameSceneComponent extends JComponent implements KeyListener, OptionsChangeListener<ClientOptions> {
 

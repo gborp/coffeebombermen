@@ -1,14 +1,8 @@
-/*
- * Created on July 7, 2004
- */
-
 package classes;
 
 /**
  * Holds constants for the game describing it as a software and about the
  * directory hierarchy and file informations
- * 
- * @author Andras Belicza
  */
 public class Consts {
 
