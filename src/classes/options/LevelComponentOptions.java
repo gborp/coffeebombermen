@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import classes.options.Consts.Diseases;
 import classes.options.Consts.Items;
 import classes.options.model.LevelOptions;
 

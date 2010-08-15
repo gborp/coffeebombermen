@@ -8,7 +8,7 @@ import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
 
 import java.util.EnumMap;
 
-import classes.options.Consts.Diseases;
+import classes.options.Diseases;
 import classes.options.Consts.Items;
 import classes.utils.GeneralStringTokenizer;
 import classes.utils.MathHelper;

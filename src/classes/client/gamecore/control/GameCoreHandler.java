@@ -39,7 +39,7 @@ import classes.client.shrink.MassKillShrinkPerformer;
 import classes.client.shrink.ShrinkPerformer;
 import classes.client.shrink.SpiderBombShrinkPerformer;
 import classes.client.sound.SoundEffect;
-import classes.options.Consts.Diseases;
+import classes.options.Diseases;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;

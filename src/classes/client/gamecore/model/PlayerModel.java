@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import classes.client.gamecore.Consts.Activities;
 import classes.client.sound.SoundEffect;
+import classes.options.Diseases;
 import classes.options.LevelComponentOptions;
-import classes.options.Consts.Diseases;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 
