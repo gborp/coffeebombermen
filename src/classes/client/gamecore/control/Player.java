@@ -915,11 +915,29 @@ public class Player {
 	 * @return true, if the player can step onto the component specified by the
 	 *         position; false otherwise
 	 */
-	private boolean canPlayerStepToPosition(final int posX, final int posY) {
-		final int componentPosX = posX / LEVEL_COMPONENT_GRANULARITY;
-		final int componentPosY = posY / LEVEL_COMPONENT_GRANULARITY;
+	private boolean canPlayerStepToPosition(int posX, int posY) {
+		int componentPosX = posX / LEVEL_COMPONENT_GRANULARITY;
+		int componentPosY = posY / LEVEL_COMPONENT_GRANULARITY;
 
-		final Walls wall = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX].getWall();
+		Walls wall = modelProvider.getLevelModel().getComponent(componentPosX, componentPosY).getWall();
+
+		if (model.hasDisease(Diseases.BODY_BUILDER)) {
+			if (wall == Walls.BRICK && componentPosX > 1 && componentPosY > 1 && componentPosX < modelProvider.getLevelModel().getWidth() - 2
+			        && componentPosY < modelProvider.getLevelModel().getHeight() - 2) {
+				int dX = componentPosX - model.getComponentPosX();
+				int dY = componentPosY - model.getComponentPosY();
+				int wX = componentPosX + dX;
+				int wY = componentPosY + dY;
+				LevelComponent compToPush = modelProvider.getLevelModel().getComponent(wX, wY);
+				if (compToPush.getWall() == Walls.EMPTY && !modelProvider.isBombAtComponentPosition(wX, wY)
+				        && !modelProvider.isPlayerAtComponentPositionExcludePlayer(wX, wY, model)) {
+					LevelComponent oldComp = modelProvider.getLevelModel().getComponent(componentPosX, componentPosY);
+					modelProvider.getLevelModel().setComponent(oldComp, wX, wY);
+					modelProvider.getLevelModel().setComponent(compToPush, componentPosX, componentPosY);
+					return true;
+				}
+			}
+		}
 
 		if (model.hasNonAccumulateableItemsMap.get(Items.WALL_CLIMBING)) {
 			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH)) {

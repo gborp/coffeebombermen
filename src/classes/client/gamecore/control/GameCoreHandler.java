@@ -422,7 +422,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 						model.expireDisease(entry.getKey());
 					}
 				}
-				if (!hasInfectedPlayer && model.hasDisease()) {
+				if (!hasInfectedPlayer && model.hasDiseases()) {
 					hasInfectedPlayer = true;
 				}
 			}

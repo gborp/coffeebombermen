@@ -63,5 +63,11 @@ public enum Diseases {
 		public String toString() {
 			return "Color blind";
 		}
+	},
+	BODY_BUILDER {
+
+		public String toString() {
+			return "Body builder";
+		}
 	}
 }

@@ -262,8 +262,12 @@ public class PlayerModel extends PositionedIterableObject {
 		}
 	}
 
-	public boolean hasDisease() {
+	public boolean hasDiseases() {
 		return !mapOwnedDiseases.isEmpty();
+	}
+
+	public boolean hasDisease(Diseases disease) {
+		return mapOwnedDiseases.containsKey(disease);
 	}
 
 	public HashMap<Diseases, Long> getOwnedDiseases() {
