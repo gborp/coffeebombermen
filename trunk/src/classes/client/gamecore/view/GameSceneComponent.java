@@ -500,7 +500,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			}
 			final Image bombermanImage = playerGraphics.get(playerNumberForGfx).getImage(playerModel, scaleFactor);
 
-			if (playerModel.hasDisease()) {
+			if (playerModel.hasDiseases()) {
 				if ((modelProvider.getTick() & 8) == 0) {
 					g2.setComposite(infectedComposite);
 				} else {
