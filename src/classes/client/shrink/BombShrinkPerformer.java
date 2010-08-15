@@ -6,9 +6,8 @@ import classes.utils.MathHelper;
 
 public class BombShrinkPerformer extends AbstractShrinkPerformer {
 
-	private static final int GAME_CYCLE_FREQUENCY_MULTIPLIER = 10;
+	private static final int GAME_CYCLE_FREQUENCY_MULTIPLIER = 8;
 
-	private long lastShrinkOperationAt;
 	private float numberOfBombs;
 	private int maxRange;
 
@@ -17,22 +16,21 @@ public class BombShrinkPerformer extends AbstractShrinkPerformer {
 	}
 
 	protected void initNextRoundImpl() {
-		lastShrinkOperationAt = 0;
 		numberOfBombs = 1;
 		maxRange = 1;
 	}
 
 	protected void nextIterationImpl() {
-		ServerOptions gso = getGlobalServerOptions();
-		if (getTick() > gso.roundTimeLimit	* gso.gameCycleFrequency) {
-			if (lastShrinkOperationAt == 0
-					|| ((getTick() - lastShrinkOperationAt) > (gso.gameCycleFrequency * GAME_CYCLE_FREQUENCY_MULTIPLIER))) {
+		if (isTimeToShrink()) {
+			if (isTimeToFirstShrink()
+					|| isTimeToNextShrink(getGlobalServerOptions().gameCycleFrequency
+							* GAME_CYCLE_FREQUENCY_MULTIPLIER)) {
 				for (int i = 0; i < numberOfBombs; i++) {
 					int x = getRandom().nextInt(getWidth() - 3) + 1;
 					int y = getRandom().nextInt(getHeight() - 3) + 1;
 					addCrazyBomb(x, y, MathHelper.randomInt(1, maxRange));
 				}
-				lastShrinkOperationAt = getTick();
+				setLastShrinkOperationAt();
 				if (numberOfBombs < getWidth() * getHeight()) {
 					numberOfBombs = numberOfBombs * 1.3f;
 				}

@@ -11,6 +11,7 @@ import classes.client.gamecore.control.GameCoreHandler;
 import classes.client.gamecore.control.Level;
 import classes.client.gamecore.model.BombModel;
 import classes.client.sound.SoundEffect;
+import classes.options.Consts.Items;
 import classes.options.Consts.Walls;
 import classes.options.model.ServerOptions;
 import classes.utils.MathHelper;
@@ -18,18 +19,29 @@ import classes.utils.MathHelper;
 public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 
 	private GameCoreHandler gameCoreHandler;
+	private long               lastShrinkOperationAt;
 
 	public AbstractShrinkPerformer(GameCoreHandler gameCoreHandler) {
 		this.gameCoreHandler = gameCoreHandler;
 	}
 
 	public void initNextRound() {
+		lastShrinkOperationAt = 0;
 		initNextRoundImpl();
 	}
 
 	public void nextIteration() {
 		nextIterationImpl();		
 	}
+	
+	protected void setLastShrinkOperationAt() {
+		lastShrinkOperationAt = getTick();
+	}
+	
+	public long getLastShrinkOperationAt() {
+		return lastShrinkOperationAt;
+	}
+	
 	protected GameCoreHandler getGameCoreHandler() {
 		return gameCoreHandler;
 	}
@@ -56,6 +68,19 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 
 	protected long getTick() {
 		return gameCoreHandler.getTick();
+	}
+
+	protected boolean isTimeToFirstShrink() {
+		return getLastShrinkOperationAt() == 0;
+	}
+
+	protected boolean isTimeToNextShrink(int frequency) {
+		return  ((getTick() - getLastShrinkOperationAt()) > frequency);
+	}
+
+	protected boolean isTimeToShrink() {
+		ServerOptions gso = getGlobalServerOptions();
+		return getTick() > gso.roundTimeLimit * gso.gameCycleFrequency;
 	}
 
 	protected abstract void nextIterationImpl();
@@ -114,6 +139,10 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 			directionDif++;
 		}
 		newBombModel.setDirection(Directions.get(direction));
+	}
+
+	protected void setItem(int x, int y, Items item) {
+		getGameCoreHandler().getLevel().getModel().getComponents()[y][x].setItem(item);
 	}
 
 	protected void addDetonatingOnHitBomb(int x, int y, int range) {
