@@ -138,6 +138,7 @@ public class Player {
 	 * activity if it is needed to.
 	 */
 	public void nextIteration() {
+		handleSpiderBomb();
 		if (model.getActivity() == Activities.DYING) {
 			model.nextIteration(); // We're just counting, we will drop out the
 			// picked up items.
@@ -149,9 +150,10 @@ public class Player {
 				for (final Items item : model.pickedUpAccumulateableItems) {
 					modelController.replaceItemOnLevel(item);
 				}
+				model.setSpiderBombRounds(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
+				model.setSpiderBombEnabled(true);
 			}
 		} else {
-			handleSpiderBomb();
 
 			processDiseaseEffects();
 			processActionsAndHandleActivityTransitions();
@@ -213,6 +215,7 @@ public class Player {
 			}
 		}
 
+		model.accumulateableItemQuantitiesMap.put(Items.BOMB, Math.max(0, model.accumulateableItemQuantitiesMap.get(Items.BOMB) - 1));
 		final int playerComponentPosX = model.getComponentPosX();
 		final int playerComponentPosY = model.getComponentPosY();
 		int componentPosX = playerComponentPosX;
