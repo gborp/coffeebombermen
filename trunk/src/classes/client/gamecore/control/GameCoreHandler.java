@@ -35,6 +35,7 @@ import classes.client.graphics.GraphicsManager;
 import classes.client.shrink.BinaryShrinkPerformer;
 import classes.client.shrink.BombShrinkPerformer;
 import classes.client.shrink.DefaultShrinkPerformer;
+import classes.client.shrink.MassKillShrinkPerformer;
 import classes.client.shrink.ShrinkPerformer;
 import classes.client.shrink.SpiderBombShrinkPerformer;
 import classes.client.sound.SoundEffect;
@@ -138,8 +139,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				new DefaultShrinkPerformer(this),
 				new BombShrinkPerformer(this),
 				new BinaryShrinkPerformer(this),
-//				new SpiderBombShrinkPerformer(this),
-				/*new MassKillShrinkPerformer(this) */};
+				new SpiderBombShrinkPerformer(this),
+				new MassKillShrinkPerformer(this)};
 
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
@@ -281,8 +282,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
-//		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
-		 shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
+		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
+//		 shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
 		shrinkPerformer.initNextRound();
 		SoundEffect.START_MATCH.play();
 	}

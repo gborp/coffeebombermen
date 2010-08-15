@@ -145,6 +145,10 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		getGameCoreHandler().getLevel().getModel().getComponents()[y][x].setItem(item);
 	}
 
+	protected void setItem(Items item) {
+		getGameCoreHandler().replaceItemOnLevel(item);
+	}
+	
 	protected void addDetonatingOnHitBomb(int x, int y, int range) {
 		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
 		final BombModel newBombModel = newBomb.getModel();
