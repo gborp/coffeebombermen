@@ -29,7 +29,7 @@ import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.sound.SoundEffect;
-import classes.options.Consts.Diseases;
+import classes.options.Diseases;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
