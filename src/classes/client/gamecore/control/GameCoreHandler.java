@@ -12,9 +12,9 @@ import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NA
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
@@ -135,12 +135,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-		this.shrinkPerformers = new ShrinkPerformer[] {
-				new DefaultShrinkPerformer(this),
-				new BombShrinkPerformer(this),
-				new BinaryShrinkPerformer(this),
-				new SpiderBombShrinkPerformer(this),
-				new MassKillShrinkPerformer(this)};
+		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
+		        new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this) };
 
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
@@ -201,8 +197,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * Inits the next round.
 	 */
 	public void initNextRound() {
-		level = globalServerOptions.levelName.equals(RANDOMLY_GENERATED_LEVEL_NAME) ? generateRandomLevel() : new Level(receivedLevelModel.cloneLevel(), this,
-		        this);
+		level = globalServerOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME) ? generateRandomLevel() : new Level(receivedLevelModel.cloneLevel(),
+		        this, this);
 
 		final LevelComponent[][] levelComponents = level.getModel().getComponents();
 
@@ -283,7 +279,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
 		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
-//		 shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
+		// shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
 		shrinkPerformer.initNextRound();
 		SoundEffect.START_MATCH.play();
 	}
@@ -295,7 +291,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 * @return a random level specified by the global server options
 	 */
 	private Level generateRandomLevel() {
-		final LevelOptions levelOptions = globalServerOptions.levelOptions;
+		final LevelOptions levelOptions = globalServerOptions.getLevelOptions();
 		final Level level = new Level(levelOptions, this, this);
 		final LevelComponent[][] levelComponents = level.getModel().getComponents();
 
@@ -313,7 +309,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				} else if ((x & 0x01) == 0 && (y & 0x01) == 0) {
 					wall = Walls.CONCRETE; // Inner concrete matrix
 				} else {
-					wall = random.nextInt(100) < globalServerOptions.amountOfBrickWalls ? Walls.BRICK : Walls.EMPTY;
+					wall = random.nextInt(100) < globalServerOptions.getAmountOfBrickWalls() ? Walls.BRICK : Walls.EMPTY;
 				}
 
 				levelComponents[y][x].setWall(wall);
@@ -520,12 +516,12 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 				if (playerModel.getActivity() != Activities.DYING) {
 					LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
 					int firesCount = comp.getFireCount();
-					if (!globalServerOptions.multipleFire && firesCount > 1) {
+					if (!globalServerOptions.isMultipleFire() && firesCount > 1) {
 						firesCount = 1;
 					}
 					if (firesCount > 0) {
 						final int damage = firesCount
-						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.damageOfWholeBombFire / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
+						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
 						// for ceiling (can't flooring, cause 100% damage might
 						// cause remainder, would let the player live!)
 						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
@@ -894,7 +890,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		final LevelComponent levelComponentAheadAhead = getLevelModel().getComponents()[componentPosY][componentPosX];
 		if (levelComponentAheadAhead.getWall() != Walls.EMPTY)
 			return false;
-		if (levelComponentAheadAhead.getWall() == Walls.EMPTY && levelComponentAheadAhead.getItem() != null && getGlobalServerOptions().itemsStopRollingBombs)
+		if (levelComponentAheadAhead.getWall() == Walls.EMPTY && levelComponentAheadAhead.getItem() != null
+		        && getGlobalServerOptions().isItemsStopRollingBombs())
 			return false;
 
 		// Collision with players:
@@ -978,7 +975,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		else if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) {
 			final Items item = levelComponent.getItem();
 			levelComponent.setItem(null);
-			if (item == Items.DISEASE && !getGlobalServerOptions().explosionAnnihilatesDiseases)
+			if (item == Items.DISEASE && !getGlobalServerOptions().isExplosionAnnihilatesDiseases())
 				replaceItemOnLevel(item);
 		}
 

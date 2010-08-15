@@ -1,7 +1,6 @@
 /*
  * Created on July 5, 2004
  */
-
 package classes.options.model;
 
 import static classes.options.Consts.ACCUMULATEABLE_ITEMS;
@@ -12,12 +11,11 @@ import java.util.EnumMap;
 import classes.options.Consts.Diseases;
 import classes.options.Consts.Items;
 import classes.utils.GeneralStringTokenizer;
+import classes.utils.MathHelper;
 
 /**
  * This class holds the options of a complete level options (not included
  * options needed only for generating random levels).
- * 
- * @author Andras Belicza
  */
 public class LevelOptions extends Options<LevelOptions> {
 
@@ -47,6 +45,25 @@ public class LevelOptions extends Options<LevelOptions> {
 		for (final Items item : Items.values())
 			if (!ACCUMULATEABLE_ITEMS.contains(item))
 				hasNonAccumulateableItemsMap.put(item, new Boolean(false));
+	}
+
+	public Diseases getRandomDisease() {
+		int allWeight = 0;
+		for (int w : diseaseWeights) {
+			allWeight += w;
+		}
+
+		int whichDisease = MathHelper.randomInt(allWeight);
+
+		int i = 0;
+		for (int w : diseaseWeights) {
+			whichDisease -= w;
+			if (whichDisease <= 0) {
+				return Diseases.values()[i];
+			}
+			i++;
+		}
+		throw new RuntimeException("This should never happen");
 	}
 
 	/**

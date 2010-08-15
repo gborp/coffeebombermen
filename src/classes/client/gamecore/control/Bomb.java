@@ -112,7 +112,7 @@ public class Bomb {
 				// level, then we have to replace them to the opposite end.
 				// TODO: check game rules!!
 				final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
-				if (modelController.getGlobalServerOptions().punchedBombsComeBackAtTheOppositeEnd) {
+				if (modelController.getGlobalServerOptions().isPunchedBombsComeBackAtTheOppositeEnd()) {
 					if (newPosX < 0)
 						model.setPosX(levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY - 1);
 					else if (newPosX > levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY - 1)

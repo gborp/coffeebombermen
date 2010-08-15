@@ -100,7 +100,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 		this.serverOptionsManager = serverOptionsManager;
 		this.clientContacts = clientContacts;
 		this.mainFrame = mainFrame;
-		createServerSocket(serverOptionsManager.getOptions().gamePort);
+		createServerSocket(serverOptionsManager.getOptions().getGamePort());
 		startAcceptingClients();
 		this.serverOptionsManager.registerOptionsChangeListener(this);
 	}
@@ -216,7 +216,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 							connectionStub.sendMessage(APPLICATION_VERSION);
 							if (!connectionStub.receiveMessage().equals(APPLICATION_VERSION))
 								throw new AcceptingClientFailedException("Incompatible versions");
-							final String gamePassword = serverOptionsManager.getOptions().password;
+							final String gamePassword = serverOptionsManager.getOptions().getPassword();
 							final String receivedGamePassword = connectionStub.receiveMessage();
 							if (gamePassword.equals("") || gamePassword.equals(receivedGamePassword)) {
 								connectionStub.sendMessage(PASSWORD_ACCEPTED);
@@ -269,9 +269,9 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 	 *            the new server options are about to become effective
 	 */
 	public void optionsChanged(final ServerOptions oldOptions, final ServerOptions newOptions) {
-		if (oldOptions.gamePort != newOptions.gamePort) {
+		if (oldOptions.getGamePort() != newOptions.getGamePort()) {
 			closeServerSocket();
-			createServerSocket(newOptions.gamePort);
+			createServerSocket(newOptions.getGamePort());
 			startAcceptingClients();
 		}
 	}

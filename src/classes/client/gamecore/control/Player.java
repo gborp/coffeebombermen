@@ -706,47 +706,16 @@ public class Player {
 					model.setSpiderBombEnabled(true);
 					break;
 				case DISEASE: {
-					int[] diseaseWeights = modelController.getGlobalServerOptions().levelOptions.diseaseWeights;
-					int allWeight = 0;
-					for (int w : diseaseWeights) {
-						allWeight += w;
-					}
-
-					int whichDisease = MathHelper.randomInt(allWeight);
-
-					int i = 0;
-					for (int w : diseaseWeights) {
-						whichDisease -= w;
-						if (whichDisease <= 0) {
-							getModel().addDisease(Diseases.values()[i], modelProvider.getTick() + PlayerModel.DISEASE_DURATION);
-							break;
-						}
-						i++;
-					}
+					getModel().addDisease(modelController.getGlobalServerOptions().getLevelOptions().getRandomDisease(),
+					        modelProvider.getTick() + PlayerModel.DISEASE_DURATION);
 					break;
 				}
 				case SUPER_DISEASE: {
-					int[] diseaseWeights = modelController.getGlobalServerOptions().levelOptions.diseaseWeights;
-					int allWeight = 0;
-					for (int w : diseaseWeights) {
-						allWeight += w;
-					}
-
 					int numberOfMassDiseases = MathHelper.randomInt(2) + 1;
 
 					for (int massDiseaseCounter = 0; massDiseaseCounter < numberOfMassDiseases; massDiseaseCounter++) {
-
-						int whichDisease = MathHelper.randomInt(allWeight);
-
-						int i = 0;
-						for (int w : diseaseWeights) {
-							whichDisease -= w;
-							if (whichDisease <= 0) {
-								getModel().addDisease(Diseases.values()[i], modelProvider.getTick() + PlayerModel.SUPER_DISEASE_DURATION);
-								break;
-							}
-							i++;
-						}
+						getModel().addDisease(modelController.getGlobalServerOptions().getLevelOptions().getRandomDisease(),
+						        modelProvider.getTick() + PlayerModel.SUPER_DISEASE_DURATION);
 					}
 					break;
 				}

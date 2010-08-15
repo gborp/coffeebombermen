@@ -21,7 +21,7 @@ public class SpiderBombShrinkPerformer extends AbstractShrinkPerformer {
 	protected void nextIterationImpl() {
 		if (isTimeToShrink()) {
 			if (isTimeToFirstShrink()
-					|| isTimeToNextShrink(getGlobalServerOptions().gameCycleFrequency
+					|| isTimeToNextShrink(getGlobalServerOptions().getGameCycleFrequency()
 							* GAME_CYCLE_FREQUENCY_MULTIPLIER)) {
 				System.out
 						.println("SpiderBombShrinkPerformer.nextIterationImpl()" + chance);

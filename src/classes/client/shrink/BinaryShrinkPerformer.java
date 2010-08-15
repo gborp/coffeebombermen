@@ -23,7 +23,7 @@ public class BinaryShrinkPerformer extends AbstractShrinkPerformer {
 	protected void nextIterationImpl() {
 		if (isTimeToShrink()) {
 			if (isTimeToFirstShrink()
-					|| isTimeToNextShrink(getGlobalServerOptions().gameCycleFrequency
+					|| isTimeToNextShrink(getGlobalServerOptions().getGameCycleFrequency()
 							* GAME_CYCLE_FREQUENCY_MULTIPLIER)) {
 				if (isTimeToFirstShrink()) {
 					lstArea.add(new Area(1, 1, getWidth() - 2, getHeight() - 2));
