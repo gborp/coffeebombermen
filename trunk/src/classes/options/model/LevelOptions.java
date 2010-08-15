@@ -9,6 +9,7 @@ import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
 import java.util.EnumMap;
 
 import classes.options.Diseases;
+import classes.options.Shrinkers;
 import classes.options.Consts.Items;
 import classes.utils.GeneralStringTokenizer;
 import classes.utils.MathHelper;
@@ -34,6 +35,8 @@ public class LevelOptions extends Options<LevelOptions> {
 	/** The weights of the diseases. */
 	private int[]                   diseaseWeights                  = new int[Diseases.values().length];
 
+	private int[]                   shrinkerWeights                 = new int[Shrinkers.values().length];
+
 	/**
 	 * Creates a new LevelOptions. Adds entries to
 	 * accumulateableItemQuantitiesMap and hasNonAccumulateableItemsMap.
@@ -48,22 +51,7 @@ public class LevelOptions extends Options<LevelOptions> {
 	}
 
 	public Diseases getRandomDisease() {
-		int allWeight = 0;
-		for (int w : getDiseaseWeights()) {
-			allWeight += w;
-		}
-
-		int whichDisease = MathHelper.randomInt(allWeight);
-
-		int i = 0;
-		for (int w : getDiseaseWeights()) {
-			whichDisease -= w;
-			if (whichDisease <= 0) {
-				return Diseases.values()[i];
-			}
-			i++;
-		}
-		throw new RuntimeException("This should never happen");
+		return Diseases.values()[MathHelper.getWeightedRandom(getDiseaseWeights())];
 	}
 
 	/**
@@ -72,7 +60,7 @@ public class LevelOptions extends Options<LevelOptions> {
 	 * @return a compact string representing this level options
 	 */
 	public String packToString() {
-		final StringBuilder buffer = new StringBuilder();
+		StringBuilder buffer = new StringBuilder();
 
 		buffer.append(getLevelWidth()).append(GENERAL_SEPARATOR_CHAR);
 		buffer.append(getLevelHeight()).append(GENERAL_SEPARATOR_CHAR);
@@ -91,6 +79,10 @@ public class LevelOptions extends Options<LevelOptions> {
 
 		for (final int diseaseWeight : getDiseaseWeights()) {
 			buffer.append(diseaseWeight).append(GENERAL_SEPARATOR_CHAR);
+		}
+
+		for (int shrinkerWeight : getShrinkerWeights()) {
+			buffer.append(shrinkerWeight).append(GENERAL_SEPARATOR_CHAR);
 		}
 
 		return buffer.toString();
@@ -126,6 +118,12 @@ public class LevelOptions extends Options<LevelOptions> {
 			}
 		}
 
+		for (int i = 0; i < levelOptions.getShrinkerWeights().length; i++) {
+			if (optionsTokenizer.hasRemainingString()) {
+				levelOptions.getShrinkerWeights()[i] = optionsTokenizer.nextIntToken();
+			}
+		}
+
 		return levelOptions;
 	}
 
@@ -142,51 +140,59 @@ public class LevelOptions extends Options<LevelOptions> {
 	}
 
 	public void setLevelWidth(int levelWidth) {
-	    this.levelWidth = levelWidth;
-    }
+		this.levelWidth = levelWidth;
+	}
 
 	public int getLevelWidth() {
-	    return levelWidth;
-    }
+		return levelWidth;
+	}
 
 	public void setLevelHeight(int levelHeight) {
-	    this.levelHeight = levelHeight;
-    }
+		this.levelHeight = levelHeight;
+	}
 
 	public int getLevelHeight() {
-	    return levelHeight;
-    }
+		return levelHeight;
+	}
 
 	public void setAccumulateableItemQuantitiesMap(EnumMap<Items, Integer> accumulateableItemQuantitiesMap) {
-	    this.accumulateableItemQuantitiesMap = accumulateableItemQuantitiesMap;
-    }
+		this.accumulateableItemQuantitiesMap = accumulateableItemQuantitiesMap;
+	}
 
 	public EnumMap<Items, Integer> getAccumulateableItemQuantitiesMap() {
-	    return accumulateableItemQuantitiesMap;
-    }
+		return accumulateableItemQuantitiesMap;
+	}
 
 	public void setHasNonAccumulateableItemsMap(EnumMap<Items, Boolean> hasNonAccumulateableItemsMap) {
-	    this.hasNonAccumulateableItemsMap = hasNonAccumulateableItemsMap;
-    }
+		this.hasNonAccumulateableItemsMap = hasNonAccumulateableItemsMap;
+	}
 
 	public EnumMap<Items, Boolean> getHasNonAccumulateableItemsMap() {
-	    return hasNonAccumulateableItemsMap;
-    }
+		return hasNonAccumulateableItemsMap;
+	}
 
 	public void setItemWeights(int[] itemWeights) {
-	    this.itemWeights = itemWeights;
-    }
+		this.itemWeights = itemWeights;
+	}
 
 	public int[] getItemWeights() {
-	    return itemWeights;
-    }
+		return itemWeights;
+	}
 
 	public void setDiseaseWeights(int[] diseaseWeights) {
-	    this.diseaseWeights = diseaseWeights;
-    }
+		this.diseaseWeights = diseaseWeights;
+	}
 
 	public int[] getDiseaseWeights() {
-	    return diseaseWeights;
-    }
+		return diseaseWeights;
+	}
+
+	public int[] getShrinkerWeights() {
+		return this.shrinkerWeights;
+	}
+
+	public void setShrinkerWeights(int[] shrinkerWeights) {
+		this.shrinkerWeights = shrinkerWeights;
+	}
 
 }

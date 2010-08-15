@@ -32,10 +32,15 @@ import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
 import classes.client.graphics.AnimationDatas;
 import classes.client.graphics.GraphicsManager;
+import classes.client.shrink.BinaryShrinkPerformer;
+import classes.client.shrink.BombShrinkPerformer;
 import classes.client.shrink.DefaultShrinkPerformer;
+import classes.client.shrink.MassKillShrinkPerformer;
 import classes.client.shrink.ShrinkPerformer;
+import classes.client.shrink.SpiderBombShrinkPerformer;
 import classes.client.sound.SoundEffect;
 import classes.options.Diseases;
+import classes.options.Shrinkers;
 import classes.options.Consts.Items;
 import classes.options.Consts.PlayerControlKeys;
 import classes.options.Consts.Walls;
@@ -129,10 +134,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
-		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this) };
-
-		// , new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),new
-		// SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this)
+		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
+		        new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this) };
 
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
@@ -274,10 +277,22 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
-		shrinkPerformer = shrinkPerformers[getRandom().nextInt(shrinkPerformers.length)];
-		// shrinkPerformer = shrinkPerformers[shrinkPerformers.length - 1];
+
+		shrinkPerformer = getRandomShrinkPerformer();
+
 		shrinkPerformer.initNextRound();
 		SoundEffect.START_MATCH.play();
+	}
+
+	private ShrinkPerformer getRandomShrinkPerformer() {
+		int[] shrinkWeights = globalServerOptions.getLevelOptions().getShrinkerWeights();
+		Shrinkers shrinkType = Shrinkers.values()[MathHelper.getWeightedRandom(shrinkWeights)];
+		for (ShrinkPerformer li : shrinkPerformers) {
+			if (li.getType() == shrinkType) {
+				return li;
+			}
+		}
+		throw new RuntimeException("this should never happen");
 	}
 
 	/**
@@ -474,8 +489,9 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 		level.nextIteration();
 
-		for (final Bomb bomb : bombs)
+		for (final Bomb bomb : bombs) {
 			bomb.nextIteration();
+		}
 
 		// We remove the bombs just went dead.
 		for (int i = bombs.size() - 1; i >= 0; i--) {

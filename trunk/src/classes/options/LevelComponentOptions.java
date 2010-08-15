@@ -97,6 +97,8 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 	/** Components for disease weights. */
 	private final JSpinner[]                diseaseWeights_cs                    = new JSpinner[options.getDiseaseWeights().length];
 
+	private final JSpinner[]                shrinkerWeights_cs                   = new JSpinner[options.getShrinkerWeights().length];
+
 	/**
 	 * Creates a new LevelComponentOptions.<br>
 	 * The new level component options will contain changable options.
@@ -148,6 +150,8 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 			itemWeights_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_ITEM_WEIGHTS[i], MINIMUM_WEIGHT, MAXIMUM_WEIGHT, 1));
 		for (int i = 0; i < diseaseWeights_cs.length; i++)
 			diseaseWeights_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_WEIGHT, MINIMUM_WEIGHT, MAXIMUM_WEIGHT, 1));
+		for (int i = 0; i < shrinkerWeights_cs.length; i++)
+			shrinkerWeights_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_WEIGHT, MINIMUM_WEIGHT, MAXIMUM_WEIGHT, 1));
 
 		buildOptionsTabbedPane(viewOnly);
 	}
@@ -220,6 +224,18 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 		panel = new JPanel();
 		panel.add(box);
 		optionsTabbedPane.addTab("Disease weights", panel);
+
+		box = Box.createVerticalBox();
+		for (int i = 0; i < shrinkerWeights_cs.length; i++) {
+			panel = new JPanel();
+			panel.add(createLabel(Shrinkers.values()[i] + ":", componentsEnabled));
+			shrinkerWeights_cs[i].setEnabled(componentsEnabled);
+			panel.add(shrinkerWeights_cs[i]);
+			box.add(panel);
+		}
+		panel = new JPanel();
+		panel.add(box);
+		optionsTabbedPane.addTab("Shrinker weights", panel);
 	}
 
 	/**
@@ -250,6 +266,8 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 			itemWeights_cs[i].setValue(DEFAULT_ITEM_WEIGHTS[i]);
 		for (final JSpinner spinner : diseaseWeights_cs)
 			spinner.setValue(DEFAULT_WEIGHT);
+		for (final JSpinner spinner : shrinkerWeights_cs)
+			spinner.setValue(DEFAULT_WEIGHT);
 	}
 
 	/**
@@ -274,6 +292,8 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 			levelOptions.getItemWeights()[i] = (Integer) itemWeights_cs[i].getValue();
 		for (int i = 0; i < levelOptions.getDiseaseWeights().length; i++)
 			levelOptions.getDiseaseWeights()[i] = (Integer) diseaseWeights_cs[i].getValue();
+		for (int i = 0; i < levelOptions.getShrinkerWeights().length; i++)
+			levelOptions.getShrinkerWeights()[i] = (Integer) shrinkerWeights_cs[i].getValue();
 
 		return levelOptions;
 	}
@@ -295,6 +315,8 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 			itemWeights_cs[i].setValue(options.getItemWeights()[i]);
 		for (int i = 0; i < diseaseWeights_cs.length; i++)
 			diseaseWeights_cs[i].setValue(options.getDiseaseWeights()[i]);
+		for (int i = 0; i < shrinkerWeights_cs.length; i++)
+			shrinkerWeights_cs[i].setValue(options.getShrinkerWeights()[i]);
 	}
 
 	/**

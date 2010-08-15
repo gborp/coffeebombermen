@@ -150,7 +150,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 			if (ourIndex == i) {
 				for (PlayerModel playerModel : clientPlayerModels.get(i)) {
-					if (playerModel.getOwnedDiseases().containsKey(Diseases.BLACK_OUT)) {
+					if (playerModel.hasDisease(Diseases.BLACK_OUT)) {
 						blackOut = true;
 					}
 					if (playerModel.getOwnedDiseases().containsKey(Diseases.COLOR_BLIND)) {

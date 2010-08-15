@@ -36,11 +36,30 @@ public class MathHelper {
 	}
 
 	public static Directions getRandomDirection() {
-		return Directions.get(random.nextInt( Directions.values().length ));
+		return Directions.get(random.nextInt(Directions.values().length));
 	}
-	
+
 	public static void setRandom(Random random) {
 		MathHelper.random = random;
+	}
+
+	public static int getWeightedRandom(int[] arWeights) {
+		int allWeight = 0;
+		for (int w : arWeights) {
+			allWeight += w;
+		}
+
+		int whichDisease = MathHelper.randomInt(allWeight);
+
+		int i = 0;
+		for (int w : arWeights) {
+			whichDisease -= w;
+			if (whichDisease <= 0) {
+				return i;
+			}
+			i++;
+		}
+		throw new RuntimeException("This should never happen");
 	}
 
 }
