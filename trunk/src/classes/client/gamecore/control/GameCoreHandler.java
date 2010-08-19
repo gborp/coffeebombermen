@@ -55,6 +55,11 @@ import classes.utils.MathHelper;
  */
 public class GameCoreHandler implements ModelProvider, ModelController {
 
+	/** in tick */
+	private static final int                LAST_PLAYER_COUNT_DOWN_BEFORE_WIN = 30;
+
+	private static final int                MATCH_WON_SPIDER_BOMB_ROUNDS      = 16;
+
 	/** Reference to the game manager. */
 	private final GameManager               gameManager;
 	/** Reference to the main frame. */
@@ -97,7 +102,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	private long                            tick;
 	private ShrinkPerformer[]               shrinkPerformers;
 	private ShrinkPerformer                 shrinkPerformer;
-	private boolean                         hasMaxOneALivePlayer;
+	private boolean                         hasMoreThanOneAlivePlayer;
+	private long                            lastPlayerCountDownStartedAt;
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -205,6 +211,8 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		final ArrayList<int[]> generatedStartPositions = new ArrayList<int[]>();
 
 		tick = 0;
+		lastPlayerCountDownStartedAt = -1;
+		hasMoreThanOneAlivePlayer = true;
 
 		// This is the quality of how perfectly can the players be positioned on
 		// the level.
@@ -353,7 +361,18 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	public void nextIteration(final String newClientsActions) {
 		tick++;
 
-		hasMaxOneALivePlayer = hasMaxOneAlivePlayer();
+		boolean newHasMoreThanOneALivePlayer = hasMoreThanOneAlivePlayer;
+
+		if (hasMoreThanOneAlivePlayer && getAlivePlayerCount() <= 1) {
+			if (lastPlayerCountDownStartedAt == -1) {
+				lastPlayerCountDownStartedAt = tick;
+			} else if ((tick - lastPlayerCountDownStartedAt) > LAST_PLAYER_COUNT_DOWN_BEFORE_WIN) {
+				// match is just won
+				newHasMoreThanOneALivePlayer = false;
+				matchJustWon();
+			}
+		}
+		hasMoreThanOneAlivePlayer = newHasMoreThanOneALivePlayer;
 
 		if (newClientsActions != null) {
 			processNewClientsActions(newClientsActions);
@@ -402,32 +421,41 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			}
 		}
 
-		if (hasMaxOneALivePlayer) {
+		if (hasMoreThanOneAlivePlayer) {
 			shrinkPerformer.nextIteration();
-		}
-		// Now we damage players being in fire.
-		for (PlayerModel playerModel : getAllPlayerModels())
-			if (playerModel.getActivity() != Activities.DYING) {
-				LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
-				int firesCount = comp.getFireCount();
-				if (!globalServerOptions.isMultipleFire() && firesCount > 1) {
-					firesCount = 1;
-				}
-				if (firesCount > 0) {
-					int damage = firesCount * (int) (MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
-					// for ceiling (can't flooring, cause 100% damage might
-					// cause remainder, would let the player live!)
-					playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
-					if (playerModel.getVitality() <= 0) {
+
+			// Now we damage players being in fire.
+			for (PlayerModel playerModel : getAllPlayerModels())
+				if (playerModel.getActivity() != Activities.DYING) {
+					LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
+					int firesCount = comp.getFireCount();
+					if (!globalServerOptions.isMultipleFire() && firesCount > 1) {
+						firesCount = 1;
+					}
+					if (firesCount > 0) {
+						int damage = firesCount
+						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
+						// for ceiling (can't flooring, cause 100% damage might
+						// cause remainder, would let the player live!)
+						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
+						if (playerModel.getVitality() <= 0) {
+							killPlayer(playerModel);
+						}
+					}
+
+					// the shrinking game area can cause the player die
+					if (comp.getWall() == Walls.DEATH) {
 						killPlayer(playerModel);
 					}
 				}
-
-				// the shrinking game area can cause the player die
-				if (comp.getWall() == Walls.DEATH) {
-					killPlayer(playerModel);
+		} else {
+			if (tick % 42 == 0) {
+				PlayerModel lastPlayer = getTheLastRemainingPlyer();
+				if (lastPlayer != null) {
+					lastPlayer.setSpiderBombEnabled(true);
 				}
 			}
+		}
 	}
 
 	private List<PlayerModel> getAllPlayerModels() {
@@ -441,20 +469,58 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		return result;
 	}
 
-	private boolean hasMaxOneAlivePlayer() {
+	private PlayerModel getTheLastRemainingPlyer() {
+		for (PlayerModel[] playerModels : clientsPlayerModels) {
+			for (PlayerModel playerModel : playerModels) {
+				if (playerModel.isAlive()) {
+					return playerModel;
+				}
+			}
+		}
+		return null;
+	}
+
+	private void matchJustWon() {
+
+		PlayerModel lastPlayer = getTheLastRemainingPlyer();
+		if (lastPlayer == null) {
+			mainFrame.receiveMessage("Everyone died.");
+		} else {
+			// playerModel.setSpiderBombEnabled(true);
+			// playerModel.setSpiderBombRounds(MATCH_WON_SPIDER_BOMB_ROUNDS);
+			mainFrame.receiveMessage("Match is won by " + lastPlayer.getName() + " !");
+		}
+
+		for (int i = bombs.size() - 1; i >= 0; i--) {
+			final BombModel bombModel = bombModels.get(i);
+			bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+			        .get(Items.BOMB) + 1);
+			bombs.remove(i);
+			bombModels.remove(i);
+		}
+
+		LevelModel levelModel = level.getModel();
+		for (int y = 0; y < levelModel.getHeight(); y++) {
+			for (int x = 0; x < levelModel.getWidth(); x++) {
+				LevelComponent comp = levelModel.getComponent(x, y);
+				if (comp.getWall() != Walls.EMPTY && comp.getWall() != Walls.BRICK) {
+					comp.setWall(Walls.DEATH_WARN);
+				}
+			}
+		}
+
+	}
+
+	private int getAlivePlayerCount() {
 		int aliveCount = 0;
 		for (PlayerModel[] playerModels : clientsPlayerModels) {
 			for (PlayerModel playerModel : playerModels) {
 				if (playerModel.isAlive()) {
 					aliveCount++;
-					if (aliveCount > 1) {
-						return true;
-					}
 				}
 			}
 		}
-
-		return false;
+		return aliveCount;
 	}
 
 	private void killPlayer(PlayerModel playerModel) {
@@ -906,7 +972,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 		return tick;
 	}
 
-	public boolean getHasMaxOneALivePlayer() {
-		return hasMaxOneALivePlayer;
+	public boolean getHasMoreThanOneAlivePlayer() {
+		return hasMoreThanOneAlivePlayer;
 	}
 }

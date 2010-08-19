@@ -198,6 +198,7 @@ public class Player {
 
 	private void throwSpiderBomb(Directions direction) {
 		if (direction.equals(Directions.UP)) {
+
 			if (model.getSpiderBombRounds() % 4 != 0) {
 				return;
 			}
@@ -955,7 +956,7 @@ public class Player {
 		}
 
 		if (model.hasNonAccumulateableItemsMap.get(Items.WALL_CLIMBING)) {
-			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH)) {
+			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH) || (wall == Walls.DEATH_WARN)) {
 				return false;
 			}
 		} else {
