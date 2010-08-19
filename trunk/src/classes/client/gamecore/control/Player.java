@@ -148,8 +148,10 @@ public class Player {
 				for (final Items item : model.pickedUpAccumulateableItems) {
 					modelController.replaceItemOnLevel(item);
 				}
-				model.setSpiderBombRounds(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
-				model.setSpiderBombEnabled(true);
+				// spider bomb in the place of the died bomberman
+				// TODO make it configurable
+				// model.setSpiderBombRounds(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
+				// model.setSpiderBombEnabled(true);
 			}
 		} else {
 
