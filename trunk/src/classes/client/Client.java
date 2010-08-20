@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 
 import classes.AbstractAnimationMainComponentHandler;
@@ -134,6 +135,8 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 
 	/** New, unprocessed actions of all clients (including ours). */
 	public String                                newClientsActions;
+
+	private Map<String, Integer>                 previousRoundsPoints;
 
 	/**
 	 * Creates a new Client.
@@ -339,15 +342,8 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 							gameCoreHandler.aClientHasLeftTheGame(clientIndex);
 						break;
 					case SENDING_PUBLIC_CLIENT_OPTIONS:
-						final int clientIndex_ = commandTokenizer.nextIntToken(); // Index
-						// of
-						// client
-						// whose
-						// public
-						// client
-						// options
-						// is
-						// being
+						final int clientIndex_ = commandTokenizer.nextIntToken();
+						// Index of client whose public client options is being
 						// received
 						clientsPublicClientOptions.set(clientIndex_, PublicClientOptions.parseFromString(commandTokenizer.remainingString()));
 						break;
@@ -441,7 +437,10 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			// handler now, and register that game is now in GameStates.PLAYING
 			// state
 			gameCoreHandler = new GameCoreHandler(gameManager, mainFrame, globalServerOptions, levelModel, random, clientsPublicClientOptions, ourIndex);
-			gameSceneMainComponentHandler.getGameSceneComponent().setModelProvider(gameCoreHandler);
+			if (previousRoundsPoints != null) {
+				gameCoreHandler.setPoints(previousRoundsPoints);
+			}
+			gameSceneMainComponentHandler.getGameSceneComponent().setGameCoreHandler(gameCoreHandler);
 			gameSceneMainComponentHandler.getGameSceneComponent().handleGameStarting();
 			gameManager.setMainComponentHandler(gameSceneMainComponentHandler);
 
@@ -516,13 +515,10 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * Handles ending of the game.
 	 */
 	private void handleGameEnding() {
-		mainFrame.getMainMenuBar().setGameState(GameStates.PLAYER_COLLECTING_CONNECTED); // This
-		// has
-		// to
-		// be
-		// done
-		// first
-		gameSceneMainComponentHandler.getGameSceneComponent().setModelProvider(null);
+		mainFrame.getMainMenuBar().setGameState(GameStates.PLAYER_COLLECTING_CONNECTED);
+		// This has to be done first
+		gameSceneMainComponentHandler.getGameSceneComponent().setGameCoreHandler(null);
+		previousRoundsPoints = gameCoreHandler.getPoints();
 		gameCoreHandler = null;
 		gameManager.setMainComponentHandler(waitingAnimationMainComponentHandler);
 	}
@@ -560,6 +556,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * to) be invoked at the end of the run() method.
 	 */
 	protected void close() {
+		previousRoundsPoints = null;
 		gameSceneMainComponentHandler.getGameSceneComponent().close();
 
 		clientOptionsManager.unregisterOptionsChangeListener(this);
