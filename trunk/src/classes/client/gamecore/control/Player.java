@@ -25,7 +25,6 @@ import classes.client.gamecore.Consts.BombPhases;
 import classes.client.gamecore.Consts.BombTypes;
 import classes.client.gamecore.Consts.Directions;
 import classes.client.gamecore.model.BombModel;
-import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.sound.SoundEffect;
@@ -51,9 +50,8 @@ public class Player {
 	/** The model of the player. */
 	private final PlayerModel     model               = new PlayerModel();
 	/** Reference to a model provider. */
-	private final ModelProvider   modelProvider;
-	/** Reference to a model controller. */
-	private final ModelController modelController;
+	private final GameCoreHandler gameCoreHandler;
+
 	private final boolean         ourClient;
 	private long                  lastSpiderBomb;
 
@@ -69,13 +67,11 @@ public class Player {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Player(boolean ourClient, final int clientIndex, final int playerIndex, final ModelProvider modelProvider, final ModelController modelController,
-	        String name) {
+	public Player(boolean ourClient, final int clientIndex, final int playerIndex, final GameCoreHandler gameCoreHandler, String name) {
 		this.ourClient = ourClient;
 		this.clientIndex = clientIndex;
 		this.playerIndex = playerIndex;
-		this.modelProvider = modelProvider;
-		this.modelController = modelController;
+		this.gameCoreHandler = gameCoreHandler;
 		model.setName(name);
 	}
 
@@ -115,8 +111,8 @@ public class Player {
 		model.setVitality(MAX_PLAYER_VITALITY);
 		model.setPickedUpBombModel(null);
 
-		model.accumulateableItemQuantitiesMap.putAll(modelProvider.getLevelModel().getLevelOptions().getAccumulateableItemQuantitiesMap());
-		model.hasNonAccumulateableItemsMap.putAll(modelProvider.getLevelModel().getLevelOptions().getHasNonAccumulateableItemsMap());
+		model.accumulateableItemQuantitiesMap.putAll(gameCoreHandler.getLevelModel().getLevelOptions().getAccumulateableItemQuantitiesMap());
+		model.hasNonAccumulateableItemsMap.putAll(gameCoreHandler.getLevelModel().getLevelOptions().getHasNonAccumulateableItemsMap());
 		model.pickedUpAccumulateableItems.clear();
 		model.pickedUpNonAccumulateableItems.clear();
 		model.setPlaceableWalls(0);
@@ -143,10 +139,10 @@ public class Player {
 
 			if (model.getIterationCounter() == DEAD_ITERATIONS_BEFORE_REPLACING_ITEMS) {
 				for (final Items item : model.pickedUpNonAccumulateableItems) {
-					modelController.replaceItemOnLevel(item);
+					gameCoreHandler.replaceItemOnLevel(item);
 				}
 				for (final Items item : model.pickedUpAccumulateableItems) {
-					modelController.replaceItemOnLevel(item);
+					gameCoreHandler.replaceItemOnLevel(item);
 				}
 				// spider bomb in the place of the died bomberman
 				// TODO make it configurable
@@ -175,7 +171,7 @@ public class Player {
 	}
 
 	private void handleSpiderBomb() {
-		long now = modelProvider.getTick();
+		long now = gameCoreHandler.getTick();
 		if (!model.isSpiderBombEnabled() || (lastSpiderBomb + SPIDER_BOMB_LATENCY > now)) {
 			return;
 		}
@@ -222,7 +218,7 @@ public class Player {
 		int componentPosX = playerComponentPosX;
 		int componentPosY = playerComponentPosY;
 
-		final Bomb newBomb = new Bomb(model, modelProvider, modelController);
+		final Bomb newBomb = new Bomb(model, gameCoreHandler);
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setRange(model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap
 		        .get(Items.FIRE) + 1);
@@ -238,10 +234,10 @@ public class Player {
 		newBombModel.setTickingIterations(BOMB_DETONATION_ITERATIONS / 2);
 		newBombModel.setPhase(BombPhases.FLYING);
 
-		modelController.validateAndSetFlyingTargetPosX(newBombModel, newBombModel.getPosX() + newBombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
-		modelController.validateAndSetFlyingTargetPosY(newBombModel, newBombModel.getPosY() + newBombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
+		gameCoreHandler.validateAndSetFlyingTargetPosX(newBombModel, newBombModel.getPosX() + newBombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
+		gameCoreHandler.validateAndSetFlyingTargetPosY(newBombModel, newBombModel.getPosY() + newBombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 
-		modelController.addNewBomb(newBomb);
+		gameCoreHandler.addNewBomb(newBomb);
 	}
 
 	private void processDiseaseEffects() {
@@ -345,14 +341,14 @@ public class Player {
 		int componentPosY = playerComponentPosY;
 		int maxPlacableBombs = Math.min(1, model.accumulateableItemQuantitiesMap.get(Items.BOMB));
 
-		final Integer bombIndexAtComponentPosition = modelProvider.getBombIndexAtComponentPosition(componentPosX, componentPosY);
+		final Integer bombIndexAtComponentPosition = gameCoreHandler.getBombIndexAtComponentPosition(componentPosX, componentPosY);
 		if (bombIndexAtComponentPosition != null) {
 			if (model.hasNonAccumulateableItemsMap.get(Items.BLUE_GLOVES)) {
-				if (modelProvider.getBombModels().get(bombIndexAtComponentPosition).getOwnerPlayer() != model) {
+				if (gameCoreHandler.getBombModels().get(bombIndexAtComponentPosition).getOwnerPlayer() != model) {
 					return; // We can only pick up our own bombs
 				}
-				model.setPickedUpBombModel(modelProvider.getBombModels().get(bombIndexAtComponentPosition));
-				modelController.removeBombAtIndex(bombIndexAtComponentPosition);
+				model.setPickedUpBombModel(gameCoreHandler.getBombModels().get(bombIndexAtComponentPosition));
+				gameCoreHandler.removeBombAtIndex(bombIndexAtComponentPosition);
 				model.setActivity(Activities.PICKING_UP);
 				return;
 			}
@@ -364,24 +360,24 @@ public class Player {
 			}
 		}
 
-		final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+		final LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
 
 		int bombsCount = model.accumulateableItemQuantitiesMap.get(Items.BOMB);
 		for (int i = 0; i < maxPlacableBombs; i++) {
 			final Walls wallInPosition = levelComponents[componentPosY][componentPosX].getWall();
 
-			if (modelProvider.isBombAtComponentPosition(componentPosX, componentPosY) || (wallInPosition != Walls.EMPTY)
+			if (gameCoreHandler.isBombAtComponentPosition(componentPosX, componentPosY) || (wallInPosition != Walls.EMPTY)
 			        || ((wallInPosition == Walls.EMPTY) && (levelComponents[componentPosY][componentPosX].getItem() != null))) {
 				break;
 			}
 			if ((componentPosX != playerComponentPosX) || (componentPosY != playerComponentPosY)) {
-				if (modelProvider.isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, model)) {
+				if (gameCoreHandler.isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, model)) {
 					break;
 				}
 			}
 
 			model.accumulateableItemQuantitiesMap.put(Items.BOMB, --bombsCount);
-			final Bomb newBomb = new Bomb(model, modelProvider, modelController);
+			final Bomb newBomb = new Bomb(model, gameCoreHandler);
 			final BombModel newBombModel = newBomb.getModel();
 
 			int bombRange = model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE
@@ -408,7 +404,7 @@ public class Player {
 				newBombModel.setTickingIterations(Consts.BOMB_DETONATION_ITERATIONS * 3 / 4);
 			}
 
-			modelController.addNewBomb(newBomb);
+			gameCoreHandler.addNewBomb(newBomb);
 
 			componentPosX += model.getDirectionXMultiplier();
 			componentPosY += model.getDirectionYMultiplier();
@@ -430,10 +426,10 @@ public class Player {
 
 		bombModel.setPhase(BombPhases.FLYING);
 
-		modelController.validateAndSetFlyingTargetPosX(bombModel, bombModel.getPosX() + bombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
-		modelController.validateAndSetFlyingTargetPosY(bombModel, bombModel.getPosY() + bombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
+		gameCoreHandler.validateAndSetFlyingTargetPosX(bombModel, bombModel.getPosX() + bombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
+		gameCoreHandler.validateAndSetFlyingTargetPosY(bombModel, bombModel.getPosY() + bombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 
-		modelController.addNewBomb(new Bomb(bombModel, modelProvider, modelController));
+		gameCoreHandler.addNewBomb(new Bomb(bombModel, gameCoreHandler));
 		model.setPickedUpBombModel(null);
 
 		model.setActivity(model.getActivity() == Activities.STANDING_WITH_BOMB ? Activities.STANDING : Activities.WALKING);
@@ -449,7 +445,7 @@ public class Player {
 	private void handleFunction2() {
 		// First of all, function 2 stops normal rolling bombs and triggers
 		// triggerable bombs.
-		for (final BombModel bombModel : modelProvider.getBombModels()) {
+		for (final BombModel bombModel : gameCoreHandler.getBombModels()) {
 			if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.NORMAL) && (bombModel.getPhase() == BombPhases.ROLLING)) {
 				bombModel.setPhase(BombPhases.STANDING);
 				bombModel.alignPosXToComponentCenter();
@@ -460,24 +456,24 @@ public class Player {
 		if (model.hasNonAccumulateableItemsMap.get(Items.BOXING_GLOVES)) {
 			model.setActivity(Activities.PUNCHING);
 
-			final Integer bombIndexAhead = modelProvider.getBombIndexAtComponentPosition(model.getComponentPosX() + model.getDirectionXMultiplier(), model
+			final Integer bombIndexAhead = gameCoreHandler.getBombIndexAtComponentPosition(model.getComponentPosX() + model.getDirectionXMultiplier(), model
 			        .getComponentPosY()
 			        + model.getDirectionYMultiplier());
 			if (bombIndexAhead != null) {
-				final BombModel bombModel = modelProvider.getBombModels().get(bombIndexAhead);
+				final BombModel bombModel = gameCoreHandler.getBombModels().get(bombIndexAhead);
 				bombModel.setDirection(model.getDirection()); // We punch in our
 				// direction
 				bombModel.setPosX(bombModel.getComponentPosX() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 				bombModel.setPosY(bombModel.getComponentPosY() * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
 				bombModel.setPhase(BombPhases.FLYING);
 
-				modelController.validateAndSetFlyingTargetPosX(bombModel, bombModel.getPosX() + bombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
-				modelController.validateAndSetFlyingTargetPosY(bombModel, bombModel.getPosY() + bombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
+				gameCoreHandler.validateAndSetFlyingTargetPosX(bombModel, bombModel.getPosX() + bombModel.getDirectionXMultiplier() * BOMB_FLYING_DISTANCE);
+				gameCoreHandler.validateAndSetFlyingTargetPosY(bombModel, bombModel.getPosY() + bombModel.getDirectionYMultiplier() * BOMB_FLYING_DISTANCE);
 			}
 		}
 
 		else if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER)) {
-			for (final BombModel bombModel : modelProvider.getBombModels()) {
+			for (final BombModel bombModel : gameCoreHandler.getBombModels()) {
 				if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.TRIGGERED) && (bombModel.getPhase() != BombPhases.FLYING)) {
 					bombModel.setAboutToDetonate(true);
 					break; // Function2 only detonates 1 triggered bomb
@@ -489,7 +485,7 @@ public class Player {
 			final int componentPosX = model.getComponentPosX() + model.getDirectionXMultiplier();
 			final int componentPosY = model.getComponentPosY() + model.getDirectionYMultiplier();
 			if (isComponentPositionFreeForWallBuilding(componentPosX, componentPosY) && (model.getPlaceableWalls() > 0)) {
-				modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX].setWall(Walls.BRICK);
+				gameCoreHandler.getLevelModel().getComponents()[componentPosY][componentPosX].setWall(Walls.BRICK);
 				model.setPlaceableWalls(model.getPlaceableWalls() - 1);
 				SoundEffect.PLACE_WALL.play();
 				if (model.getPlaceableWalls() == 0) {
@@ -513,17 +509,17 @@ public class Player {
 	 *         false otherwise
 	 */
 	private boolean isComponentPositionFreeForWallBuilding(final int componentPosX, final int componentPosY) {
-		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[componentPosY][componentPosX];
 
 		if ((levelComponent.getWall() != Walls.EMPTY) || ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null))) {
 			return false;
 		}
 
-		if (modelProvider.isBombAtComponentPosition(componentPosX, componentPosY)) {
+		if (gameCoreHandler.isBombAtComponentPosition(componentPosX, componentPosY)) {
 			return false;
 		}
 
-		if (modelProvider.isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, null)) {
+		if (gameCoreHandler.isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, null)) {
 			return false;
 		}
 
@@ -567,7 +563,7 @@ public class Player {
 
 			if (needsToBeContained) {
 				int newSpeed = -1;
-				final boolean bombAhead = modelProvider.isBombAtComponentPosition(posXAhead / LEVEL_COMPONENT_GRANULARITY, posYAhead
+				final boolean bombAhead = gameCoreHandler.isBombAtComponentPosition(posXAhead / LEVEL_COMPONENT_GRANULARITY, posYAhead
 				        / LEVEL_COMPONENT_GRANULARITY);
 
 				switch (model.getDirection()) {
@@ -633,7 +629,7 @@ public class Player {
 	 * Check whether we stand on an item, and handles the picking up.
 	 */
 	private void checkAndHandleItemPickingUp() {
-		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
+		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
 
 		if ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null) && !levelComponent.hasFire()) {
 			final Items item = levelComponent.getItem();
@@ -660,14 +656,14 @@ public class Player {
 
 							model.hasNonAccumulateableItemsMap.put(neutralizedItem, false);
 							if (model.pickedUpNonAccumulateableItems.remove(neutralizedItem)) {
-								modelController.replaceItemOnLevel(neutralizedItem);
+								gameCoreHandler.replaceItemOnLevel(neutralizedItem);
 							}
 
 							// If Trigger has been thrown out the window, we
 							// have to transform triggered bombs back to normal
 							// or jelly.
 							if (neutralizedItem == Items.TRIGGER) {
-								for (final BombModel bombModel : modelProvider.getBombModels()) {
+								for (final BombModel bombModel : gameCoreHandler.getBombModels()) {
 									if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.TRIGGERED)) {
 										bombModel.setType(model.hasNonAccumulateableItemsMap.get(Items.JELLY) ? BombTypes.JELLY : BombTypes.NORMAL);
 										bombModel.setIterationCounter(0);
@@ -686,7 +682,7 @@ public class Player {
 			switch (item) {
 				case TRIGGER:
 					model.setPlacableTriggeredBombs(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
-					for (final BombModel bombModel : modelProvider.getBombModels()) {
+					for (final BombModel bombModel : gameCoreHandler.getBombModels()) {
 						if (bombModel.getOwnerPlayer() == model) {
 							model.setPlacableTriggeredBombs(model.getPlacableTriggeredBombs() + 1);
 						}
@@ -707,16 +703,16 @@ public class Player {
 					model.setSpiderBombEnabled(true);
 					break;
 				case DISEASE: {
-					getModel().addDisease(modelController.getGlobalServerOptions().getLevelOptions().getRandomDisease(),
-					        modelProvider.getTick() + PlayerModel.DISEASE_DURATION);
+					getModel().addDisease(gameCoreHandler.getGlobalServerOptions().getLevelOptions().getRandomDisease(),
+					        gameCoreHandler.getTick() + PlayerModel.DISEASE_DURATION);
 					break;
 				}
 				case SUPER_DISEASE: {
 					int numberOfMassDiseases = MathHelper.randomInt(2) + 1;
 
 					for (int massDiseaseCounter = 0; massDiseaseCounter < numberOfMassDiseases; massDiseaseCounter++) {
-						getModel().addDisease(modelController.getGlobalServerOptions().getLevelOptions().getRandomDisease(),
-						        modelProvider.getTick() + PlayerModel.SUPER_DISEASE_DURATION);
+						getModel().addDisease(gameCoreHandler.getGlobalServerOptions().getLevelOptions().getRandomDisease(),
+						        gameCoreHandler.getTick() + PlayerModel.SUPER_DISEASE_DURATION);
 					}
 					break;
 				}
@@ -741,7 +737,7 @@ public class Player {
 		// standing on in order to be able to turn on it.
 
 		final int movementCorrectionSensitivity = LEVEL_COMPONENT_GRANULARITY
-		        * modelProvider.getClientsPublicClientOptions().get(clientIndex).movementCorrectionSensitivities[playerIndex] / 200;
+		        * gameCoreHandler.getClientsPublicClientOptions().get(clientIndex).movementCorrectionSensitivities[playerIndex] / 200;
 
 		if (model.getControlKeyState(PlayerControlKeys.DOWN)) {
 			model.setDirection(Directions.DOWN);
@@ -906,17 +902,17 @@ public class Player {
 	}
 
 	private void pushWall(int cx, int cy, int wx, int wy, int dx, int dy) {
-		LevelComponent compToPush = modelProvider.getLevelModel().getComponent(wx, wy);
+		LevelComponent compToPush = gameCoreHandler.getLevelModel().getComponent(wx, wy);
 
 		boolean explosionsAtPos = compToPush.hasFire();
-		boolean bombAtPos = modelProvider.isBombAtComponentPosition(wx, wy);
-		boolean playerAtPos = modelProvider.isPlayerAtComponentPositionExcludePlayer(wx, wy, model);
+		boolean bombAtPos = gameCoreHandler.isBombAtComponentPosition(wx, wy);
+		boolean playerAtPos = gameCoreHandler.isPlayerAtComponentPositionExcludePlayer(wx, wy, model);
 
 		if (!bombAtPos && !playerAtPos && !explosionsAtPos) {
 			if (compToPush.getWall() == Walls.EMPTY) {
-				LevelComponent oldComp = modelProvider.getLevelModel().getComponent(cx, cy);
-				modelProvider.getLevelModel().setComponent(oldComp, wx, wy);
-				modelProvider.getLevelModel().setComponent(compToPush, cx, cy);
+				LevelComponent oldComp = gameCoreHandler.getLevelModel().getComponent(cx, cy);
+				gameCoreHandler.getLevelModel().setComponent(oldComp, wx, wy);
+				gameCoreHandler.getLevelModel().setComponent(compToPush, cx, cy);
 			} else if (compToPush.getWall() == Walls.BRICK) {
 				pushWall(cx, cy, wx + dx, wy + dy, dx, dy);
 			}
@@ -940,14 +936,14 @@ public class Player {
 		int componentPosX = posX / LEVEL_COMPONENT_GRANULARITY;
 		int componentPosY = posY / LEVEL_COMPONENT_GRANULARITY;
 
-		Walls wall = modelProvider.getLevelModel().getComponent(componentPosX, componentPosY).getWall();
+		Walls wall = gameCoreHandler.getLevelModel().getComponent(componentPosX, componentPosY).getWall();
 
 		if (model.hasDisease(Diseases.BODY_BUILDER)) {
 			int dx = componentPosX - model.getComponentPosX();
 			int dy = componentPosY - model.getComponentPosY();
 
 			if ((dx != 0 || dy != 0) && wall == Walls.BRICK && componentPosX > 1 && componentPosY > 1
-			        && componentPosX < modelProvider.getLevelModel().getWidth() - 2 && componentPosY < modelProvider.getLevelModel().getHeight() - 2) {
+			        && componentPosX < gameCoreHandler.getLevelModel().getWidth() - 2 && componentPosY < gameCoreHandler.getLevelModel().getHeight() - 2) {
 
 				int wx = componentPosX + dx;
 				int wy = componentPosY + dy;
@@ -965,7 +961,7 @@ public class Player {
 			}
 		}
 
-		if (modelProvider.isBombAtComponentPosition(componentPosX, componentPosY)) {
+		if (gameCoreHandler.isBombAtComponentPosition(componentPosX, componentPosY)) {
 			return false;
 		}
 
@@ -979,17 +975,17 @@ public class Player {
 		final int componentPosXAhead = model.getComponentPosX() + model.getDirectionXMultiplier();
 		final int componentPosYAhead = model.getComponentPosY() + model.getDirectionYMultiplier();
 
-		final Integer bombIndexAhead = modelProvider.getBombIndexAtComponentPosition(componentPosXAhead, componentPosYAhead);
+		final Integer bombIndexAhead = gameCoreHandler.getBombIndexAtComponentPosition(componentPosXAhead, componentPosYAhead);
 		if (bombIndexAhead == null) {
 			return;
 		}
 
-		final BombModel bombModel = modelProvider.getBombModels().get(bombIndexAhead);
+		final BombModel bombModel = gameCoreHandler.getBombModels().get(bombIndexAhead);
 
 		final int componentPosXAheadAhead = componentPosXAhead + model.getDirectionXMultiplier();
 		final int componentPosYAheadAhead = componentPosYAhead + model.getDirectionYMultiplier();
 
-		if (!modelController.canBombRollToComponentPosition(bombModel, componentPosXAheadAhead, componentPosYAheadAhead)) {
+		if (!gameCoreHandler.canBombRollToComponentPosition(bombModel, componentPosXAheadAhead, componentPosYAheadAhead)) {
 			return;
 		}
 

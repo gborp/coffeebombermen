@@ -8,7 +8,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
 import classes.options.Consts.Items;
@@ -28,10 +27,8 @@ public class Level {
 	 * each component.
 	 */
 	private final List<Fire>[][]  fireVectorss;
-	/** Reference to a model provider. */
-	private final ModelProvider   modelProvider;
-	/** Reference to a model controller. */
-	private final ModelController modelController;
+
+	private final GameCoreHandler gameCoreHandler;
 
 	/**
 	 * Creates a new Level.<br>
@@ -44,8 +41,8 @@ public class Level {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Level(final LevelOptions levelOptions, final ModelProvider modelProvider, final ModelController modelController) {
-		this(new LevelModel(levelOptions), modelProvider, modelController);
+	public Level(final LevelOptions levelOptions, final GameCoreHandler gameCoreHandler) {
+		this(new LevelModel(levelOptions), gameCoreHandler);
 	}
 
 	/**
@@ -58,10 +55,9 @@ public class Level {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Level(final LevelModel levelModel, final ModelProvider modelProvider, final ModelController modelController) {
+	public Level(final LevelModel levelModel, final GameCoreHandler gameCoreHandler) {
 		model = levelModel;
-		this.modelProvider = modelProvider;
-		this.modelController = modelController;
+		this.gameCoreHandler = gameCoreHandler;
 
 		fireVectorss = (ArrayList<Fire>[][]) Array.newInstance(new ArrayList<Fire>().getClass(), new int[] { model.getComponents().length,
 		        model.getComponents()[0].length });
@@ -94,7 +90,7 @@ public class Level {
 	public void addFireToComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		fireVectorss[componentPosY][componentPosX].add(fire);
 
-		final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[componentPosY][componentPosX];
 		levelComponent.addFire(fire.getModel());
 
 		// We decide what item and if there will be an item after the fire,
@@ -107,9 +103,9 @@ public class Level {
 			// once (see: time
 			// delayed multiple
 			// fire).
-			if (modelController.getGlobalServerOptions().getGettingItemProbability() > modelController.getRandom().nextInt(100))
-				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(modelController.getGlobalServerOptions().getLevelOptions()
-				        .getItemWeights(), modelController.getRandom())]);
+			if (gameCoreHandler.getGlobalServerOptions().getGettingItemProbability() > gameCoreHandler.getRandom().nextInt(100))
+				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(gameCoreHandler.getGlobalServerOptions().getLevelOptions()
+				        .getItemWeights(), gameCoreHandler.getRandom())]);
 	}
 
 	/**

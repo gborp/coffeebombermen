@@ -6,7 +6,6 @@ package classes.client.gamecore.control;
 
 import static classes.client.gamecore.Consts.FIRE_ITERATIONS;
 import classes.client.gamecore.model.FireModel;
-import classes.client.gamecore.model.ModelProvider;
 
 /**
  * The control layer of the fire.<br>
@@ -21,10 +20,8 @@ public class Fire {
 	private final int             componentPosX;
 	/** Y coordinate of the component where this fire takes place on. */
 	private final int             componentPosY;
-	/** Reference to a model provider. */
-	private final ModelProvider   modelProvider;
-	/** Reference to a model controller. */
-	private final ModelController modelController;
+
+	private final GameCoreHandler gameCoreHandler;
 
 	/**
 	 * Creates a new Fire.<br>
@@ -38,11 +35,10 @@ public class Fire {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Fire(final int componentPosX, final int componentPosY, final ModelProvider modelProvider, final ModelController modelController) {
+	public Fire(final int componentPosX, final int componentPosY, final GameCoreHandler gameCoreHandler) {
 		this.componentPosX = componentPosX;
 		this.componentPosY = componentPosY;
-		this.modelProvider = modelProvider;
-		this.modelController = modelController;
+		this.gameCoreHandler = gameCoreHandler;
 
 		model = new FireModel();
 	}
@@ -60,10 +56,11 @@ public class Fire {
 	 * Performs operations which are requried by passing the time.
 	 */
 	public void nextIteration() {
-		if (model.getIterationCounter() + 1 < FIRE_ITERATIONS)
+		if (model.getIterationCounter() + 1 < FIRE_ITERATIONS) {
 			model.nextIteration();
-		else
-			modelController.removeFireFromComponentPos(this, componentPosX, componentPosY);
+		} else {
+			gameCoreHandler.removeFireFromComponentPos(this, componentPosX, componentPosY);
+		}
 	}
 
 }

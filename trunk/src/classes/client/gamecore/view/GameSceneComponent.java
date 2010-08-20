@@ -23,9 +23,9 @@ import javax.swing.JComponent;
 import classes.client.Client;
 import classes.client.gamecore.Consts.Activities;
 import classes.client.gamecore.Consts.BombPhases;
+import classes.client.gamecore.control.GameCoreHandler;
 import classes.client.gamecore.model.BombModel;
 import classes.client.gamecore.model.FireModel;
-import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.graphics.GraphicsManager;
@@ -73,8 +73,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	/** References to the handlers of the burning phases. */
 	private ImageHandler[]                      burningPhaseHandlers;
 
-	/** Reference to a model provider, this model will be displayed. */
-	private ModelProvider                       modelProvider;
+	private GameCoreHandler                     gameCoreHandler;
 	/**
 	 * The sequence of actions made by the users on this component required for
 	 * the game.
@@ -133,18 +132,18 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		if (GraphicsManager.getCurrentManager() == null) // No graphics theme
 			// loaded
 			return;
-		if (modelProvider == null) // No game started yet
+		if (gameCoreHandler == null) // No game started yet
 			return;
-		if (modelProvider.getLevelModel() == null) // No level created yet
+		if (gameCoreHandler.getLevelModel() == null) // No level created yet
 			return;
 
-		long now = modelProvider.getTick();
+		long now = gameCoreHandler.getTick();
 
 		boolean blackOut = false;
 		boolean colorBlind = false;
 
 		int ourIndex = client.getOurIndex();
-		List<PlayerModel[]> clientPlayerModels = modelProvider.getClientsPlayerModels();
+		List<PlayerModel[]> clientPlayerModels = gameCoreHandler.getClientsPlayerModels();
 
 		for (int i = 0; i < clientPlayerModels.size(); i++) {
 
@@ -194,12 +193,14 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		g2.setComposite(blackoutComposite);
 
 		if (!hasActualDetonation()) {
-			g2.fillRect(0, 0, modelProvider.getLevelModel().getWidth() * levelComponentSize, modelProvider.getLevelModel().getHeight() * levelComponentSize);
+			g2
+			        .fillRect(0, 0, gameCoreHandler.getLevelModel().getWidth() * levelComponentSize, gameCoreHandler.getLevelModel().getHeight()
+			                * levelComponentSize);
 			g2.setComposite(normalComposit);
 			return;
 		}
 
-		final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+		final LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
 
 		for (int i = 0, y = 0; i < levelComponents.length; i++, y += levelComponentSize) {
 			final LevelComponent[] levelComponentLine = levelComponents[i];
@@ -243,7 +244,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	}
 
 	private boolean hasActualDetonation() {
-		final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+		final LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
 
 		for (int i = 0, y = 0; i < levelComponents.length; i++, y += levelComponentSize) {
 			final LevelComponent[] levelComponentLine = levelComponents[i];
@@ -268,7 +269,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 *            graphics context which will be used to paint in
 	 */
 	private void setWorkingParameters(final Graphics graphics) {
-		LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+		LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
 		int originalLevelComponentSize = wallImageHandlers[0].getOriginalWidth(); // Equals
 		// to
 		// wallImageHandlers[
@@ -296,7 +297,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 */
 	private void paintLevel(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
+		LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
 		float wallScaleFactor = (float) levelComponentSize / wallImageHandlers[0].getOriginalWidth();
 		float itemScaleFactor = (float) levelComponentSize / itemImageHandlers[0].getOriginalWidth();
 		float fireScaleFactor = (float) levelComponentSize / firePhaseHandlers[0][0].getOriginalWidth();
@@ -405,7 +406,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 *            graphics context in which to paint
 	 */
 	private void paintBombs(final Graphics graphics) {
-		final List<BombModel> bombModels = modelProvider.getBombModels();
+		final List<BombModel> bombModels = gameCoreHandler.getBombModels();
 
 		if (bombModels == null) {
 			return;
@@ -446,7 +447,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 *            graphics context in which to paint
 	 */
 	private void paintBombermen(final Graphics graphics, boolean colorBlind) {
-		final List<PlayerModel[]> clientPlayerModels = modelProvider.getClientsPlayerModels();
+		final List<PlayerModel[]> clientPlayerModels = gameCoreHandler.getClientsPlayerModels();
 
 		final float scaleFactor = (float) levelComponentSize / playerGraphics.get(0).getOriginalWidth();
 		final ClientOptions clientOptions = clientOptionsManager.getOptions();
@@ -460,7 +461,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			final PlayerModel[] playerModels = clientPlayerModels.get(i);
 
 			if (ourIndex != i) {
-				PublicClientOptions publicClientOptions = modelProvider.getClientsPublicClientOptions().get(i);
+				PublicClientOptions publicClientOptions = gameCoreHandler.getClientsPublicClientOptions().get(i);
 				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor, colorBlind);
 			}
 
@@ -473,7 +474,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			final PlayerModel[] playerModels = clientPlayerModels.get(i);
 
 			if (ourIndex == i) {
-				PublicClientOptions publicClientOptions = modelProvider.getClientsPublicClientOptions().get(i);
+				PublicClientOptions publicClientOptions = gameCoreHandler.getClientsPublicClientOptions().get(i);
 				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor, colorBlind);
 			}
 
@@ -508,7 +509,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			}
 
 			if (playerModel.hasDiseases()) {
-				if ((modelProvider.getTick() % FLASH_EVERY_NTH_TICK) == 0) {
+				if ((gameCoreHandler.getTick() % FLASH_EVERY_NTH_TICK) == 0) {
 					g2.setComposite(infectedComposite);
 					effectivePlayerNumberForGx = PLAYER_GFX_FLASH;
 				}
@@ -597,8 +598,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 * @param modelProvider
 	 *            the model provider that should be displayed
 	 */
-	public void setModelProvider(final ModelProvider modelProvider) {
-		this.modelProvider = modelProvider;
+	public void setModelProvider(final GameCoreHandler gameCoreHandler) {
+		this.gameCoreHandler = gameCoreHandler;
 	}
 
 	/**
