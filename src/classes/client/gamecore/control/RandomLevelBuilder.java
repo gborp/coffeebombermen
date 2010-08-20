@@ -2,7 +2,6 @@ package classes.client.gamecore.control;
 
 import java.util.Random;
 
-import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.options.Consts.Walls;
 import classes.options.model.LevelOptions;
@@ -20,9 +19,9 @@ public class RandomLevelBuilder {
 	 * 
 	 * @return a random level specified by the global server options
 	 */
-	public static Level generateRandomLevel(ServerOptions globalServerOptions, ModelProvider modelProvider, ModelController modelController, Random random) {
+	public static Level generateRandomLevel(ServerOptions globalServerOptions, GameCoreHandler gameCoreHandler, Random random) {
 		final LevelOptions levelOptions = globalServerOptions.getLevelOptions();
-		final Level level = new Level(levelOptions, modelProvider, modelController);
+		final Level level = new Level(levelOptions, gameCoreHandler);
 		final LevelComponent[][] levelComponents = level.getModel().getComponents();
 
 		final int levelWidth = levelComponents[0].length;

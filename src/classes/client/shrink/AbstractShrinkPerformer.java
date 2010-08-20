@@ -99,7 +99,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	}
 
 	protected void addBomb(int x, int y, int range, BombPhases phase, Directions direction) {
-		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
+		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler());
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
 		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
@@ -111,7 +111,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	}
 
 	protected void addCrazyBomb(int x, int y, int range) {
-		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
+		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler());
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
 		newBombModel.setCrazyPercent(0.5f);
@@ -146,7 +146,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	}
 
 	protected void addDetonatingOnHitBomb(int x, int y, int range) {
-		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler(), getGameCoreHandler());
+		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler());
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
 		newBombModel.setDetonatingOnHit(true);

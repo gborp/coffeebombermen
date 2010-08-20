@@ -66,6 +66,7 @@ public class PlayerModel extends PositionedIterableObject {
 	private boolean                      autoDropBombEnabled;
 	private boolean                      spiderBombEnabled;
 	private int                          spiderBombRounds;
+	private int                          points;
 
 	/**
 	 * Returns the vitality of the player.
@@ -303,6 +304,14 @@ public class PlayerModel extends PositionedIterableObject {
 
 	public boolean isAlive() {
 		return vitality > 0;
+	}
+
+	public int getPoints() {
+		return this.points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
 	}
 
 }

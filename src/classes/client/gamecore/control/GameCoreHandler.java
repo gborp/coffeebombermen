@@ -26,7 +26,6 @@ import classes.client.gamecore.Consts.Directions;
 import classes.client.gamecore.Consts.FireShapes;
 import classes.client.gamecore.model.BombModel;
 import classes.client.gamecore.model.FireModel;
-import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.gamecore.model.level.LevelModel;
@@ -53,7 +52,7 @@ import classes.utils.MathHelper;
  * The class which handles the core of the game: manages rounds and the running
  * of a game.
  */
-public class GameCoreHandler implements ModelProvider, ModelController {
+public class GameCoreHandler {
 
 	/** in tick */
 	private static final int                LAST_PLAYER_COUNT_DOWN_BEFORE_WIN = 30;
@@ -148,7 +147,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 			final PlayerModel[] playerModels = new PlayerModel[publicClientOptions.playerNames.length];
 
 			for (int j = 0; j < players.length; j++) {
-				players[j] = new Player(ourClientIndex == i, i, j, this, this, publicClientOptions.playerNames[j]);
+				players[j] = new Player(ourClientIndex == i, i, j, this, publicClientOptions.playerNames[j]);
 				playerModels[j] = players[j].getModel();
 			}
 
@@ -199,7 +198,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 	 */
 	public void initNextRound() {
 		level = globalServerOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME) ? RandomLevelBuilder.generateRandomLevel(globalServerOptions, this,
-		        this, random) : new Level(receivedLevelModel.cloneLevel(), this, this);
+		        random) : new Level(receivedLevelModel.cloneLevel(), this);
 
 		final LevelComponent[][] levelComponents = level.getModel().getComponents();
 
@@ -482,13 +481,14 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 
 	private void matchJustWon() {
 
-		PlayerModel lastPlayer = getTheLastRemainingPlyer();
-		if (lastPlayer == null) {
+		PlayerModel lastPlayerModel = getTheLastRemainingPlyer();
+		if (lastPlayerModel == null) {
 			mainFrame.receiveMessage("Everyone died.");
 		} else {
 			// playerModel.setSpiderBombEnabled(true);
 			// playerModel.setSpiderBombRounds(MATCH_WON_SPIDER_BOMB_ROUNDS);
-			mainFrame.receiveMessage("Match is won by " + lastPlayer.getName() + " !");
+			lastPlayerModel.setPoints(lastPlayerModel.getPoints());
+			mainFrame.receiveMessage("Match is won by " + lastPlayerModel.getName() + " !");
 		}
 
 		for (int i = bombs.size() - 1; i >= 0; i--) {
@@ -632,7 +632,7 @@ public class GameCoreHandler implements ModelProvider, ModelController {
 							break;
 						} else {
 							// Now here we can set the fire...
-							final Fire fire = new Fire(componentPosX, componentPosY, this, this);
+							final Fire fire = new Fire(componentPosX, componentPosY, this);
 							final FireModel fireModel = fire.getModel();
 
 							fireModel.setShape(range == 0 ? FireShapes.CROSSING : (direction.getXMultiplier() != 0 ? FireShapes.HORIZONTAL

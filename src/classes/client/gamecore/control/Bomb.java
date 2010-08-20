@@ -13,7 +13,6 @@ import classes.client.gamecore.Consts.BombPhases;
 import classes.client.gamecore.Consts.BombTypes;
 import classes.client.gamecore.Consts.Directions;
 import classes.client.gamecore.model.BombModel;
-import classes.client.gamecore.model.ModelProvider;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
 import classes.options.Consts.Walls;
@@ -26,10 +25,7 @@ public class Bomb {
 
 	/** The model of the bomb. */
 	private final BombModel       model;
-	/** Reference to a model provider. */
-	private final ModelProvider   modelProvider;
-	/** Reference to a model controller. */
-	private final ModelController modelController;
+	private final GameCoreHandler gameCoreHandler;
 
 	/**
 	 * Creates a new Bomb.<br>
@@ -42,8 +38,8 @@ public class Bomb {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Bomb(final PlayerModel ownerPlayer, final ModelProvider modelProvider, final ModelController modelController) {
-		this(new BombModel(ownerPlayer), modelProvider, modelController);
+	public Bomb(final PlayerModel ownerPlayer, final GameCoreHandler gameCoreHandler) {
+		this(new BombModel(ownerPlayer), gameCoreHandler);
 	}
 
 	/**
@@ -56,10 +52,9 @@ public class Bomb {
 	 * @param modelController
 	 *            reference to a model controller
 	 */
-	public Bomb(final BombModel model, final ModelProvider modelProvider, final ModelController modelController) {
+	public Bomb(final BombModel model, final GameCoreHandler gameCoreHandler) {
 		this.model = model;
-		this.modelProvider = modelProvider;
-		this.modelController = modelController;
+		this.gameCoreHandler = gameCoreHandler;
 	}
 
 	/**
@@ -109,8 +104,8 @@ public class Bomb {
 				// We have to check the new positions: might be they're out of
 				// level, then we have to replace them to the opposite end.
 				// TODO: check game rules!!
-				final LevelComponent[][] levelComponents = modelProvider.getLevelModel().getComponents();
-				if (modelController.getGlobalServerOptions().isPunchedBombsComeBackAtTheOppositeEnd()) {
+				final LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
+				if (gameCoreHandler.getGlobalServerOptions().isPunchedBombsComeBackAtTheOppositeEnd()) {
 					if (newPosX < 0)
 						model.setPosX(levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY - 1);
 					else if (newPosX > levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY - 1)
@@ -157,9 +152,9 @@ public class Bomb {
 					final LevelComponent levelComponent = levelComponents[model.getComponentPosY()][model.getComponentPosX()];
 					if (levelComponent.getWall() != Walls.EMPTY || levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null)
 						permanentTargetPosition = false;
-					else if (modelProvider.isBombAtComponentPosition(model.getComponentPosX(), model.getComponentPosY()))
+					else if (gameCoreHandler.isBombAtComponentPosition(model.getComponentPosX(), model.getComponentPosY()))
 						permanentTargetPosition = false;
-					else if (modelProvider.isPlayerAtComponentPositionExcludePlayer(model.getComponentPosX(), model.getComponentPosY(), null))
+					else if (gameCoreHandler.isPlayerAtComponentPositionExcludePlayer(model.getComponentPosX(), model.getComponentPosY(), null))
 						permanentTargetPosition = false;
 
 					if (permanentTargetPosition) {
@@ -186,25 +181,25 @@ public class Bomb {
 							// new
 							// direction.
 							model.setPosY(model.getFlyingTargetPosY());
-							model.setDirection(Directions.values()[modelController.getRandom().nextInt(Directions.values().length)]);
+							model.setDirection(Directions.values()[gameCoreHandler.getRandom().nextInt(Directions.values().length)]);
 						}
-						modelController.validateAndSetFlyingTargetPosX(model, model.getFlyingTargetPosX() + model.getDirectionXMultiplier()
+						gameCoreHandler.validateAndSetFlyingTargetPosX(model, model.getFlyingTargetPosX() + model.getDirectionXMultiplier()
 						        * LEVEL_COMPONENT_GRANULARITY);
-						modelController.validateAndSetFlyingTargetPosY(model, model.getFlyingTargetPosY() + model.getDirectionYMultiplier()
+						gameCoreHandler.validateAndSetFlyingTargetPosY(model, model.getFlyingTargetPosY() + model.getDirectionYMultiplier()
 						        * LEVEL_COMPONENT_GRANULARITY);
 					}
 				}
 				break;
 
 			case ROLLING:
-				if (modelController.canBombRollToComponentPosition(model, model.getComponentPosX() + model.getDirectionXMultiplier(), model.getComponentPosY()
+				if (gameCoreHandler.canBombRollToComponentPosition(model, model.getComponentPosX() + model.getDirectionXMultiplier(), model.getComponentPosY()
 				        + model.getDirectionYMultiplier())) {
 					if (MathHelper.checkRandomEvent(model.getCrazyPercent() / (LEVEL_COMPONENT_GRANULARITY / BOMB_ROLLING_SPEED))) {
-						Directions newDirection = Directions.values()[modelController.getRandom().nextInt(Directions.values().length)];
+						Directions newDirection = Directions.values()[gameCoreHandler.getRandom().nextInt(Directions.values().length)];
 						if (newDirection.equals(model.getDirection()) || newDirection.equals(model.getDirection().getOpposite())) {
 							newDirection = newDirection.getTurnLeft();
 						}
-						if (modelController.canBombRollToComponentPosition(model, model.getComponentPosX() + newDirection.getXMultiplier(), model
+						if (gameCoreHandler.canBombRollToComponentPosition(model, model.getComponentPosX() + newDirection.getXMultiplier(), model
 						        .getComponentPosY()
 						        + newDirection.getYMultiplier())) {
 							model.setDirection(newDirection);
@@ -214,7 +209,7 @@ public class Bomb {
 					model.setPosX(model.getPosX() + BOMB_ROLLING_SPEED * model.getDirectionXMultiplier());
 					model.setPosY(model.getPosY() + BOMB_ROLLING_SPEED * model.getDirectionYMultiplier());
 
-					final LevelComponent levelComponent = modelProvider.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
+					final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
 					if (levelComponent.getItem() != null)
 						levelComponent.setItem(null);
 				} else {
