@@ -11,11 +11,14 @@ import static classes.client.gamecore.Consts.MAX_PLAYER_VITALITY;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -94,6 +97,16 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	private AlphaComposite                      infectedComposite        = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 	private AlphaComposite                      blackoutComposite        = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
 	private AlphaComposite                      fireLightComposite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
+	private AlphaComposite                      hallOfFameComposite      = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f);
+
+	private long                                blackOutDuration         = 30;
+	private long                                flashDuration            = 3;
+	private long                                nextFlashStart           = -1;
+
+	private float                               hallOfFameX;
+	private float                               hallOfFameY;
+	private int                                 hallOfFameWidth;
+	private int                                 hallOfFameHeight;
 
 	/**
 	 * Creates a new GameSceneComponent.
@@ -117,18 +130,14 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		refreshGraphicDatas();
 	}
 
-	private long blackOutDuration = 30;
-	private long flashDuration    = 3;
-	private long nextFlashStart   = -1;
-
 	/**
 	 * Paints the actual view of the component: paints the actual view of the
 	 * game scene.
 	 * 
-	 * @param graphics
+	 * @param g
 	 *            graphics context in which to paint
 	 */
-	public void paintComponent(final Graphics graphics) {
+	public void paintComponent(Graphics g) {
 		if (GraphicsManager.getCurrentManager() == null) // No graphics theme
 			// loaded
 			return;
@@ -174,15 +183,99 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			}
 		}
 
-		setWorkingParameters(graphics);
+		setWorkingParameters(g);
 
-		paintLevel(graphics);
-		paintBombs(graphics);
-		paintBombermen(graphics, colorBlind);
+		paintLevel(g);
+		paintBombs(g);
+		paintBombermen(g, colorBlind);
 
-		if (blackOut) {
-			paintBlackout(graphics);
+		if (gameCoreHandler.getHasMoreThanOneAlivePlayer()) {
+			if (blackOut) {
+				paintBlackout(g);
+			}
+		} else {
+			paintHallOfFrame(g);
 		}
+	}
+
+	private void paintHallOfFrame(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setComposite(hallOfFameComposite);
+		Font oldFont = g2.getFont();
+
+		PlayerModel playerWon = gameCoreHandler.getTheLastRemainingPlyer();
+
+		List<String> lstMessage = new ArrayList<String>();
+		if (playerWon != null) {
+			lstMessage.add(playerWon.getName() + " has won!");
+		} else {
+			lstMessage.add("Draw game.");
+		}
+		for (PlayerModel pm : gameCoreHandler.getAllPlayerModelsOrderedByPoint()) {
+			lstMessage.add(pm.getPoints() + " - " + pm.getName());
+		}
+
+		float fontSize = getHeight() / 4 / lstMessage.size();
+		g2.setFont(oldFont.deriveFont(fontSize).deriveFont(Font.BOLD));
+
+		FontMetrics fm = g2.getFontMetrics();
+
+		int maxWidth = -1;
+		for (String line : lstMessage) {
+			int width = fm.stringWidth(line);
+			if (width > maxWidth) {
+				maxWidth = width;
+			}
+		}
+		hallOfFameWidth = maxWidth;
+		hallOfFameHeight = (int) (lstMessage.size() * fontSize + 0.5 * fontSize - 0.5 * fontSize);
+
+		int y = (int) hallOfFameY;
+		g2.setColor(Color.BLACK);
+		g2.drawLine((int) hallOfFameX, (int) (y + fontSize * 1.5), (int) hallOfFameX + hallOfFameWidth, (int) (y + fontSize * 1.5));
+		g2.setColor(Color.WHITE);
+		g2.drawLine((int) hallOfFameX, (int) (y + fontSize * 1.5) + 1, (int) hallOfFameX + hallOfFameWidth, (int) (y + fontSize * 1.5) + 1);
+
+		for (String line : lstMessage) {
+			g2.setColor(Color.BLACK);
+			g2.drawString(line, hallOfFameX, y + fontSize);
+			g2.setColor(Color.WHITE);
+			g2.drawString(line, hallOfFameX + 2, y + fontSize + 2);
+			y += fontSize * 1.5;
+		}
+
+		g2.setFont(oldFont);
+		g2.setComposite(normalComposit);
+		moveHallOfFame(playerWon);
+	}
+
+	private void moveHallOfFame(PlayerModel playerWon) {
+		int tx = 0;
+		int ty = 0;
+		if (playerWon == null) {
+			tx = getWidth() / 2;
+			ty = getHeight() / 2;
+		} else {
+			tx = (playerWon.getPosX() + 0) * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
+			ty = (playerWon.getPosY() + 0) * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
+		}
+
+		tx = tx - hallOfFameWidth / 2;
+		ty = ty - hallOfFameHeight / 2;
+		if (tx < 0) {
+			tx = 0;
+		} else if (tx > getWidth() - hallOfFameWidth) {
+			tx = getWidth() - hallOfFameWidth;
+		}
+
+		if (ty < 0) {
+			ty = 0;
+		} else if (ty > getHeight() - hallOfFameHeight) {
+			ty = getHeight() - hallOfFameHeight;
+		}
+
+		hallOfFameX = (hallOfFameX * 14 + tx) / 15;
+		hallOfFameY = (hallOfFameY * 14 + ty) / 15;
 	}
 
 	private void paintBlackout(Graphics graphics) {
@@ -270,11 +363,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 */
 	private void setWorkingParameters(final Graphics graphics) {
 		LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
-		int originalLevelComponentSize = wallImageHandlers[0].getOriginalWidth(); // Equals
-		// to
-		// wallImageHandlers[
-		// 0
-		// ].getOriginalHeight()
+		int originalLevelComponentSize = wallImageHandlers[0].getOriginalWidth();
+		// Equals to wallImageHandlers[0].getOriginalHeight()
 
 		int sceneWidth = getWidth();
 		int sceneHeight = getHeight();
@@ -523,7 +613,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			int playerY = playerModel.getPosY() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
 
 			// Position is tricky: head of bomberman may take place on the
-			// row over the position of bobmerman
+			// row over the position of bomberman
 			graphics.drawImage(bombermanImage, playerX - levelComponentSize / 2, playerY + levelComponentSize / 2 - bombermanImage.getHeight(null), null);
 			g2.setComposite(normalComposit);
 			if (clientOptions.showPlayerNames && !colorBlind) {
@@ -598,7 +688,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 * @param modelProvider
 	 *            the model provider that should be displayed
 	 */
-	public void setModelProvider(final GameCoreHandler gameCoreHandler) {
+	public void setGameCoreHandler(final GameCoreHandler gameCoreHandler) {
 		this.gameCoreHandler = gameCoreHandler;
 	}
 

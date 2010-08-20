@@ -11,7 +11,10 @@ import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NA
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
@@ -103,6 +106,8 @@ public class GameCoreHandler {
 	private ShrinkPerformer                 shrinkPerformer;
 	private boolean                         hasMoreThanOneAlivePlayer;
 	private long                            lastPlayerCountDownStartedAt;
+
+	private PlayerModelComparatorByPoint    playerModelComparatorByPoint      = new PlayerModelComparatorByPoint();
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -448,7 +453,7 @@ public class GameCoreHandler {
 					}
 				}
 		} else {
-			if (tick % 42 == 0) {
+			if (tick % 64 == 0) {
 				PlayerModel lastPlayer = getTheLastRemainingPlyer();
 				if (lastPlayer != null) {
 					lastPlayer.setSpiderBombEnabled(true);
@@ -457,7 +462,7 @@ public class GameCoreHandler {
 		}
 	}
 
-	private List<PlayerModel> getAllPlayerModels() {
+	public List<PlayerModel> getAllPlayerModels() {
 		ArrayList<PlayerModel> result = new ArrayList<PlayerModel>();
 		for (PlayerModel[] playerModels : clientsPlayerModels) {
 			for (PlayerModel playerModel : playerModels) {
@@ -468,7 +473,13 @@ public class GameCoreHandler {
 		return result;
 	}
 
-	private PlayerModel getTheLastRemainingPlyer() {
+	public List<PlayerModel> getAllPlayerModelsOrderedByPoint() {
+		List<PlayerModel> result = getAllPlayerModels();
+		Collections.sort(result, playerModelComparatorByPoint);
+		return result;
+	}
+
+	public PlayerModel getTheLastRemainingPlyer() {
 		for (PlayerModel[] playerModels : clientsPlayerModels) {
 			for (PlayerModel playerModel : playerModels) {
 				if (playerModel.isAlive()) {
@@ -487,7 +498,7 @@ public class GameCoreHandler {
 		} else {
 			// playerModel.setSpiderBombEnabled(true);
 			// playerModel.setSpiderBombRounds(MATCH_WON_SPIDER_BOMB_ROUNDS);
-			lastPlayerModel.setPoints(lastPlayerModel.getPoints());
+			lastPlayerModel.setPoints(lastPlayerModel.getPoints() + 1);
 			mainFrame.receiveMessage("Match is won by " + lastPlayerModel.getName() + " !");
 		}
 
@@ -974,5 +985,22 @@ public class GameCoreHandler {
 
 	public boolean getHasMoreThanOneAlivePlayer() {
 		return hasMoreThanOneAlivePlayer;
+	}
+
+	public Map<String, Integer> getPoints() {
+		HashMap<String, Integer> result = new HashMap<String, Integer>();
+		for (PlayerModel pm : getAllPlayerModels()) {
+			result.put(pm.getName(), pm.getPoints());
+		}
+		return result;
+	}
+
+	public void setPoints(Map<String, Integer> mapPoints) {
+		for (PlayerModel pm : getAllPlayerModels()) {
+			Integer points = mapPoints.get(pm.getName());
+			if (points != null) {
+				pm.setPoints(points);
+			}
+		}
 	}
 }
