@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 
-import classes.client.gamecore.Consts.Activities;
+import classes.client.gamecore.Activities;
 import classes.client.sound.SoundEffect;
 import classes.options.Diseases;
 import classes.options.LevelComponentOptions;

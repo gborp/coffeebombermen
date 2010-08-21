@@ -1,7 +1,7 @@
 package classes.client.gamecore.model;
 
 import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
-import classes.client.gamecore.Consts.Directions;
+import classes.client.gamecore.Directions;
 
 /**
  * Represents an iterable object which has a position and a direction.

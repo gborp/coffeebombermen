@@ -4,7 +4,7 @@
 
 package classes.client.gamecore.model;
 
-import classes.client.gamecore.Consts.FireShapes;
+import classes.client.gamecore.FireShapes;
 
 /**
  * The class represents the model of the fire.<br>

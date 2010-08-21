@@ -2,7 +2,7 @@ package classes.utils;
 
 import java.util.Random;
 
-import classes.client.gamecore.Consts.Directions;
+import classes.client.gamecore.Directions;
 
 public class MathHelper {
 

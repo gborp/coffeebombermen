@@ -19,11 +19,11 @@ import static classes.options.Consts.NEUTRALIZER_ITEMS_MAP;
 
 import java.util.EnumSet;
 
+import classes.client.gamecore.Activities;
+import classes.client.gamecore.BombPhases;
+import classes.client.gamecore.BombTypes;
 import classes.client.gamecore.Consts;
-import classes.client.gamecore.Consts.Activities;
-import classes.client.gamecore.Consts.BombPhases;
-import classes.client.gamecore.Consts.BombTypes;
-import classes.client.gamecore.Consts.Directions;
+import classes.client.gamecore.Directions;
 import classes.client.gamecore.model.BombModel;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
