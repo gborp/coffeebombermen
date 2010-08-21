@@ -205,12 +205,12 @@ public class GameCoreHandler {
 		level = globalServerOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME) ? RandomLevelBuilder.generateRandomLevel(globalServerOptions, this,
 		        random) : new Level(receivedLevelModel.cloneLevel(), this);
 
-		final LevelComponent[][] levelComponents = level.getModel().getComponents();
+		LevelModel levelModel = level.getModel();
 
 		// The level is surrounded with concrete walls, we dont even try
 		// there...
-		final int maxComponentPosX = levelComponents[0].length - 2;
-		final int maxComponentPosY = levelComponents.length - 2;
+		final int maxComponentPosX = levelModel.getWidth() - 2;
+		final int maxComponentPosY = levelModel.getHeight() - 2;
 
 		final ArrayList<int[]> generatedStartPositions = new ArrayList<int[]>();
 
@@ -242,15 +242,15 @@ public class GameCoreHandler {
 						}
 
 						if (positioningAlgoritmQuality < 4)
-							if (levelComponents[componentPosY][componentPosX].getWall() == Walls.CONCRETE)
+							if (levelModel.getComponent(componentPosX, componentPosY).getWall() == Walls.CONCRETE)
 								continue; // Obvious...
 
 						if (positioningAlgoritmQuality < 2) {
-							if (levelComponents[componentPosY][componentPosX - 1].getWall() == Walls.CONCRETE
-							        && levelComponents[componentPosY][componentPosX + 1].getWall() == Walls.CONCRETE)
+							if (levelModel.getComponent(componentPosX - 1, componentPosY).getWall() == Walls.CONCRETE
+							        && levelModel.getComponent(componentPosX + 1, componentPosY).getWall() == Walls.CONCRETE)
 								continue; // Horizontally not open the component
-							if (levelComponents[componentPosY - 1][componentPosX].getWall() == Walls.CONCRETE
-							        && levelComponents[componentPosY + 1][componentPosX].getWall() == Walls.CONCRETE)
+							if (levelModel.getComponent(componentPosX, componentPosY - 1).getWall() == Walls.CONCRETE
+							        && levelModel.getComponent(componentPosX, componentPosY + 1).getWall() == Walls.CONCRETE)
 								continue; // Vertically not open the component
 						}
 
@@ -272,7 +272,7 @@ public class GameCoreHandler {
 				final int[][] DELTA_COORDS = new int[][] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }; // Delta
 				// coordinates of the clearable components
 				for (int i = 0; i < DELTA_COORDS.length; i++) {
-					final LevelComponent levelComponent = levelComponents[componentPosY + DELTA_COORDS[i][0]][componentPosX + DELTA_COORDS[i][1]];
+					final LevelComponent levelComponent = levelModel.getComponent(componentPosX + DELTA_COORDS[i][1], componentPosY + DELTA_COORDS[i][0]);
 					if (levelComponent.getWall() != Walls.CONCRETE) {
 						levelComponent.setWall(Walls.EMPTY);
 						levelComponent.setItem(null);
@@ -431,7 +431,7 @@ public class GameCoreHandler {
 			// Now we damage players being in fire.
 			for (PlayerModel playerModel : getAllPlayerModels())
 				if (playerModel.getActivity() != Activities.DYING) {
-					LevelComponent comp = getLevelModel().getComponents()[playerModel.getComponentPosY()][playerModel.getComponentPosX()];
+					LevelComponent comp = getLevelModel().getComponent(playerModel.getComponentPosX(), playerModel.getComponentPosY());
 					int firesCount = comp.getFireCount();
 					if (!globalServerOptions.isMultipleFire() && firesCount > 1) {
 						firesCount = 1;
@@ -579,25 +579,22 @@ public class GameCoreHandler {
 	 * bombs.
 	 */
 	private void checkAndHandleBombDetonations() {
-		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
+		LevelModel levelModel = getLevelModel();
 		final ArrayList<BombModel> detonatableBombModels = new ArrayList<BombModel>();
 		boolean checkedAllBombModels;
 
 		// First we check the fire triggered bombs...
-		for (final BombModel bombModel : bombModels)
-			if (bombModel.getPhase() != BombPhases.FLYING && !bombModel.isAboutToDetonate()
-			        && levelComponents[bombModel.getComponentPosY()][bombModel.getComponentPosX()].hasFire()) {
+		for (final BombModel bombModel : bombModels) {
+			LevelComponent levelComp = levelModel.getComponent(bombModel.getComponentPosX(), bombModel.getComponentPosY());
+			if (bombModel.getPhase() != BombPhases.FLYING && !bombModel.isAboutToDetonate() && levelComp.hasFire()) {
 				bombModel.setAboutToDetonate(true);
-
-				LevelComponent levelComp = levelComponents[bombModel.getComponentPosY()][bombModel.getComponentPosX()];
-
 				bombModel.setTriggererPlayer(levelComp.getLastFire().getTriggererPlayer());
 			}
-
+		}
 		do {
-			checkedAllBombModels = true; // The fact that we didn't check all of
-			// 'em will be known if we find one
-			// that hasn't been checked out yet.
+			checkedAllBombModels = true;
+			// The fact that we didn't check all of 'em will be known if we find
+			// one that hasn't been checked out yet.
 
 			for (final BombModel bombModel : bombModels)
 				if (!bombModel.isDetonated() && bombModel.isAboutToDetonate()) {
@@ -625,7 +622,7 @@ public class GameCoreHandler {
 						if (componentPosX == -1 || componentPosY == -1) {
 							continue;
 						}
-						final LevelComponent levelComponent = levelComponents[componentPosY][componentPosX];
+						LevelComponent levelComponent = levelModel.getComponent(componentPosX, componentPosY);
 
 						if (levelComponent.getWall() == Walls.CONCRETE || levelComponent.getWall() == Walls.DEATH
 						        || levelComponent.getWall() == Walls.DEATH_WARN)
@@ -839,11 +836,11 @@ public class GameCoreHandler {
 	 *            flying bomb
 	 */
 	public void validateAndSetFlyingTargetPosX(final BombModel bombModel, final int flyingTargetPosX) {
-		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
+		LevelModel levelModel = getLevelModel();
 
 		if (flyingTargetPosX < 0)
-			bombModel.setFlyingTargetPosX((levelComponents[0].length - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
-		else if (flyingTargetPosX > levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY)
+			bombModel.setFlyingTargetPosX((levelModel.getWidth() - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+		else if (flyingTargetPosX > levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY)
 			bombModel.setFlyingTargetPosX(LEVEL_COMPONENT_GRANULARITY / 2);
 		else
 			bombModel.setFlyingTargetPosX(flyingTargetPosX);
@@ -860,11 +857,11 @@ public class GameCoreHandler {
 	 *            flying bomb
 	 */
 	public void validateAndSetFlyingTargetPosY(final BombModel bombModel, final int flyingTargetPosY) {
-		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
+		LevelModel levelModel = getLevelModel();
 
 		if (flyingTargetPosY < 0)
-			bombModel.setFlyingTargetPosY((levelComponents.length - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
-		else if (flyingTargetPosY > levelComponents.length * LEVEL_COMPONENT_GRANULARITY)
+			bombModel.setFlyingTargetPosY((levelModel.getHeight() - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
+		else if (flyingTargetPosY > levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY)
 			bombModel.setFlyingTargetPosY(LEVEL_COMPONENT_GRANULARITY / 2);
 		else
 			bombModel.setFlyingTargetPosY(flyingTargetPosY);
@@ -884,7 +881,7 @@ public class GameCoreHandler {
 	 */
 	public boolean canBombRollToComponentPosition(final BombModel bombModel, final int componentPosX, final int componentPosY) {
 
-		final LevelComponent levelComponentAheadAhead = getLevelModel().getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponentAheadAhead = getLevelModel().getComponent(componentPosX, componentPosY);
 		if (levelComponentAheadAhead.getWall() != Walls.EMPTY)
 			return false;
 		if (levelComponentAheadAhead.getWall() == Walls.EMPTY && levelComponentAheadAhead.getItem() != null
@@ -921,12 +918,12 @@ public class GameCoreHandler {
 	 *            item to be replaced
 	 */
 	public void replaceItemOnLevel(final Items item) {
-		final LevelComponent[][] levelComponents = getLevelModel().getComponents();
+		LevelModel levelModel = getLevelModel();
 
 		// The level is surrounded with concrete walls, we dont even try
 		// there...
-		final int maxComponentPosX = levelComponents[0].length - 2;
-		final int maxComponentPosY = levelComponents.length - 2;
+		final int maxComponentPosX = levelModel.getWidth() - 2;
+		final int maxComponentPosY = levelModel.getHeight() - 2;
 
 		int componentPosX = 1 + getRandom().nextInt(maxComponentPosX);
 		int componentPosY = 1 + getRandom().nextInt(maxComponentPosY);
@@ -938,7 +935,7 @@ public class GameCoreHandler {
 					componentPosY = maxComponentPosY;
 			}
 
-			final LevelComponent levelComponent = levelComponents[componentPosY][componentPosX];
+			final LevelComponent levelComponent = levelModel.getComponent(componentPosX, componentPosY);
 
 			if (levelComponent.getWall() != Walls.EMPTY || levelComponent.getItem() != null)
 				continue;
@@ -965,7 +962,7 @@ public class GameCoreHandler {
 	 *            y coordinate of the component to remove the fire from
 	 */
 	public void removeFireFromComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
-		final LevelComponent levelComponent = getLevelModel().getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponent = getLevelModel().getComponent(componentPosX, componentPosY);
 
 		if (levelComponent.getWall() == Walls.BRICK)
 			levelComponent.setWall(Walls.EMPTY);

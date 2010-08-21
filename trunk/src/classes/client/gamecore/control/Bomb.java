@@ -15,6 +15,7 @@ import classes.client.gamecore.Consts.Directions;
 import classes.client.gamecore.model.BombModel;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
+import classes.client.gamecore.model.level.LevelModel;
 import classes.options.Consts.Walls;
 import classes.utils.MathHelper;
 
@@ -95,6 +96,8 @@ public class Bomb {
 	 * Steps the bomb.
 	 */
 	private void stepBomb() {
+		LevelModel levelModel = gameCoreHandler.getLevelModel();
+
 		switch (model.getPhase()) {
 
 			case FLYING:
@@ -104,23 +107,23 @@ public class Bomb {
 				// We have to check the new positions: might be they're out of
 				// level, then we have to replace them to the opposite end.
 				// TODO: check game rules!!
-				final LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
+
 				if (gameCoreHandler.getGlobalServerOptions().isPunchedBombsComeBackAtTheOppositeEnd()) {
 					if (newPosX < 0)
-						model.setPosX(levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY - 1);
-					else if (newPosX > levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY - 1)
+						model.setPosX(levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY - 1);
+					else if (newPosX > levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY - 1)
 						model.setPosX(0);
 					else
 						model.setPosX(newPosX);
 					if (newPosY < 0)
-						model.setPosY(levelComponents.length * LEVEL_COMPONENT_GRANULARITY - 1);
-					else if (newPosY > levelComponents.length * LEVEL_COMPONENT_GRANULARITY - 1)
+						model.setPosY(levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY - 1);
+					else if (newPosY > levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY - 1)
 						model.setPosY(0);
 					else
 						model.setPosY(newPosY);
 				} else {
-					if (newPosX < 0 || newPosY < 0 || newPosX > levelComponents[0].length * LEVEL_COMPONENT_GRANULARITY - 1
-					        || newPosY > levelComponents.length * LEVEL_COMPONENT_GRANULARITY - 1) {
+					if (newPosX < 0 || newPosY < 0 || newPosX > levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY - 1
+					        || newPosY > levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY - 1) {
 						model.setDead(true);
 						break;
 					} else {
@@ -149,7 +152,7 @@ public class Bomb {
 
 				if (reachedPotentialTargetPosition) {
 					boolean permanentTargetPosition = true;
-					final LevelComponent levelComponent = levelComponents[model.getComponentPosY()][model.getComponentPosX()];
+					final LevelComponent levelComponent = levelModel.getComponent(model.getComponentPosX(), model.getComponentPosY());
 					if (levelComponent.getWall() != Walls.EMPTY || levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null)
 						permanentTargetPosition = false;
 					else if (gameCoreHandler.isBombAtComponentPosition(model.getComponentPosX(), model.getComponentPosY()))
@@ -209,7 +212,7 @@ public class Bomb {
 					model.setPosX(model.getPosX() + BOMB_ROLLING_SPEED * model.getDirectionXMultiplier());
 					model.setPosY(model.getPosY() + BOMB_ROLLING_SPEED * model.getDirectionYMultiplier());
 
-					final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
+					final LevelComponent levelComponent = levelModel.getComponent(model.getComponentPosX(), model.getComponentPosY());
 					if (levelComponent.getItem() != null)
 						levelComponent.setItem(null);
 				} else {

@@ -59,8 +59,7 @@ public class Level {
 		model = levelModel;
 		this.gameCoreHandler = gameCoreHandler;
 
-		fireVectorss = (ArrayList<Fire>[][]) Array.newInstance(new ArrayList<Fire>().getClass(), new int[] { model.getComponents().length,
-		        model.getComponents()[0].length });
+		fireVectorss = (ArrayList<Fire>[][]) Array.newInstance(new ArrayList<Fire>().getClass(), new int[] { model.getHeight(), model.getWidth() });
 		for (final List<Fire>[] fireVectors : fireVectorss) {
 			for (int i = 0; i < fireVectors.length; i++) {
 				fireVectors[i] = new ArrayList<Fire>();
@@ -90,22 +89,18 @@ public class Level {
 	public void addFireToComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		fireVectorss[componentPosY][componentPosX].add(fire);
 
-		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponent(componentPosX, componentPosY);
 		levelComponent.addFire(fire.getModel());
 
 		// We decide what item and if there will be an item after the fire,
 		// cause it has to be appeared from the middle of the fire.
-		if (levelComponent.getWall() == Walls.BRICK && levelComponent.getItem() == null) // Item
-			// has
-			// to
-			// be
-			// generated
-			// once (see: time
-			// delayed multiple
-			// fire).
-			if (gameCoreHandler.getGlobalServerOptions().getGettingItemProbability() > gameCoreHandler.getRandom().nextInt(100))
+		if (levelComponent.getWall() == Walls.BRICK && levelComponent.getItem() == null) {
+			// Item has to be generated once (see: time delayed multiple fire).
+			if (gameCoreHandler.getGlobalServerOptions().getGettingItemProbability() > gameCoreHandler.getRandom().nextInt(100)) {
 				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(gameCoreHandler.getGlobalServerOptions().getLevelOptions()
 				        .getItemWeights(), gameCoreHandler.getRandom())]);
+			}
+		}
 	}
 
 	/**
@@ -120,7 +115,7 @@ public class Level {
 	 */
 	public void removeFireFromComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		fireVectorss[componentPosY][componentPosX].remove(fire);
-		model.getComponents()[componentPosY][componentPosX].removeFire(fire.getModel());
+		model.getComponent(componentPosX, componentPosY).removeFire(fire.getModel());
 	}
 
 	/**
