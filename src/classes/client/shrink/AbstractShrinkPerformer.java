@@ -10,6 +10,8 @@ import classes.client.gamecore.control.Bomb;
 import classes.client.gamecore.control.GameCoreHandler;
 import classes.client.gamecore.control.Level;
 import classes.client.gamecore.model.BombModel;
+import classes.client.gamecore.model.level.LevelComponent;
+import classes.client.gamecore.model.level.LevelModel;
 import classes.client.sound.SoundEffect;
 import classes.options.Consts.Items;
 import classes.options.Consts.Walls;
@@ -87,13 +89,14 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	protected abstract void initNextRoundImpl();
 
 	protected void addDeathWall(int x, int y) {
-		Level level = getLevel();
-		int width = level.getModel().getWidth();
-		int height = level.getModel().getHeight();
+		LevelModel levelModel = getLevel().getModel();
+		int width = levelModel.getWidth();
+		int height = levelModel.getHeight();
 
 		if (x >= 0 && x < width && y >= 0 && y < height) {
-			level.getModel().getComponents()[y][x].setItem(null);
-			level.getModel().getComponents()[y][x].setWall(Walls.DEATH);
+			LevelComponent comp = levelModel.getComponent(x, y);
+			comp.setItem(null);
+			comp.setWall(Walls.DEATH);
 			SoundEffect.DEATH_WALL.play();
 		}
 	}
@@ -138,7 +141,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	}
 
 	protected void setItem(int x, int y, Items item) {
-		getGameCoreHandler().getLevel().getModel().getComponents()[y][x].setItem(item);
+		getGameCoreHandler().getLevel().getModel().getComponent(x, y).setItem(item);
 	}
 
 	protected void setItem(Items item) {

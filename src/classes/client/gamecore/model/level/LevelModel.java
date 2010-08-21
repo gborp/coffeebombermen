@@ -47,15 +47,6 @@ public class LevelModel {
 		return levelOptions.getLevelHeight();
 	}
 
-	/**
-	 * Returns the components of the level.
-	 * 
-	 * @return the components of the level
-	 */
-	public LevelComponent[][] getComponents() {
-		return components;
-	}
-
 	public LevelComponent getComponent(int x, int y) {
 		return components[y][x];
 	}

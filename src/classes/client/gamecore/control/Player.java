@@ -27,6 +27,7 @@ import classes.client.gamecore.Consts.Directions;
 import classes.client.gamecore.model.BombModel;
 import classes.client.gamecore.model.PlayerModel;
 import classes.client.gamecore.model.level.LevelComponent;
+import classes.client.gamecore.model.level.LevelModel;
 import classes.client.sound.SoundEffect;
 import classes.options.Diseases;
 import classes.options.Consts.Items;
@@ -360,14 +361,15 @@ public class Player {
 			}
 		}
 
-		final LevelComponent[][] levelComponents = gameCoreHandler.getLevelModel().getComponents();
+		LevelModel levelModel = gameCoreHandler.getLevelModel();
 
 		int bombsCount = model.accumulateableItemQuantitiesMap.get(Items.BOMB);
 		for (int i = 0; i < maxPlacableBombs; i++) {
-			final Walls wallInPosition = levelComponents[componentPosY][componentPosX].getWall();
+			LevelComponent comp = levelModel.getComponent(componentPosX, componentPosY);
+			final Walls wallInPosition = comp.getWall();
 
 			if (gameCoreHandler.isBombAtComponentPosition(componentPosX, componentPosY) || (wallInPosition != Walls.EMPTY)
-			        || ((wallInPosition == Walls.EMPTY) && (levelComponents[componentPosY][componentPosX].getItem() != null))) {
+			        || ((wallInPosition == Walls.EMPTY) && (comp.getItem() != null))) {
 				break;
 			}
 			if ((componentPosX != playerComponentPosX) || (componentPosY != playerComponentPosY)) {
@@ -485,7 +487,7 @@ public class Player {
 			final int componentPosX = model.getComponentPosX() + model.getDirectionXMultiplier();
 			final int componentPosY = model.getComponentPosY() + model.getDirectionYMultiplier();
 			if (isComponentPositionFreeForWallBuilding(componentPosX, componentPosY) && (model.getPlaceableWalls() > 0)) {
-				gameCoreHandler.getLevelModel().getComponents()[componentPosY][componentPosX].setWall(Walls.BRICK);
+				gameCoreHandler.getLevelModel().getComponent(componentPosX, componentPosY).setWall(Walls.BRICK);
 				model.setPlaceableWalls(model.getPlaceableWalls() - 1);
 				SoundEffect.PLACE_WALL.play();
 				if (model.getPlaceableWalls() == 0) {
@@ -509,7 +511,7 @@ public class Player {
 	 *         false otherwise
 	 */
 	private boolean isComponentPositionFreeForWallBuilding(final int componentPosX, final int componentPosY) {
-		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[componentPosY][componentPosX];
+		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponent(componentPosX, componentPosY);
 
 		if ((levelComponent.getWall() != Walls.EMPTY) || ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null))) {
 			return false;
@@ -629,7 +631,7 @@ public class Player {
 	 * Check whether we stand on an item, and handles the picking up.
 	 */
 	private void checkAndHandleItemPickingUp() {
-		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponents()[model.getComponentPosY()][model.getComponentPosX()];
+		final LevelComponent levelComponent = gameCoreHandler.getLevelModel().getComponent(model.getComponentPosX(), model.getComponentPosY());
 
 		if ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null) && !levelComponent.hasFire()) {
 			final Items item = levelComponent.getItem();

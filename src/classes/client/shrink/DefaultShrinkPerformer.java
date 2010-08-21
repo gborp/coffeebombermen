@@ -1,6 +1,7 @@
 package classes.client.shrink;
 
 import classes.client.gamecore.control.GameCoreHandler;
+import classes.client.gamecore.model.level.LevelComponent;
 import classes.client.sound.SoundEffect;
 import classes.options.Shrinkers;
 import classes.options.Consts.Walls;
@@ -185,8 +186,9 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 				}
 
 				if (newWallX >= 0 && newWallX < getWidth() && newWallY >= 0 && newWallY < getHeight()) {
-					getLevel().getModel().getComponents()[newWallY][newWallX].setItem(null);
-					getLevel().getModel().getComponents()[newWallY][newWallX].setWall(Walls.DEATH);
+					LevelComponent comp = getLevel().getModel().getComponent(newWallX, newWallY);
+					comp.setItem(null);
+					comp.setWall(Walls.DEATH);
 					SoundEffect.DEATH_WALL.play();
 				}
 				setLastShrinkOperationAt();
