@@ -23,10 +23,10 @@ import classes.AbstractAnimationMainComponentHandler;
 import classes.GameManager;
 import classes.MainComponentHandler;
 import classes.MainFrame;
-import classes.client.gamecore.Consts.Activities;
-import classes.client.gamecore.Consts.BombPhases;
-import classes.client.gamecore.Consts.Directions;
-import classes.client.gamecore.Consts.FireShapes;
+import classes.client.gamecore.Activities;
+import classes.client.gamecore.BombPhases;
+import classes.client.gamecore.Directions;
+import classes.client.gamecore.FireShapes;
 import classes.client.gamecore.model.BombModel;
 import classes.client.gamecore.model.FireModel;
 import classes.client.gamecore.model.PlayerModel;
@@ -504,8 +504,10 @@ public class GameCoreHandler {
 
 		for (int i = bombs.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
-			bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-			        .get(Items.BOMB) + 1);
+			if (bombModel.getOwnerPlayer() != null) {
+				bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB, bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+				        .get(Items.BOMB) + 1);
+			}
 			bombs.remove(i);
 			bombModels.remove(i);
 		}
@@ -619,8 +621,8 @@ public class GameCoreHandler {
 						final int componentPosX = detonatedBombComponentPosX + direction.getXMultiplier() * range;
 						final int componentPosY = detonatedBombComponentPosY + direction.getYMultiplier() * range;
 
-						if (componentPosX == -1 || componentPosY == -1) {
-							continue;
+						if (componentPosX < 0 || componentPosX > levelModel.getWidth() - 1 || componentPosY < 0 || componentPosY > levelModel.getHeight() - 1) {
+							break;
 						}
 						LevelComponent levelComponent = levelModel.getComponent(componentPosX, componentPosY);
 
@@ -745,9 +747,8 @@ public class GameCoreHandler {
 	public Integer getBombIndexAtComponentPosition(final int componentPosX, final int componentPosY) {
 		for (int i = bombModels.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
-			if (bombModel.getPhase() != BombPhases.FLYING) // Flying bombs
-				// "aren't" in the
-				// level.
+			if (bombModel.getPhase() != BombPhases.FLYING)
+				// Flying bombs "aren't" in the level.
 				if (bombModel.getComponentPosX() == componentPosX && bombModel.getComponentPosY() == componentPosY)
 					return i;
 		}
@@ -881,7 +882,12 @@ public class GameCoreHandler {
 	 */
 	public boolean canBombRollToComponentPosition(final BombModel bombModel, final int componentPosX, final int componentPosY) {
 
-		final LevelComponent levelComponentAheadAhead = getLevelModel().getComponent(componentPosX, componentPosY);
+		LevelModel levelModel = getLevelModel();
+		if (componentPosX < 0 || componentPosX >= levelModel.getWidth() || componentPosY < 0 || componentPosY >= levelModel.getHeight()) {
+			return false;
+		}
+
+		final LevelComponent levelComponentAheadAhead = levelModel.getComponent(componentPosX, componentPosY);
 		if (levelComponentAheadAhead.getWall() != Walls.EMPTY)
 			return false;
 		if (levelComponentAheadAhead.getWall() == Walls.EMPTY && levelComponentAheadAhead.getItem() != null

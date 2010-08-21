@@ -24,8 +24,8 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import classes.client.Client;
-import classes.client.gamecore.Consts.Activities;
-import classes.client.gamecore.Consts.BombPhases;
+import classes.client.gamecore.Activities;
+import classes.client.gamecore.BombPhases;
 import classes.client.gamecore.control.GameCoreHandler;
 import classes.client.gamecore.model.BombModel;
 import classes.client.gamecore.model.FireModel;

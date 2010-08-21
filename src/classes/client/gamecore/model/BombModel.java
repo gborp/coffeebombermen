@@ -6,9 +6,9 @@ package classes.client.gamecore.model;
 
 import java.util.ArrayList;
 
-import classes.client.gamecore.Consts.BombPhases;
-import classes.client.gamecore.Consts.BombTypes;
-import classes.client.gamecore.Consts.Directions;
+import classes.client.gamecore.BombPhases;
+import classes.client.gamecore.BombTypes;
+import classes.client.gamecore.Directions;
 import classes.client.sound.SoundEffect;
 
 /**

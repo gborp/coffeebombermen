@@ -17,10 +17,10 @@ import java.util.StringTokenizer;
 
 import javax.swing.ImageIcon;
 
-import classes.client.gamecore.Consts.Activities;
-import classes.client.gamecore.Consts.BombTypes;
-import classes.client.gamecore.Consts.Directions;
-import classes.client.gamecore.Consts.FireShapes;
+import classes.client.gamecore.Activities;
+import classes.client.gamecore.BombTypes;
+import classes.client.gamecore.Directions;
+import classes.client.gamecore.FireShapes;
 import classes.client.gamecore.view.PlayerGraphic;
 import classes.utils.DataTextFileReader;
 import classes.utils.GeneralUtilities;
