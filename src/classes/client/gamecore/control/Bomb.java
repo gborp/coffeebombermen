@@ -83,7 +83,7 @@ public class Bomb {
 			else
 				model.setIterationCounter(0); // Bomb phases are repeatables.
 
-			if (model.getType() != BombTypes.TRIGGERED) {
+			if (model.getType() != BombTypes.TRIGGERED && !model.isDeadBomb()) {
 				model.setTickingIterations(model.getTickingIterations() + 1);
 				if (model.getTickingIterations() >= BOMB_DETONATION_ITERATIONS)
 					model.setAboutToDetonate(true);

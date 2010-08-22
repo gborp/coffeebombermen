@@ -506,7 +506,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			// paint()
 			final BombModel bombModel = bombModels.get(i);
 			final int phasesCount = bombPhaseHandlers[bombModel.getType().ordinal()].length;
-			final Image bombImage = bombPhaseHandlers[bombModel.getType().ordinal()][phasesCount * bombModel.getIterationCounter() / BOMB_ITERATIONS]
+			final Image bombImage = bombPhaseHandlers[bombModel.getType().ordinal()][bombModel.isDeadBomb() ?  0 :  phasesCount * bombModel.getIterationCounter() / BOMB_ITERATIONS]
 			        .getScaledImage(scaleFactor);
 
 			int posYCorrection = 0;

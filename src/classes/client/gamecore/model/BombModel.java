@@ -46,6 +46,10 @@ public class BombModel extends PositionedIterableObject {
 	 * away from the level, and it cannot come back (game rule).
 	 */
 	private boolean                    dead;
+	/**
+	 * dead bomb does not detonating by itself. 
+	 */
+	private boolean deadBomb;
 
 	// The following attributes aid to detonate the bomb
 
@@ -317,5 +321,20 @@ public class BombModel extends PositionedIterableObject {
 
 	public void setDetonatingOnHit(boolean detonatingOnHit) {
 		this.detonatingOnHit = detonatingOnHit;
+	}
+	
+	/**
+	 * dead bomb does not detonating by itself.
+	 * @param deadBom
+	 */
+	public void setDeadBomb(boolean deadBomb) {
+		this.deadBomb = deadBomb;
+	}
+	
+	/**
+	 * dead bomb does not detonating by itself.
+	 */
+	public boolean isDeadBomb() {
+		return deadBomb;
 	}
 }
