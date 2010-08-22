@@ -133,7 +133,7 @@ public class Player {
 	 * activity if it is needed to.
 	 */
 	public void nextIteration() {
-		handleSpiderBomb();
+		handleSpiderBomb(model.getActivity() == Activities.DYING);
 		if (model.getActivity() == Activities.DYING) {
 			model.nextIteration(); // We're just counting, we will drop out the
 			// picked up items.
@@ -147,8 +147,8 @@ public class Player {
 				}
 				// spider bomb in the place of the died bomberman
 				// TODO make it configurable
-				// model.setSpiderBombRounds(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
-				// model.setSpiderBombEnabled(true);
+				 model.setSpiderBombRounds(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
+				 model.setSpiderBombEnabled(true);
 			}
 		} else {
 
@@ -171,16 +171,16 @@ public class Player {
 		}
 	}
 
-	private void handleSpiderBomb() {
+	private void handleSpiderBomb(boolean useDeadBombs) {
 		long now = gameCoreHandler.getTick();
 		if (!model.isSpiderBombEnabled() || (lastSpiderBomb + SPIDER_BOMB_LATENCY > now)) {
 			return;
 		}
 
-		throwSpiderBomb(Directions.UP);
-		throwSpiderBomb(Directions.RIGHT);
-		throwSpiderBomb(Directions.DOWN);
-		throwSpiderBomb(Directions.LEFT);
+		throwSpiderBomb(Directions.UP, useDeadBombs);
+		throwSpiderBomb(Directions.RIGHT, useDeadBombs);
+		throwSpiderBomb(Directions.DOWN, useDeadBombs);
+		throwSpiderBomb(Directions.LEFT, useDeadBombs);
 
 		int rounds = model.getSpiderBombRounds();
 
@@ -193,7 +193,7 @@ public class Player {
 		lastSpiderBomb = now;
 	}
 
-	private void throwSpiderBomb(Directions direction) {
+	private void throwSpiderBomb(Directions direction, boolean useDeadBombs) {
 		if (direction.equals(Directions.UP)) {
 
 			if (model.getSpiderBombRounds() % 4 != 0) {
@@ -221,6 +221,7 @@ public class Player {
 
 		final Bomb newBomb = new Bomb(model, gameCoreHandler);
 		final BombModel newBombModel = newBomb.getModel();
+		newBombModel.setDeadBomb(useDeadBombs);
 		newBombModel.setRange(model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap
 		        .get(Items.FIRE) + 1);
 		newBombModel.setPosX(componentPosX * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
