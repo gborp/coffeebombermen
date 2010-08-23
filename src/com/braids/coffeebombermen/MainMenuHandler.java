@@ -1,4 +1,4 @@
-package classes;
+package com.braids.coffeebombermen;
 
 /**
  * Defines methods to handle the action events of the different menu items of

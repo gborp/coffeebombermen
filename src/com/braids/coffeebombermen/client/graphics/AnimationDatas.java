@@ -1,4 +1,4 @@
-package classes.client.graphics;
+package com.braids.coffeebombermen.client.graphics;
 
 import java.awt.Color;
 

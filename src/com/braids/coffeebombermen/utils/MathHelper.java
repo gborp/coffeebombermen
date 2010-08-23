@@ -1,8 +1,8 @@
-package classes.utils;
+package com.braids.coffeebombermen.utils;
 
 import java.util.Random;
 
-import classes.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.Directions;
 
 public class MathHelper {
 

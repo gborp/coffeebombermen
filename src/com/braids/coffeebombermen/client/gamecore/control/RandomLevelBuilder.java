@@ -1,11 +1,11 @@
-package classes.client.gamecore.control;
+package com.braids.coffeebombermen.client.gamecore.control;
 
 import java.util.Random;
 
-import classes.client.gamecore.model.level.LevelModel;
-import classes.options.Consts.Walls;
-import classes.options.model.LevelOptions;
-import classes.options.model.ServerOptions;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.model.LevelOptions;
+import com.braids.coffeebombermen.options.model.ServerOptions;
 
 public class RandomLevelBuilder {
 

@@ -1,6 +1,7 @@
-package classes.client.sound;
+package com.braids.coffeebombermen.client.sound;
 
-import classes.utils.GeneralUtilities;
+import com.braids.coffeebombermen.Consts;
+import com.braids.coffeebombermen.utils.GeneralUtilities;
 
 /**
  * Manages the sound resources of the game.<br>
@@ -21,7 +22,7 @@ public class SoundManager {
 	 * @return array of the names of available sound themes
 	 */
 	public static String[] getAvailableSoundThemes() {
-		return GeneralUtilities.getSubdirectoryNames(classes.Consts.SOUND_DIRECTORY_NAME);
+		return GeneralUtilities.getSubdirectoryNames(Consts.SOUND_DIRECTORY_NAME);
 	}
 
 	public static String getActiveSoundTheme() {

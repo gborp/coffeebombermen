@@ -1,23 +1,15 @@
-/*
- * Created on November 28, 2005
- */
+package com.braids.coffeebombermen.client.gamecore.control;
 
-package classes.client.gamecore.control;
-
-import static classes.client.gamecore.Consts.BOMB_DETONATION_ITERATIONS;
-import static classes.client.gamecore.Consts.BOMB_FLYING_SPEED;
-import static classes.client.gamecore.Consts.BOMB_ITERATIONS;
-import static classes.client.gamecore.Consts.BOMB_ROLLING_SPEED;
-import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
-import classes.client.gamecore.BombPhases;
-import classes.client.gamecore.BombTypes;
-import classes.client.gamecore.Directions;
-import classes.client.gamecore.model.BombModel;
-import classes.client.gamecore.model.PlayerModel;
-import classes.client.gamecore.model.level.LevelComponent;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.options.Consts.Walls;
-import classes.utils.MathHelper;
+import com.braids.coffeebombermen.client.gamecore.BombPhases;
+import com.braids.coffeebombermen.client.gamecore.BombTypes;
+import com.braids.coffeebombermen.client.gamecore.CoreConsts;
+import com.braids.coffeebombermen.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.model.BombModel;
+import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 /**
  * The control layer of the bombs.
@@ -78,14 +70,14 @@ public class Bomb {
 		if (model.getPhase() != BombPhases.FLYING) { // Flying bombs aren't
 			// ticking, and their
 			// picture aren't changing.
-			if (model.getIterationCounter() + 1 < BOMB_ITERATIONS)
+			if (model.getIterationCounter() + 1 < CoreConsts.BOMB_ITERATIONS)
 				model.nextIteration();
 			else
 				model.setIterationCounter(0); // Bomb phases are repeatables.
 
 			if (model.getType() != BombTypes.TRIGGERED && !model.isDeadBomb()) {
 				model.setTickingIterations(model.getTickingIterations() + 1);
-				if (model.getTickingIterations() >= BOMB_DETONATION_ITERATIONS)
+				if (model.getTickingIterations() >= CoreConsts.BOMB_DETONATION_ITERATIONS)
 					model.setAboutToDetonate(true);
 			}
 		}
@@ -101,8 +93,8 @@ public class Bomb {
 		switch (model.getPhase()) {
 
 			case FLYING:
-				int newPosX = model.getPosX() + model.getDirectionXMultiplier() * BOMB_FLYING_SPEED;
-				int newPosY = model.getPosY() + model.getDirectionYMultiplier() * BOMB_FLYING_SPEED;
+				int newPosX = model.getPosX() + model.getDirectionXMultiplier() * CoreConsts.BOMB_FLYING_SPEED;
+				int newPosY = model.getPosY() + model.getDirectionYMultiplier() * CoreConsts.BOMB_FLYING_SPEED;
 
 				// We have to check the new positions: might be they're out of
 				// level, then we have to replace them to the opposite end.
@@ -110,20 +102,20 @@ public class Bomb {
 
 				if (gameCoreHandler.getGlobalServerOptions().isPunchedBombsComeBackAtTheOppositeEnd()) {
 					if (newPosX < 0)
-						model.setPosX(levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY - 1);
-					else if (newPosX > levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY - 1)
+						model.setPosX(levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1);
+					else if (newPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1)
 						model.setPosX(0);
 					else
 						model.setPosX(newPosX);
 					if (newPosY < 0)
-						model.setPosY(levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY - 1);
-					else if (newPosY > levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY - 1)
+						model.setPosY(levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1);
+					else if (newPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1)
 						model.setPosY(0);
 					else
 						model.setPosY(newPosY);
 				} else {
-					if (newPosX < 0 || newPosY < 0 || newPosX > levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY - 1
-					        || newPosY > levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY - 1) {
+					if (newPosX < 0 || newPosY < 0 || newPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1
+					        || newPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1) {
 						model.setDead(true);
 						break;
 					} else {
@@ -135,9 +127,10 @@ public class Bomb {
 				boolean reachedPotentialTargetPosition = false;
 				// If target is at the opposite end, we're not there though
 				// relation between pos and target might be correct.
-				if (model.getDirectionXMultiplier() != 0 && Math.abs(model.getPosX() - model.getFlyingTargetPosX()) > LEVEL_COMPONENT_GRANULARITY)
+				if (model.getDirectionXMultiplier() != 0 && Math.abs(model.getPosX() - model.getFlyingTargetPosX()) > CoreConsts.LEVEL_COMPONENT_GRANULARITY)
 					;
-				else if (model.getDirectionYMultiplier() != 0 && Math.abs(model.getPosY() - model.getFlyingTargetPosY()) > LEVEL_COMPONENT_GRANULARITY)
+				else if (model.getDirectionYMultiplier() != 0
+				        && Math.abs(model.getPosY() - model.getFlyingTargetPosY()) > CoreConsts.LEVEL_COMPONENT_GRANULARITY)
 					;
 				else {
 					if (model.getDirection() == Directions.LEFT && model.getPosX() <= model.getFlyingTargetPosX())
@@ -187,9 +180,9 @@ public class Bomb {
 							model.setDirection(Directions.values()[gameCoreHandler.getRandom().nextInt(Directions.values().length)]);
 						}
 						gameCoreHandler.validateAndSetFlyingTargetPosX(model, model.getFlyingTargetPosX() + model.getDirectionXMultiplier()
-						        * LEVEL_COMPONENT_GRANULARITY);
+						        * CoreConsts.LEVEL_COMPONENT_GRANULARITY);
 						gameCoreHandler.validateAndSetFlyingTargetPosY(model, model.getFlyingTargetPosY() + model.getDirectionYMultiplier()
-						        * LEVEL_COMPONENT_GRANULARITY);
+						        * CoreConsts.LEVEL_COMPONENT_GRANULARITY);
 					}
 				}
 				break;
@@ -197,7 +190,7 @@ public class Bomb {
 			case ROLLING:
 				if (gameCoreHandler.canBombRollToComponentPosition(model, model.getComponentPosX() + model.getDirectionXMultiplier(), model.getComponentPosY()
 				        + model.getDirectionYMultiplier())) {
-					if (MathHelper.checkRandomEvent(model.getCrazyPercent() / (LEVEL_COMPONENT_GRANULARITY / BOMB_ROLLING_SPEED))) {
+					if (MathHelper.checkRandomEvent(model.getCrazyPercent() / (CoreConsts.LEVEL_COMPONENT_GRANULARITY / CoreConsts.BOMB_ROLLING_SPEED))) {
 						Directions newDirection = Directions.values()[gameCoreHandler.getRandom().nextInt(Directions.values().length)];
 						if (newDirection.equals(model.getDirection()) || newDirection.equals(model.getDirection().getOpposite())) {
 							newDirection = newDirection.getTurnLeft();
@@ -209,8 +202,8 @@ public class Bomb {
 						}
 					}
 
-					model.setPosX(model.getPosX() + BOMB_ROLLING_SPEED * model.getDirectionXMultiplier());
-					model.setPosY(model.getPosY() + BOMB_ROLLING_SPEED * model.getDirectionYMultiplier());
+					model.setPosX(model.getPosX() + CoreConsts.BOMB_ROLLING_SPEED * model.getDirectionXMultiplier());
+					model.setPosY(model.getPosY() + CoreConsts.BOMB_ROLLING_SPEED * model.getDirectionYMultiplier());
 
 					final LevelComponent levelComponent = levelModel.getComponent(model.getComponentPosX(), model.getComponentPosY());
 					if (levelComponent.getItem() != null)

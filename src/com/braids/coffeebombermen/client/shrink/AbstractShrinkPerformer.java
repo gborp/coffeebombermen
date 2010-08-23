@@ -1,22 +1,22 @@
-package classes.client.shrink;
+package com.braids.coffeebombermen.client.shrink;
 
 import java.util.Random;
 
-import classes.client.gamecore.BombPhases;
-import classes.client.gamecore.BombTypes;
-import classes.client.gamecore.Consts;
-import classes.client.gamecore.Directions;
-import classes.client.gamecore.control.Bomb;
-import classes.client.gamecore.control.GameCoreHandler;
-import classes.client.gamecore.control.Level;
-import classes.client.gamecore.model.BombModel;
-import classes.client.gamecore.model.level.LevelComponent;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.client.sound.SoundEffect;
-import classes.options.Consts.Items;
-import classes.options.Consts.Walls;
-import classes.options.model.ServerOptions;
-import classes.utils.MathHelper;
+import com.braids.coffeebombermen.client.gamecore.BombPhases;
+import com.braids.coffeebombermen.client.gamecore.BombTypes;
+import com.braids.coffeebombermen.client.gamecore.CoreConsts;
+import com.braids.coffeebombermen.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.control.Bomb;
+import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
+import com.braids.coffeebombermen.client.gamecore.control.Level;
+import com.braids.coffeebombermen.client.gamecore.model.BombModel;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.client.sound.SoundEffect;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.model.ServerOptions;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 
@@ -106,8 +106,8 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		Bomb newBomb = new Bomb(new BombModel(null), getGameCoreHandler());
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
-		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
-		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosX(x * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 		newBombModel.setRange(range);
 		newBombModel.setPhase(phase);
 		newBombModel.setDirection(direction);
@@ -125,8 +125,8 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
 		newBombModel.setCrazyPercent(0.5f);
-		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
-		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosX(x * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 		newBombModel.setRange(range);
 		newBombModel.setPhase(BombPhases.ROLLING);
 		gameCoreHandler.addNewBomb(newBomb);
@@ -150,9 +150,9 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 			newBombModel.setDirection(direction);
 			newBombModel.setPhase(BombPhases.FLYING);
 			gameCoreHandler.validateAndSetFlyingTargetPosX(newBombModel, newBombModel.getPosX() + newBombModel.getDirectionXMultiplier()
-			        * Consts.LEVEL_COMPONENT_GRANULARITY);
+			        * CoreConsts.LEVEL_COMPONENT_GRANULARITY);
 			gameCoreHandler.validateAndSetFlyingTargetPosY(newBombModel, newBombModel.getPosY() + newBombModel.getDirectionYMultiplier()
-			        * Consts.LEVEL_COMPONENT_GRANULARITY);
+			        * CoreConsts.LEVEL_COMPONENT_GRANULARITY);
 		}
 
 	}
@@ -170,8 +170,8 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setType(BombTypes.JELLY);
 		newBombModel.setDetonatingOnHit(true);
-		newBombModel.setPosX(x * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
-		newBombModel.setPosY(y * Consts.LEVEL_COMPONENT_GRANULARITY + Consts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosX(x * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+		newBombModel.setPosY(y * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 		newBombModel.setRange(range);
 		newBombModel.setPhase(BombPhases.ROLLING);
 		getGameCoreHandler().addNewBomb(newBomb);

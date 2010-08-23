@@ -1,6 +1,4 @@
-package classes;
-
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
+package com.braids.coffeebombermen;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +8,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import classes.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
 
 /**
  * This is the main menu bar of the game.
@@ -348,9 +346,9 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		final StringBuilder buffer = new StringBuilder();
 
 		buffer.append(((JCheckBoxMenuItem) menuItems[MenuItems.FULLSCREEN_WINDOW.ordinal()]).getState());
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(((JCheckBoxMenuItem) menuItems[MenuItems.SOUND_EFFECTS.ordinal()]).getState());
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		return buffer.toString();
 	}
@@ -372,7 +370,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * Restores the default the states of checkbox menu items.
 	 */
 	public void restoreDefaultMenuStates() {
-		setMenuStates("true" + GENERAL_SEPARATOR_CHAR + "true" + GENERAL_SEPARATOR_CHAR);
+		setMenuStates("true" + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR + "true" + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 	}
 
 	/**

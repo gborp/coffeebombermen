@@ -1,19 +1,15 @@
-/*
- * Created on October 26, 2004
- */
-
-package classes.client.gamecore.control;
+package com.braids.coffeebombermen.client.gamecore.control;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import classes.client.gamecore.model.level.LevelComponent;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.options.Consts.Items;
-import classes.options.Consts.Walls;
-import classes.options.model.LevelOptions;
-import classes.utils.GeneralUtilities;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.model.LevelOptions;
+import com.braids.coffeebombermen.utils.GeneralUtilities;
 
 /**
  * The control layer of the level.

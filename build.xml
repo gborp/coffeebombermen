@@ -49,7 +49,7 @@
     <jar destfile="${dist}/coffeebombermen.jar" >
     	<zipfileset dir="${build}" prefix="" />
     	<manifest>
-    	   <attribute name="Main-Class" value="classes.Bombermen"/>
+    	   <attribute name="Main-Class" value="com.braids.coffeebombermen.Bombermen"/>
     	</manifest>
     </jar>
     <copy todir="${dist}">

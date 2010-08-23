@@ -1,4 +1,4 @@
-package classes.options;
+package com.braids.coffeebombermen.options;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -12,8 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import classes.options.model.Options;
-import classes.utils.GeneralUtilities;
+import com.braids.coffeebombermen.options.model.Options;
+import com.braids.coffeebombermen.utils.GeneralUtilities;
 
 /**
  * This class manages the options belonging together. The manageable component

@@ -1,13 +1,4 @@
-package classes.client.gamecore.view;
-
-import static classes.client.gamecore.Consts.BOMB_FLYING_ASCENDENCE_PRIMARY;
-import static classes.client.gamecore.Consts.BOMB_FLYING_ASCENDENCE_SECONDARY;
-import static classes.client.gamecore.Consts.BOMB_FLYING_DISTANCE;
-import static classes.client.gamecore.Consts.BOMB_FLYING_SPEED;
-import static classes.client.gamecore.Consts.BOMB_ITERATIONS;
-import static classes.client.gamecore.Consts.FIRE_ITERATIONS;
-import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
-import static classes.client.gamecore.Consts.MAX_PLAYER_VITALITY;
+package com.braids.coffeebombermen.client.gamecore.view;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -23,23 +14,24 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import classes.client.Client;
-import classes.client.gamecore.Activities;
-import classes.client.gamecore.BombPhases;
-import classes.client.gamecore.control.GameCoreHandler;
-import classes.client.gamecore.model.BombModel;
-import classes.client.gamecore.model.FireModel;
-import classes.client.gamecore.model.PlayerModel;
-import classes.client.gamecore.model.level.LevelComponent;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.client.graphics.GraphicsManager;
-import classes.client.graphics.ImageHandler;
-import classes.options.Diseases;
-import classes.options.OptionsChangeListener;
-import classes.options.OptionsManager;
-import classes.options.Consts.Walls;
-import classes.options.model.ClientOptions;
-import classes.options.model.PublicClientOptions;
+import com.braids.coffeebombermen.client.Client;
+import com.braids.coffeebombermen.client.gamecore.Activities;
+import com.braids.coffeebombermen.client.gamecore.BombPhases;
+import com.braids.coffeebombermen.client.gamecore.CoreConsts;
+import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
+import com.braids.coffeebombermen.client.gamecore.model.BombModel;
+import com.braids.coffeebombermen.client.gamecore.model.FireModel;
+import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.client.graphics.ImageHandler;
+import com.braids.coffeebombermen.options.Diseases;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
+import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.model.ClientOptions;
+import com.braids.coffeebombermen.options.model.PublicClientOptions;
 
 /**
  * This is the game scene. Game will be displayed on this component.
@@ -257,8 +249,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			tx = getWidth() / 2;
 			ty = getHeight() / 2;
 		} else {
-			tx = (playerWon.getPosX() + 0) * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
-			ty = (playerWon.getPosY() + 0) * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
+			tx = (playerWon.getPosX() + 0) * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
+			ty = (playerWon.getPosY() + 0) * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 		}
 
 		tx = tx - hallOfFameWidth / 2;
@@ -454,10 +446,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() == null) {
 						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
-						g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * fireModel.getIterationCounter() / FIRE_ITERATIONS]
-						        .getScaledImage(fireScaleFactor), x, y, null);
+						g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * fireModel.getIterationCounter()
+						        / CoreConsts.FIRE_ITERATIONS].getScaledImage(fireScaleFactor), x, y, null);
 					} else {
-						if (fireModel.getIterationCounter() < FIRE_ITERATIONS / 2) {
+						if (fireModel.getIterationCounter() < CoreConsts.FIRE_ITERATIONS / 2) {
 							// The original wall or item is burning.
 							if (levelComponent.getWall() == Walls.EMPTY) {
 								// item
@@ -477,7 +469,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 								g.drawImage(wallImageHandlers[Walls.EMPTY.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 							}
 						}
-						g.drawImage(burningPhaseHandlers[burningPhaseHandlers.length * fireModel.getIterationCounter() / FIRE_ITERATIONS]
+						g.drawImage(burningPhaseHandlers[burningPhaseHandlers.length * fireModel.getIterationCounter() / CoreConsts.FIRE_ITERATIONS]
 						        .getScaledImage(burningScaleFactor), x, y, null);
 					}
 				}
@@ -506,24 +498,24 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			// paint()
 			final BombModel bombModel = bombModels.get(i);
 			final int phasesCount = bombPhaseHandlers[bombModel.getType().ordinal()].length;
-			final Image bombImage = bombPhaseHandlers[bombModel.getType().ordinal()][bombModel.isDeadBomb() ?  0 :  phasesCount * bombModel.getIterationCounter() / BOMB_ITERATIONS]
-			        .getScaledImage(scaleFactor);
+			final Image bombImage = bombPhaseHandlers[bombModel.getType().ordinal()][bombModel.isDeadBomb() ? 0 : phasesCount * bombModel.getIterationCounter()
+			        / CoreConsts.BOMB_ITERATIONS].getScaledImage(scaleFactor);
 
 			int posYCorrection = 0;
 			if (bombModel.getPhase() == BombPhases.FLYING) {
-				if (bombModel.getIterationsDuringPhase() * BOMB_FLYING_SPEED < BOMB_FLYING_DISTANCE)
-					posYCorrection = -(int) (BOMB_FLYING_ASCENDENCE_PRIMARY * Math.sin(Math.PI * bombModel.getIterationsDuringPhase() * BOMB_FLYING_SPEED
-					        / BOMB_FLYING_DISTANCE));
+				if (bombModel.getIterationsDuringPhase() * CoreConsts.BOMB_FLYING_SPEED < CoreConsts.BOMB_FLYING_DISTANCE)
+					posYCorrection = -(int) (CoreConsts.BOMB_FLYING_ASCENDENCE_PRIMARY * Math.sin(Math.PI * bombModel.getIterationsDuringPhase()
+					        * CoreConsts.BOMB_FLYING_SPEED / CoreConsts.BOMB_FLYING_DISTANCE));
 				else {
-					final int posXInComponent = bombModel.getPosX() % LEVEL_COMPONENT_GRANULARITY;
-					posYCorrection = -(int) (BOMB_FLYING_ASCENDENCE_SECONDARY * Math.sin(Math.PI
-					        * (posXInComponent + (posXInComponent < LEVEL_COMPONENT_GRANULARITY / 2 ? LEVEL_COMPONENT_GRANULARITY / 2
-					                : -LEVEL_COMPONENT_GRANULARITY / 2)) / LEVEL_COMPONENT_GRANULARITY));
+					final int posXInComponent = bombModel.getPosX() % CoreConsts.LEVEL_COMPONENT_GRANULARITY;
+					posYCorrection = -(int) (CoreConsts.BOMB_FLYING_ASCENDENCE_SECONDARY * Math.sin(Math.PI
+					        * (posXInComponent + (posXInComponent < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2 ? CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2
+					                : -CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2)) / CoreConsts.LEVEL_COMPONENT_GRANULARITY));
 				}
 			}
 
-			graphics.drawImage(bombImage, bombModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2,
-			        (bombModel.getPosY() + posYCorrection) * levelComponentSize / LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2, null);
+			graphics.drawImage(bombImage, bombModel.getPosX() * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2,
+			        (bombModel.getPosY() + posYCorrection) * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY - levelComponentSize / 2, null);
 		}
 	}
 
@@ -606,8 +598,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 			g2.setComposite(normalComposit);
 
-			int playerX = playerModel.getPosX() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
-			int playerY = playerModel.getPosY() * levelComponentSize / LEVEL_COMPONENT_GRANULARITY;
+			int playerX = playerModel.getPosX() * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
+			int playerY = playerModel.getPosY() * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 
 			// Position is tricky: head of bomberman may take place on the
 			// row over the position of bomberman
@@ -627,8 +619,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 				boolean uberMaxVitality = false;
 				int vitality = playerModel.getVitality();
-				if (vitality > MAX_PLAYER_VITALITY) {
-					vitality = MAX_PLAYER_VITALITY;
+				if (vitality > CoreConsts.MAX_PLAYER_VITALITY) {
+					vitality = CoreConsts.MAX_PLAYER_VITALITY;
 					uberMaxVitality = true;
 				}
 
@@ -644,7 +636,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				}
 
 				graphics.fillRect(playerX - levelComponentSize / 2 + 1, playerY + levelComponentSize / 2 + 3, (levelComponentSize - 1) * vitality
-				        / MAX_PLAYER_VITALITY, 4);
+				        / CoreConsts.MAX_PLAYER_VITALITY, 4);
 
 			}
 		}

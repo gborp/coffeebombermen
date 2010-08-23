@@ -1,4 +1,4 @@
-package classes.client.gamecore;
+package com.braids.coffeebombermen.client.gamecore;
 
 /**
  * Shapes of the fire of an explosion.

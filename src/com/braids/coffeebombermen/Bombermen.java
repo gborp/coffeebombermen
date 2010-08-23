@@ -1,4 +1,4 @@
-package classes;
+package com.braids.coffeebombermen;
 
 /**
  * The main class of Bombermen. Holds the public static main method, and does

@@ -1,24 +1,22 @@
-package classes.server;
-
-import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_STRING;
+package com.braids.coffeebombermen.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import classes.GameManager;
-import classes.MainFrame;
-import classes.MainMenuBar.GameStates;
-import classes.client.Client;
-import classes.options.OptionsChangeListener;
-import classes.options.OptionsManager;
-import classes.options.Consts.NetworkLatencies;
-import classes.options.model.PublicClientOptions;
-import classes.options.model.ServerOptions;
-import classes.utils.GeneralStringTokenizer;
-import classes.utils.TimedIterableControlledThread;
+import com.braids.coffeebombermen.GameManager;
+import com.braids.coffeebombermen.MainFrame;
+import com.braids.coffeebombermen.MainMenuBar.GameStates;
+import com.braids.coffeebombermen.client.Client;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
+import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.ServerComponentOptions;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
+import com.braids.coffeebombermen.options.model.PublicClientOptions;
+import com.braids.coffeebombermen.options.model.ServerOptions;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.TimedIterableControlledThread;
 
 /**
  * The server of the game.<br>
@@ -204,13 +202,13 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	private void handleGame() {
 
 		// Game starting protocol
-		broadcastCommand(Client.Commands.STARTING_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.STARTING_GAME.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 
 		// Sending all required options and datas for a new game...
 		broadcastCommand("" + new Random().nextLong());
 		final ServerOptions serverOptions = serverOptionsManager.getOptions();
 		broadcastCommand(serverOptions.packToString());
-		if (!serverOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME))
+		if (!serverOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME))
 			broadcastCommand(gameManager.getLevel().packToString());
 
 		iterationTimer.setFrequency(serverOptions.getGameCycleFrequency());
@@ -255,7 +253,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 			}
 		}
 
-		broadcastCommand(Client.Commands.ENDING_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.ENDING_GAME.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 		requestedToEndGame = false;
 	}
 
@@ -276,7 +274,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	private void broadcastStartingNextIterationCommand() {
 		StringBuilder newClientsActions = new StringBuilder();
 		newClientsActions.append(Integer.toString(Client.Commands.STARTING_NEXT_ITERATION.ordinal()));
-		newClientsActions.append(GENERAL_SEPARATOR_STRING);
+		newClientsActions.append(GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 
 		for (int i = 0; i < clientContacts.size(); i++) {
 			final ClientContact clientContact = clientContacts.get(i);
@@ -338,12 +336,12 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 						// available)
 						case SENDING_PUBLIC_CLIENT_OPTIONS:
 							clientContact.publicClientOptions = PublicClientOptions.parseFromString(commandTokenizer.remainingString());
-							broadcastCommand(Client.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING + i + GENERAL_SEPARATOR_STRING
-							        + clientContact.publicClientOptions.packToString());
+							broadcastCommand(Client.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + i
+							        + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + clientContact.publicClientOptions.packToString());
 							break;
 						case REQUESTING_SERVER_OPTIONS:
-							clientContact.connectionStub.sendMessage(Client.Commands.SENDING_SERVER_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING
-							        + serverOptionsManager.getOptions().packToString());
+							clientContact.connectionStub.sendMessage(Client.Commands.SENDING_SERVER_OPTIONS.ordinal()
+							        + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + serverOptionsManager.getOptions().packToString());
 							break;
 
 						case PLAYER_DIED:
@@ -364,7 +362,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 *            message to be broadcasted
 	 */
 	public void broadcastMessage(final String message) {
-		broadcastCommand(Client.Commands.MESSAGE.ordinal() + GENERAL_SEPARATOR_STRING + message);
+		broadcastCommand(Client.Commands.MESSAGE.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + message);
 	}
 
 	/**
@@ -412,7 +410,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 * Starts next round of the game.
 	 */
 	public void startNextRound() {
-		broadcastCommand(Client.Commands.STARTING_NEXT_ROUND.ordinal() + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.STARTING_NEXT_ROUND.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 	}
 
 	/**
@@ -425,7 +423,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		clientContacts.remove(clientContact);
 		clientContact.connectionStub.close();
 
-		broadcastCommand(Client.Commands.A_CLIENT_HAS_LEFT_THE_GAME.ordinal() + GENERAL_SEPARATOR_STRING + clientContact.ownIndex + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.A_CLIENT_HAS_LEFT_THE_GAME.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + clientContact.ownIndex
+		        + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 		broadcastMessage(SERVER_CHAT_NAME + clientContact.publicClientOptions.clientName + " has left the game.");
 	}
 
@@ -451,7 +450,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		iterationTimer.shutDown();
 		serverOptionsManager.unregisterOptionsChangeListener(this);
 		broadcastMessage(SERVER_CHAT_NAME + "Server is going for a shutdown...");
-		broadcastCommand(Client.Commands.SHUTDOWN + GENERAL_SEPARATOR_STRING);
+		broadcastCommand(Client.Commands.SHUTDOWN + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 		for (final ClientContact clientContact : clientContacts)
 			clientContact.connectionStub.close();
 	}

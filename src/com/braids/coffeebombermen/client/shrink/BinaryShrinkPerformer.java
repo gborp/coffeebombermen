@@ -1,11 +1,11 @@
-package classes.client.shrink;
+package com.braids.coffeebombermen.client.shrink;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import classes.client.gamecore.control.GameCoreHandler;
-import classes.options.Shrinkers;
-import classes.utils.MathHelper;
+import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
+import com.braids.coffeebombermen.options.Shrinkers;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 public class BinaryShrinkPerformer extends AbstractShrinkPerformer {
 

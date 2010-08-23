@@ -1,4 +1,4 @@
-package classes.utils;
+package com.braids.coffeebombermen.utils;
 
 /**
  * This class is a controlled thread which has iterations timed by a controlled

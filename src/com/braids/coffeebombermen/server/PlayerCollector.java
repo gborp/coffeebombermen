@@ -1,8 +1,4 @@
-package classes.server;
-
-import static classes.Consts.APPLICATION_NAME;
-import static classes.Consts.APPLICATION_VERSION;
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_STRING;
+package com.braids.coffeebombermen.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -11,13 +7,14 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import classes.client.Client;
-import classes.options.OptionsChangeListener;
-import classes.options.OptionsManager;
-import classes.options.model.PublicClientOptions;
-import classes.options.model.ServerOptions;
-import classes.utils.ConnectionStub;
-import classes.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.Consts;
+import com.braids.coffeebombermen.client.Client;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
+import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.model.PublicClientOptions;
+import com.braids.coffeebombermen.options.model.ServerOptions;
+import com.braids.coffeebombermen.utils.ConnectionStub;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
 
 /**
  * The Player collector of the server. Handles player collecting.<br>
@@ -49,7 +46,7 @@ import classes.utils.GeneralStringTokenizer;
 public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 
 	/** Identification string of the Bombermen server. */
-	public static final String                  SERVER_IDENTIFICATION_STRING = APPLICATION_NAME + " server";
+	public static final String                  SERVER_IDENTIFICATION_STRING = Consts.APPLICATION_NAME + " server";
 	/** Message to the client that the given password was accepted. */
 	public static final String                  PASSWORD_ACCEPTED            = "Password accepted";
 	/** Message to the client that the given password was rejected. */
@@ -164,7 +161,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 				final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(newClientContact.connectionStub.receiveMessage());
 				commandTokenizer.nextIntToken();
 				newClientContact.publicClientOptions = PublicClientOptions.parseFromString(commandTokenizer.remainingString());
-				server.broadcastCommand(Client.Commands.A_CLIENT_HAS_JOINED_THE_GAME.ordinal() + GENERAL_SEPARATOR_STRING
+				server.broadcastCommand(Client.Commands.A_CLIENT_HAS_JOINED_THE_GAME.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING
 				        + newClientContact.publicClientOptions.packToString());
 				clientContacts.add(newClientContact);
 
@@ -206,9 +203,9 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 							connectionStub.sendMessage(SERVER_IDENTIFICATION_STRING);
 							// Authentication of the client...
 							if (!connectionStub.receiveMessage().equals(Client.CLIENT_IDENTIFICATION_STRING))
-								throw new AcceptingClientFailedException("Client is not a " + APPLICATION_NAME + " cilent");
-							connectionStub.sendMessage(APPLICATION_VERSION);
-							if (!connectionStub.receiveMessage().equals(APPLICATION_VERSION))
+								throw new AcceptingClientFailedException("Client is not a " + Consts.APPLICATION_NAME + " cilent");
+							connectionStub.sendMessage(Consts.APPLICATION_VERSION);
+							if (!connectionStub.receiveMessage().equals(Consts.APPLICATION_VERSION))
 								throw new AcceptingClientFailedException("Incompatible versions");
 							final String gamePassword = serverOptionsManager.getOptions().getPassword();
 							final String receivedGamePassword = connectionStub.receiveMessage();

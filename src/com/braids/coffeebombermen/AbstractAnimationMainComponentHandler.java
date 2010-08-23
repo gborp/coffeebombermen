@@ -1,8 +1,8 @@
-package classes;
+package com.braids.coffeebombermen;
 
-import classes.client.graphics.AnimationComponent;
-import classes.client.graphics.AnimationDatas;
-import classes.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.client.graphics.AnimationComponent;
+import com.braids.coffeebombermen.client.graphics.AnimationDatas;
+import com.braids.coffeebombermen.client.graphics.GraphicsManager;
 
 /**
  * A main component handler where the main comonent is an animation component.

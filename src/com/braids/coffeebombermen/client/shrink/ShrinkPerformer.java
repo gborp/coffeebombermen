@@ -1,6 +1,6 @@
-package classes.client.shrink;
+package com.braids.coffeebombermen.client.shrink;
 
-import classes.options.Shrinkers;
+import com.braids.coffeebombermen.options.Shrinkers;
 
 public interface ShrinkPerformer {
 

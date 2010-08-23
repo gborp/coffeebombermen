@@ -1,8 +1,8 @@
-package classes.client.gamecore.control;
+package com.braids.coffeebombermen.client.gamecore.control;
 
 import java.util.Comparator;
 
-import classes.client.gamecore.model.PlayerModel;
+import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
 
 public class PlayerModelComparatorByPoint implements Comparator<PlayerModel> {
 

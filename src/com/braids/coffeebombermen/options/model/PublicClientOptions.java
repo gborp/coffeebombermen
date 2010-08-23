@@ -1,9 +1,8 @@
-package classes.options.model;
+package com.braids.coffeebombermen.options.model;
 
-import static classes.options.Consts.MAX_PLAYERS_FROM_A_COMPUTER;
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
-import classes.options.Consts.PlayerColors;
-import classes.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.options.OptConsts;
+import com.braids.coffeebombermen.options.OptConsts.PlayerColors;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
 
 /**
  * This Options class contains the public client options, what will be
@@ -31,7 +30,7 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 	 * MAX_PLAYERS_FROM_A_COMPUTER players count
 	 */
 	public PublicClientOptions() {
-		this(MAX_PLAYERS_FROM_A_COMPUTER);
+		this(OptConsts.MAX_PLAYERS_FROM_A_COMPUTER);
 	}
 
 	/**
@@ -72,17 +71,17 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 	public String packToString(final int playersCount) {
 		final StringBuilder buffer = new StringBuilder();
 
-		buffer.append(playersCount).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(playersCount).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
-		buffer.append(clientName).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(clientName).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		for (int i = 0; i < playersCount; i++)
-			buffer.append(playerNames[i]).append(GENERAL_SEPARATOR_CHAR);
-
-		for (int i = 0; i < playersCount; i++)
-			buffer.append(playerColors[i].ordinal()).append(GENERAL_SEPARATOR_CHAR);
+			buffer.append(playerNames[i]).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		for (int i = 0; i < playersCount; i++)
-			buffer.append(movementCorrectionSensitivities[i]).append(GENERAL_SEPARATOR_CHAR);
+			buffer.append(playerColors[i].ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+
+		for (int i = 0; i < playersCount; i++)
+			buffer.append(movementCorrectionSensitivities[i]).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		return buffer.toString();
 	}

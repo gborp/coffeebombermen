@@ -1,4 +1,4 @@
-package classes.options;
+package com.braids.coffeebombermen.options;
 
 public enum Shrinkers {
 	Default {

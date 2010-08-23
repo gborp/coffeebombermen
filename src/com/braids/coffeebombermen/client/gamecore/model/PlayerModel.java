@@ -1,15 +1,15 @@
-package classes.client.gamecore.model;
+package com.braids.coffeebombermen.client.gamecore.model;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 
-import classes.client.gamecore.Activities;
-import classes.client.sound.SoundEffect;
-import classes.options.Diseases;
-import classes.options.LevelComponentOptions;
-import classes.options.Consts.Items;
-import classes.options.Consts.PlayerControlKeys;
+import com.braids.coffeebombermen.client.gamecore.Activities;
+import com.braids.coffeebombermen.client.sound.SoundEffect;
+import com.braids.coffeebombermen.options.Diseases;
+import com.braids.coffeebombermen.options.LevelComponentOptions;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
 
 /**
  * The class represents the model of a player of the GAME (NOT the the

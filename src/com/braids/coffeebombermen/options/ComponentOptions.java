@@ -1,9 +1,9 @@
-package classes.options;
+package com.braids.coffeebombermen.options;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 
-import classes.options.model.Options;
+import com.braids.coffeebombermen.options.model.Options;
 
 /**
  * Defines methods to make options available for viewing and changing on the

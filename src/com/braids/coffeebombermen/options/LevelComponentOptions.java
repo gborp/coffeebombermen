@@ -1,6 +1,4 @@
-package classes.options;
-
-import static classes.options.Consts.NEUTRALIZER_ITEMS_MAP;
+package com.braids.coffeebombermen.options;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -12,8 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import classes.options.Consts.Items;
-import classes.options.model.LevelOptions;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.model.LevelOptions;
 
 /**
  * This class makes the level options available for viewing and changing on the
@@ -332,8 +330,8 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 		if (checkBox.isSelected())
 			for (final Items item : hasNonAccumulateableItemsMap_cs.keySet())
 				if (hasNonAccumulateableItemsMap_cs.get(item) == checkBox) {
-					if (NEUTRALIZER_ITEMS_MAP.containsKey(item))
-						for (final Items neutralizedItem : NEUTRALIZER_ITEMS_MAP.get(item))
+					if (OptConsts.NEUTRALIZER_ITEMS_MAP.containsKey(item))
+						for (final Items neutralizedItem : OptConsts.NEUTRALIZER_ITEMS_MAP.get(item))
 							hasNonAccumulateableItemsMap_cs.get(neutralizedItem).setSelected(false);
 					break;
 				}

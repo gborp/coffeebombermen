@@ -1,13 +1,4 @@
-/*
- * Created on October 9, 2004
- */
-
-package classes.client.gamecore.control;
-
-import static classes.client.gamecore.Consts.FIRE_ITERATIONS;
-import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
-import static classes.client.gamecore.Consts.MAX_PLAYER_VITALITY;
-import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
+package com.braids.coffeebombermen.client.gamecore.control;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -19,37 +10,39 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
-import classes.AbstractAnimationMainComponentHandler;
-import classes.GameManager;
-import classes.MainComponentHandler;
-import classes.MainFrame;
-import classes.client.gamecore.Activities;
-import classes.client.gamecore.BombPhases;
-import classes.client.gamecore.Directions;
-import classes.client.gamecore.FireShapes;
-import classes.client.gamecore.model.BombModel;
-import classes.client.gamecore.model.FireModel;
-import classes.client.gamecore.model.PlayerModel;
-import classes.client.gamecore.model.level.LevelComponent;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.client.graphics.AnimationDatas;
-import classes.client.graphics.GraphicsManager;
-import classes.client.shrink.BinaryShrinkPerformer;
-import classes.client.shrink.BombShrinkPerformer;
-import classes.client.shrink.DefaultShrinkPerformer;
-import classes.client.shrink.MassKillShrinkPerformer;
-import classes.client.shrink.ShrinkPerformer;
-import classes.client.shrink.SpiderBombShrinkPerformer;
-import classes.client.sound.SoundEffect;
-import classes.options.Diseases;
-import classes.options.Shrinkers;
-import classes.options.Consts.Items;
-import classes.options.Consts.PlayerControlKeys;
-import classes.options.Consts.Walls;
-import classes.options.model.PublicClientOptions;
-import classes.options.model.ServerOptions;
-import classes.utils.GeneralStringTokenizer;
-import classes.utils.MathHelper;
+import com.braids.coffeebombermen.AbstractAnimationMainComponentHandler;
+import com.braids.coffeebombermen.GameManager;
+import com.braids.coffeebombermen.MainComponentHandler;
+import com.braids.coffeebombermen.MainFrame;
+import com.braids.coffeebombermen.client.gamecore.Activities;
+import com.braids.coffeebombermen.client.gamecore.BombPhases;
+import com.braids.coffeebombermen.client.gamecore.CoreConsts;
+import com.braids.coffeebombermen.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.FireShapes;
+import com.braids.coffeebombermen.client.gamecore.model.BombModel;
+import com.braids.coffeebombermen.client.gamecore.model.FireModel;
+import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.client.graphics.AnimationDatas;
+import com.braids.coffeebombermen.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.MassKillShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.ShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.SpiderBombShrinkPerformer;
+import com.braids.coffeebombermen.client.sound.SoundEffect;
+import com.braids.coffeebombermen.options.Diseases;
+import com.braids.coffeebombermen.options.ServerComponentOptions;
+import com.braids.coffeebombermen.options.Shrinkers;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.model.PublicClientOptions;
+import com.braids.coffeebombermen.options.model.ServerOptions;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 /**
  * The class which handles the core of the game: manages rounds and the running
@@ -202,8 +195,8 @@ public class GameCoreHandler {
 	 * Inits the next round.
 	 */
 	public void initNextRound() {
-		level = globalServerOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME) ? RandomLevelBuilder.generateRandomLevel(globalServerOptions, this,
-		        random) : new Level(receivedLevelModel.cloneLevel(), this);
+		level = globalServerOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME) ? RandomLevelBuilder.generateRandomLevel(
+		        globalServerOptions, this, random) : new Level(receivedLevelModel.cloneLevel(), this);
 
 		LevelModel levelModel = level.getModel();
 
@@ -279,8 +272,8 @@ public class GameCoreHandler {
 					}
 				}
 
-				player.initForNextRound(LEVEL_COMPONENT_GRANULARITY * componentPosX + LEVEL_COMPONENT_GRANULARITY / 2, LEVEL_COMPONENT_GRANULARITY
-				        * componentPosY + LEVEL_COMPONENT_GRANULARITY / 2);
+				player.initForNextRound(CoreConsts.LEVEL_COMPONENT_GRANULARITY * componentPosX + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2,
+				        CoreConsts.LEVEL_COMPONENT_GRANULARITY * componentPosY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 			}
 
 		bombs = new ArrayList<Bomb>();
@@ -438,7 +431,7 @@ public class GameCoreHandler {
 					}
 					if (firesCount > 0) {
 						int damage = firesCount
-						        * (int) (MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * FIRE_ITERATIONS) + 0.5); // +0.5
+						        * (int) (CoreConsts.MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * CoreConsts.FIRE_ITERATIONS) + 0.5); // +0.5
 						// for ceiling (can't flooring, cause 100% damage might
 						// cause remainder, would let the player live!)
 						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
@@ -839,9 +832,9 @@ public class GameCoreHandler {
 		LevelModel levelModel = getLevelModel();
 
 		if (flyingTargetPosX < 0)
-			bombModel.setFlyingTargetPosX((levelModel.getWidth() - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
-		else if (flyingTargetPosX > levelModel.getWidth() * LEVEL_COMPONENT_GRANULARITY)
-			bombModel.setFlyingTargetPosX(LEVEL_COMPONENT_GRANULARITY / 2);
+			bombModel.setFlyingTargetPosX((levelModel.getWidth() - 1) * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+		else if (flyingTargetPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY)
+			bombModel.setFlyingTargetPosX(CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 		else
 			bombModel.setFlyingTargetPosX(flyingTargetPosX);
 	}
@@ -860,9 +853,9 @@ public class GameCoreHandler {
 		LevelModel levelModel = getLevelModel();
 
 		if (flyingTargetPosY < 0)
-			bombModel.setFlyingTargetPosY((levelModel.getHeight() - 1) * LEVEL_COMPONENT_GRANULARITY + LEVEL_COMPONENT_GRANULARITY / 2);
-		else if (flyingTargetPosY > levelModel.getHeight() * LEVEL_COMPONENT_GRANULARITY)
-			bombModel.setFlyingTargetPosY(LEVEL_COMPONENT_GRANULARITY / 2);
+			bombModel.setFlyingTargetPosY((levelModel.getHeight() - 1) * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+		else if (flyingTargetPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY)
+			bombModel.setFlyingTargetPosY(CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 		else
 			bombModel.setFlyingTargetPosY(flyingTargetPosY);
 	}

@@ -1,4 +1,4 @@
-package classes.client.gamecore;
+package com.braids.coffeebombermen.client.gamecore;
 
 /**
  * Types of the bombs.

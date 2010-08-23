@@ -1,4 +1,4 @@
-package classes.client.gamecore;
+package com.braids.coffeebombermen.client.gamecore;
 
 /**
  * Activities of the bombermen.
@@ -24,9 +24,8 @@ public enum Activities {
 	DYING(30, false);
 
 	/**
-	 * The number of game iterations of the activity for a one-time play.
-	 * After that, it may or may not be repeated based on the repeatable
-	 * attribute.
+	 * The number of game iterations of the activity for a one-time play. After
+	 * that, it may or may not be repeated based on the repeatable attribute.
 	 */
 	public final int     activityIterations;
 	/**
@@ -39,8 +38,8 @@ public enum Activities {
 	 * Creates a new Activities.
 	 * 
 	 * @param activityIterations
-	 *            the number of game iterations of the activity for a
-	 *            one-time play
+	 *            the number of game iterations of the activity for a one-time
+	 *            play
 	 * @param repeatable
 	 *            tells whether this activity is repeatable once it has been
 	 *            played over

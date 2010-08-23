@@ -1,4 +1,4 @@
-package classes.utils;
+package com.braids.coffeebombermen.utils;
 
 /**
  * Controlled thread which provides more service-thread services/methods and

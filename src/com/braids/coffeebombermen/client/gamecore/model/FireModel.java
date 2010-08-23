@@ -1,10 +1,6 @@
-/*
- * Created on December 13, 2005
- */
+package com.braids.coffeebombermen.client.gamecore.model;
 
-package classes.client.gamecore.model;
-
-import classes.client.gamecore.FireShapes;
+import com.braids.coffeebombermen.client.gamecore.FireShapes;
 
 /**
  * The class represents the model of the fire.<br>

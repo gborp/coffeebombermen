@@ -1,4 +1,4 @@
-package classes.client.graphics;
+package com.braids.coffeebombermen.client.graphics;
 
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -8,9 +8,9 @@ import java.awt.Image;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 
-import classes.options.OptionsChangeListener;
-import classes.options.Consts.ImageScalingAlgorithms;
-import classes.options.model.ClientOptions;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
+import com.braids.coffeebombermen.options.OptConsts.ImageScalingAlgorithms;
+import com.braids.coffeebombermen.options.model.ClientOptions;
 
 /**
  * Handles an image.<br>

@@ -1,4 +1,4 @@
-package classes.utils;
+package com.braids.coffeebombermen.utils;
 
 import java.awt.Color;
 import java.awt.Component;

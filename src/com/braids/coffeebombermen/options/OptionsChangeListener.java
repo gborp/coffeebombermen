@@ -1,6 +1,6 @@
-package classes.options;
+package com.braids.coffeebombermen.options;
 
-import classes.options.model.Options;
+import com.braids.coffeebombermen.options.model.Options;
 
 /**
  * Defines a method to be called when the listened options may have been

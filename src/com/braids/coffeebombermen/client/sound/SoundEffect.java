@@ -1,4 +1,4 @@
-package classes.client.sound;
+package com.braids.coffeebombermen.client.sound;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,8 +8,9 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
-import classes.utils.GeneralUtilities;
-import classes.utils.MathHelper;
+import com.braids.coffeebombermen.Consts;
+import com.braids.coffeebombermen.utils.GeneralUtilities;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 /**
  * This enum encapsulates all the sound effects of a game, so as to separate the
@@ -21,29 +22,28 @@ import classes.utils.MathHelper;
  * the static variable SoundEffect.volume to mute the sound.
  */
 public enum SoundEffect {
-	BOOM("boom", true), PICKUP("pickup", true), WOUND("wound", false), KICK("kick", true), HEAL("heal", false), THROW(
-			"throw", true), DIE("die", true), PLACE_BOMB("placebomb", true), START_MATCH(
-			"startmatch", true), DEATH_WALL("deathwall", false), PLACE_WALL("placewall", true);
+	BOOM("boom", true), PICKUP("pickup", true), WOUND("wound", false), KICK("kick", true), HEAL("heal", false), THROW("throw", true), DIE("die", true), PLACE_BOMB(
+	        "placebomb", true), START_MATCH("startmatch", true), DEATH_WALL("deathwall", false), PLACE_WALL("placewall", true);
 
 	// Nested class for specifying volume
 	public static enum Volume {
 		MUTE, LOW, MEDIUM, HIGH
 	}
 
-	public static Volume volume = Volume.HIGH;
+	public static Volume  volume      = Volume.HIGH;
 
 	/**
 	 * If some effect should be played very frequent, then some must be ignored.
 	 * its in milisec
 	 */
-	private static int MIN_LATENCY = 1000000000;
+	private static int    MIN_LATENCY = 1000000000;
 
 	// Each sound effect has its own clip, loaded with its own sound file.
-	private List<Clip> lstClip;
-	private long lastPlayTime;
+	private List<Clip>    lstClip;
+	private long          lastPlayTime;
 
-	private String soundDirName;
-	private int lastPlayIndex;
+	private String        soundDirName;
+	private int           lastPlayIndex;
 
 	private final boolean allowParalell;
 
@@ -119,12 +119,10 @@ public enum SoundEffect {
 	}
 
 	private void addClips() {
-		String path = classes.Consts.SOUND_DIRECTORY_NAME
-				+ SoundManager.getActiveSoundTheme() + "/" + soundDirName + "/";
+		String path = Consts.SOUND_DIRECTORY_NAME + SoundManager.getActiveSoundTheme() + "/" + soundDirName + "/";
 		String[] fileNames = GeneralUtilities.getFileNames(path);
 		if (fileNames.length == 0) {
-			System.err.println("No file found while loading sound files from: "
-					+ path);
+			System.err.println("No file found while loading sound files from: " + path);
 			return;
 		}
 		for (String fileName : fileNames) {
@@ -135,22 +133,18 @@ public enum SoundEffect {
 				// URL url = this.getClass().getClassLoader().getResource(
 				// soundFileName);
 				// Set up an audio input stream piped from the sound file.
-				AudioInputStream audioInputStream = AudioSystem
-						.getAudioInputStream(new File(file));
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(file));
 				// Get a clip resource.
 				Clip clip = AudioSystem.getClip();
 				// Open audio clip and load samples from the audio input stream.
 				clip.open(audioInputStream);
 				lstClip.add(clip);
 			} catch (Exception ex) {
-				System.err.println("Cannot load sound file: " + file + " ("
-						+ ex.getLocalizedMessage() + ")");
+				System.err.println("Cannot load sound file: " + file + " (" + ex.getLocalizedMessage() + ")");
 			}
 		}
 		if (lstClip.size() == 0) {
-			System.err
-					.println("All files ignored while loading sound files from: "
-							+ path);
+			System.err.println("All files ignored while loading sound files from: " + path);
 			return;
 		}
 		if (lastPlayIndex < 0) {

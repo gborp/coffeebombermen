@@ -1,12 +1,12 @@
-package classes.client.graphics;
+package com.braids.coffeebombermen.client.graphics;
 
 import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.JComponent;
 
-import classes.utils.ControlledTimer;
-import classes.utils.Timeable;
+import com.braids.coffeebombermen.utils.ControlledTimer;
+import com.braids.coffeebombermen.utils.Timeable;
 
 /**
  * A component which displays an animation. The component itself is responsible
@@ -34,7 +34,7 @@ public class AnimationComponent extends JComponent implements Timeable {
 		this.animationDatas = animationDatas;
 
 		setDoubleBuffered(false); // No need to be double buffered, we draw
-								  // complete images.
+		// complete images.
 		rewindAnimation();
 	}
 
@@ -44,7 +44,7 @@ public class AnimationComponent extends JComponent implements Timeable {
 	 */
 	public void playAnimation() {
 		if (animationDatas.frameHandlers.length > 1) { // 1 frame does not need
-													   // to be animated
+			// to be animated
 			frameTimer = new ControlledTimer(this, animationDatas.framesPerSec);
 			frameTimer.start();
 		}
@@ -105,28 +105,28 @@ public class AnimationComponent extends JComponent implements Timeable {
 		if (x > 0) {
 			graphics.fillRect(0, 0, x, height);
 			graphics.fillRect(x + frameWidth, 0, x + 1, height); // the last
-																 // column might
-																 // be out of
-																 // component,
-																 // that case it
-																 // will be
-																 // clipped
+			// column might
+			// be out of
+			// component,
+			// that case it
+			// will be
+			// clipped
 		}
 		if (y > 0) { // We examine both condition, could be that frame fits the
-					 // component perfectly (thats why we don't use else
-					 // branch...)
+			// component perfectly (thats why we don't use else
+			// branch...)
 			graphics.fillRect(0, 0, frameWidth, y);
 			graphics.fillRect(0, y + frameHeight, frameWidth, y + 1); // the
-																	  // last
-																	  // row
-																	  // might
-																	  // be out
-																	  // of
-																	  // component,
-																	  // that
-																	  // case it
-																	  // will be
-																	  // clipped
+			// last
+			// row
+			// might
+			// be out
+			// of
+			// component,
+			// that
+			// case it
+			// will be
+			// clipped
 		}
 
 		if (frameTimer != null)

@@ -1,9 +1,4 @@
-package classes.client;
-
-import static classes.Consts.APPLICATION_NAME;
-import static classes.Consts.APPLICATION_VERSION;
-import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_STRING;
+package com.braids.coffeebombermen.client;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -12,31 +7,32 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
-import classes.AbstractAnimationMainComponentHandler;
-import classes.GameManager;
-import classes.MainComponentHandler;
-import classes.MainFrame;
-import classes.MainMenuBar;
-import classes.MessageHandler;
-import classes.MainMenuBar.GameStates;
-import classes.client.gamecore.control.GameCoreHandler;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.client.gamecore.view.GameSceneMainComponentHandler;
-import classes.client.graphics.AnimationDatas;
-import classes.client.graphics.GraphicsManager;
-import classes.options.OptionsChangeListener;
-import classes.options.OptionsManager;
-import classes.options.ServerComponentOptions;
-import classes.options.Consts.NetworkLatencies;
-import classes.options.Consts.SceneRefreshModes;
-import classes.options.model.ClientOptions;
-import classes.options.model.PublicClientOptions;
-import classes.options.model.ServerOptions;
-import classes.server.PlayerCollector;
-import classes.server.Server;
-import classes.utils.ConnectionStub;
-import classes.utils.GeneralStringTokenizer;
-import classes.utils.TimedIterableControlledThread;
+import com.braids.coffeebombermen.AbstractAnimationMainComponentHandler;
+import com.braids.coffeebombermen.Consts;
+import com.braids.coffeebombermen.GameManager;
+import com.braids.coffeebombermen.MainComponentHandler;
+import com.braids.coffeebombermen.MainFrame;
+import com.braids.coffeebombermen.MainMenuBar;
+import com.braids.coffeebombermen.MessageHandler;
+import com.braids.coffeebombermen.MainMenuBar.GameStates;
+import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.client.gamecore.view.GameSceneMainComponentHandler;
+import com.braids.coffeebombermen.client.graphics.AnimationDatas;
+import com.braids.coffeebombermen.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
+import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.ServerComponentOptions;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
+import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
+import com.braids.coffeebombermen.options.model.ClientOptions;
+import com.braids.coffeebombermen.options.model.PublicClientOptions;
+import com.braids.coffeebombermen.options.model.ServerOptions;
+import com.braids.coffeebombermen.server.PlayerCollector;
+import com.braids.coffeebombermen.server.Server;
+import com.braids.coffeebombermen.utils.ConnectionStub;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.TimedIterableControlledThread;
 
 /**
  * A client of the game.<br>
@@ -90,7 +86,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	}
 
 	/** Identification string of the Bombermen client. */
-	public static final String                   CLIENT_IDENTIFICATION_STRING = APPLICATION_NAME + " client";
+	public static final String                   CLIENT_IDENTIFICATION_STRING = Consts.APPLICATION_NAME + " client";
 
 	/** Reference to the game manager. */
 	private final GameManager                    gameManager;
@@ -232,11 +228,11 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 				serverStub = new ConnectionStub(socket);
 				serverStub.sendMessage(CLIENT_IDENTIFICATION_STRING);
 				if (!serverStub.receiveMessage().equals(PlayerCollector.SERVER_IDENTIFICATION_STRING))
-					throw new ConnectingToServerFailedException("Destination server is not a " + APPLICATION_NAME + " server!");
-				serverStub.sendMessage(APPLICATION_VERSION);
+					throw new ConnectingToServerFailedException("Destination server is not a " + Consts.APPLICATION_NAME + " server!");
+				serverStub.sendMessage(Consts.APPLICATION_VERSION);
 				final String serverVersion = serverStub.receiveMessage();
-				if (!serverVersion.equals(APPLICATION_VERSION))
-					throw new ConnectingToServerFailedException("Incompatible " + APPLICATION_NAME + " server (ver. " + serverVersion + ")!");
+				if (!serverVersion.equals(Consts.APPLICATION_VERSION))
+					throw new ConnectingToServerFailedException("Incompatible " + Consts.APPLICATION_NAME + " server (ver. " + serverVersion + ")!");
 				serverStub.sendMessage(serverOptions == null ? clientOptions.password : serverOptions.getPassword());
 				if (!serverStub.receiveMessage().equals(PlayerCollector.PASSWORD_ACCEPTED))
 					throw new ConnectingToServerFailedException("Incorrect game password!");
@@ -364,9 +360,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		try {
 			String newClientActions = gameSceneMainComponentHandler.getGameSceneComponent().getAndClearNewActions();
 			if (newClientActions.length() > 0)
-				newClientActions += GENERAL_SEPARATOR_STRING;
+				newClientActions += GeneralStringTokenizer.GENERAL_SEPARATOR_STRING;
 
-			serverStub.sendMessage(Server.Commands.READY_FOR_NEXT_ITERATION.ordinal() + GENERAL_SEPARATOR_STRING + newClientActions);
+			serverStub.sendMessage(Server.Commands.READY_FOR_NEXT_ITERATION.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + newClientActions);
 		} catch (final IOException ie) {
 			ie.printStackTrace();
 		}
@@ -383,7 +379,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 */
 	private void sendPublicClientOptions(final PublicClientOptions publicClientOptions, final int playersCount) {
 		try {
-			serverStub.sendMessage(Server.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING
+			serverStub.sendMessage(Server.Commands.SENDING_PUBLIC_CLIENT_OPTIONS.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING
 			        + publicClientOptions.packToString(playersCount));
 		} catch (final IOException ie) {
 			ie.printStackTrace();
@@ -398,7 +394,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 */
 	public void handleMessage(final String message) {
 		try {
-			serverStub.sendMessage(Server.Commands.MESSAGE.ordinal() + GENERAL_SEPARATOR_STRING + message);
+			serverStub.sendMessage(Server.Commands.MESSAGE.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + message);
 		} catch (final IOException ie) {
 			ie.printStackTrace();
 		}
@@ -413,7 +409,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			globalServerOptionsManager.showOptionsDialog();
 		else
 			try {
-				serverStub.sendMessage(Server.Commands.REQUESTING_SERVER_OPTIONS.ordinal() + GENERAL_SEPARATOR_STRING);
+				serverStub.sendMessage(Server.Commands.REQUESTING_SERVER_OPTIONS.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 			} catch (final IOException ie) {
 				ie.printStackTrace();
 			}
@@ -430,7 +426,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			final ServerOptions globalServerOptions = ServerOptions.parseFromString(serverStub.receiveMessage());
 			globalServerOptionsManager.setOptions(globalServerOptions);
 			LevelModel levelModel = null;
-			if (!globalServerOptions.getLevelName().equals(RANDOMLY_GENERATED_LEVEL_NAME))
+			if (!globalServerOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME))
 				levelModel = LevelModel.parseFromString(serverStub.receiveMessage());
 
 			// We received all required informations... we can create game core
@@ -561,7 +557,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 
 		clientOptionsManager.unregisterOptionsChangeListener(this);
 		try {
-			serverStub.sendMessage(Server.Commands.QUIT.ordinal() + GENERAL_SEPARATOR_STRING);
+			serverStub.sendMessage(Server.Commands.QUIT.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 		} catch (final IOException ie) {
 			ie.printStackTrace();
 		}
