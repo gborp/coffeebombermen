@@ -1,8 +1,4 @@
-package classes.options;
-
-import static classes.options.Consts.DEFAULT_GAME_PORT;
-import static classes.options.Consts.MAXIMUM_GAME_PORT;
-import static classes.options.Consts.MINIMUM_GAME_PORT;
+package com.braids.coffeebombermen.options;
 
 import java.util.Enumeration;
 
@@ -19,12 +15,12 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-import classes.Consts;
-import classes.options.Consts.GameTypes;
-import classes.options.Consts.KillsBelongTos;
-import classes.options.Consts.NetworkLatencies;
-import classes.options.model.ServerOptions;
-import classes.utils.GeneralUtilities;
+import com.braids.coffeebombermen.Consts;
+import com.braids.coffeebombermen.options.OptConsts.GameTypes;
+import com.braids.coffeebombermen.options.OptConsts.KillsBelongTos;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
+import com.braids.coffeebombermen.options.model.ServerOptions;
+import com.braids.coffeebombermen.utils.GeneralUtilities;
 
 /**
  * This class makes the server options available for viewing and changing on the
@@ -46,10 +42,10 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private static final GameTypes        DEFAULT_GAME_TYPE                                   = GameTypes.FREE_FOR_ALL;
 	/** Minimum value of round time limit option in seconds. */
 	private static final int              MINIMUM_ROUND_TIME_LIMIT                            = 0;                                                            // 0
-																																							   // can
-																																							   // mean
-																																							   // no
-																																							   // limit
+	// can
+	// mean
+	// no
+	// limit
 	/** Default value of round time limit option in seconds. */
 	private static final int              DEFAULT_ROUND_TIME_LIMIT                            = 90;
 	/** Maximum value of round time limit option in seconds. */
@@ -69,16 +65,16 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private static final int              DEFAULT_DAMAGE_OF_WHOLE_BOMB_FIRE                   = 100;
 	/** Maximum value of damage of whole bomb fire option. */
 	private static final int              MAXIMUM_DAMAGE_OF_WHOLE_BOMB_FIRE                   = 10000;                                                        // Maximum
-																																							   // must
-																																							   // be
-																																							   // big
-																																							   // enough
-																																							   // to
-																																							   // kill
-																																							   // bomberman
-																																							   // in
-																																							   // 1
-																																							   // iteration!
+	// must
+	// be
+	// big
+	// enough
+	// to
+	// kill
+	// bomberman
+	// in
+	// 1
+	// iteration!
 	/** Default value of explosion annihilates diseases option. */
 	private static final boolean          DEFAULT_EXPLOSION_ANNIHILATES_DISEASES              = true;
 	/** Default value of fire doesn't hurt teammantes option. */
@@ -179,8 +175,9 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	                                                                                                  MINIMUM_GAME_CYCLE_FREQUENCY,
 	                                                                                                  MAXIMUM_GAME_CYCLE_FREQUENCY, 1));
 	/** Component for game port option. */
-	private final JSpinner                gamePort_c                                          = new JSpinner(new SpinnerNumberModel(DEFAULT_GAME_PORT,
-	                                                                                                  MINIMUM_GAME_PORT, MAXIMUM_GAME_PORT, 1));
+	private final JSpinner                gamePort_c                                          = new JSpinner(new SpinnerNumberModel(
+	                                                                                                  OptConsts.DEFAULT_GAME_PORT, OptConsts.MINIMUM_GAME_PORT,
+	                                                                                                  OptConsts.MAXIMUM_GAME_PORT, 1));
 	/** Component for network latency. */
 	private final JComboBox               networkLatency_c                                    = new JComboBox(NetworkLatencies.values());
 
@@ -408,7 +405,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		gettingItemProbability_c.setValue(DEFAULT_GETTING_ITEM_PROBABILITY);
 
 		gameCycleFrequency_c.setValue(DEFAULT_GAME_CYCLE_FREQUENCY);
-		gamePort_c.setValue(DEFAULT_GAME_PORT);
+		gamePort_c.setValue(OptConsts.DEFAULT_GAME_PORT);
 		networkLatency_c.setSelectedItem(DEFAULT_NETWORK_LATENCY);
 	}
 

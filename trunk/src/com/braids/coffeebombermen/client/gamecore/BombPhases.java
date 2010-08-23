@@ -1,4 +1,4 @@
-package classes.client.gamecore;
+package com.braids.coffeebombermen.client.gamecore;
 
 /**
  * Phases of the bombs.

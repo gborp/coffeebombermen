@@ -1,7 +1,7 @@
-package classes.client.shrink;
+package com.braids.coffeebombermen.client.shrink;
 
-import classes.client.gamecore.control.GameCoreHandler;
-import classes.options.Shrinkers;
+import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
+import com.braids.coffeebombermen.options.Shrinkers;
 
 public class MassKillShrinkPerformer extends AbstractShrinkPerformer {
 

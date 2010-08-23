@@ -1,15 +1,11 @@
-/*
- * Created on November 28, 2005
- */
-
-package classes.client.gamecore.model;
+package com.braids.coffeebombermen.client.gamecore.model;
 
 import java.util.ArrayList;
 
-import classes.client.gamecore.BombPhases;
-import classes.client.gamecore.BombTypes;
-import classes.client.gamecore.Directions;
-import classes.client.sound.SoundEffect;
+import com.braids.coffeebombermen.client.gamecore.BombPhases;
+import com.braids.coffeebombermen.client.gamecore.BombTypes;
+import com.braids.coffeebombermen.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.sound.SoundEffect;
 
 /**
  * The class represents the model of a bomb.<br>
@@ -47,9 +43,9 @@ public class BombModel extends PositionedIterableObject {
 	 */
 	private boolean                    dead;
 	/**
-	 * dead bomb does not detonating by itself. 
+	 * dead bomb does not detonating by itself.
 	 */
-	private boolean deadBomb;
+	private boolean                    deadBomb;
 
 	// The following attributes aid to detonate the bomb
 
@@ -322,15 +318,16 @@ public class BombModel extends PositionedIterableObject {
 	public void setDetonatingOnHit(boolean detonatingOnHit) {
 		this.detonatingOnHit = detonatingOnHit;
 	}
-	
+
 	/**
 	 * dead bomb does not detonating by itself.
+	 * 
 	 * @param deadBom
 	 */
 	public void setDeadBomb(boolean deadBomb) {
 		this.deadBomb = deadBomb;
 	}
-	
+
 	/**
 	 * dead bomb does not detonating by itself.
 	 */

@@ -1,9 +1,9 @@
-package classes.client.gamecore;
+package com.braids.coffeebombermen.client.gamecore;
 
 /**
  * Holds constants for defining and calculating the game core.
  */
-public class Consts {
+public class CoreConsts {
 
 	/**
 	 * The granularity of a level component. This is the logical size of the

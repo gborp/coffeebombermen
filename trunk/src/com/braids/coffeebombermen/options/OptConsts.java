@@ -1,8 +1,4 @@
-/*
- * Created on July 4, 2004
- */
-
-package classes.options;
+package com.braids.coffeebombermen.options;
 
 import java.awt.Color;
 import java.util.EnumMap;
@@ -11,7 +7,7 @@ import java.util.EnumSet;
 /**
  * Holds constants needed for the options and can be public.
  */
-public class Consts {
+public class OptConsts {
 
 	/**
 	 * Maximum how many players can play from a computer (from a
@@ -301,7 +297,7 @@ public class Consts {
 	 * Level name for indicating random level (not the one that is displayed in
 	 * the level list combo box).
 	 */
-	public static final String RANDOM_LEVEL_NAME = "";
+	public static final String                         RANDOM_LEVEL_NAME     = "";
 
 	/**
 	 * The available game types in the game.

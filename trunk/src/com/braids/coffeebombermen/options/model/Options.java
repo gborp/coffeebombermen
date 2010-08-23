@@ -1,4 +1,4 @@
-package classes.options.model;
+package com.braids.coffeebombermen.options.model;
 
 /**
  * This class represents class destined for storing options. 3 main operations

@@ -1,7 +1,4 @@
-package classes;
-
-import static classes.Consts.APPLICATION_NAME;
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
+package com.braids.coffeebombermen;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
@@ -24,7 +21,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
-import classes.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
 
 /**
  * This is the main window, the main frame of the game. It contains references
@@ -62,7 +59,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 	 *            reference to the main menu handler
 	 */
 	MainFrame(final MainMenuHandler mainMenuHandler) {
-		super(APPLICATION_NAME);
+		super(Consts.APPLICATION_NAME);
 		mainMenuBar = new MainMenuBar(mainMenuHandler);
 		buildGUI();
 		addWindowListener(new WindowAdapter() {
@@ -287,18 +284,18 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 		StringBuilder buffer = new StringBuilder();
 
 		buffer.append(windowModeBounds.x);
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(windowModeBounds.y);
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(windowModeBounds.width);
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(windowModeBounds.height);
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		buffer.append(splitPane1.getDividerLocation());
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append("N/A");
-		buffer.append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		return buffer.toString();
 	}
@@ -326,8 +323,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 	 * Restores the default positions of the main frame and the splitters.
 	 */
 	public void restoreDefaultWindowAndSplitterPositions() {
-		setWindowAndSplitterPositions("10" + GENERAL_SEPARATOR_CHAR + "10" + GENERAL_SEPARATOR_CHAR + "650" + GENERAL_SEPARATOR_CHAR + "490"
-		        + GENERAL_SEPARATOR_CHAR + "340" + GENERAL_SEPARATOR_CHAR + "400" + GENERAL_SEPARATOR_CHAR);
+		setWindowAndSplitterPositions("10" + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR + "10" + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR + "650"
+		        + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR + "490" + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR + "340"
+		        + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR + "400" + GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 	}
 
 }

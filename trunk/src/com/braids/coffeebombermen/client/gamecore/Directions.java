@@ -1,4 +1,4 @@
-package classes.client.gamecore;
+package com.braids.coffeebombermen.client.gamecore;
 
 /**
  * The directions of an entity (can be a player or a bomb).
@@ -65,12 +65,11 @@ public enum Directions {
 	}
 
 	/**
-	 * Returns an integer which can be used to identify the horizontal
-	 * component of the direction, and can be used to calculate positions
-	 * ahead in the direction.
+	 * Returns an integer which can be used to identify the horizontal component
+	 * of the direction, and can be used to calculate positions ahead in the
+	 * direction.
 	 * 
-	 * @return an integer identifying the horizontal component of the
-	 *         direction:<br>
+	 * @return an integer identifying the horizontal component of the direction:<br>
 	 *         -1, if this is LEFT, 1, if this is RIGHT 0 otherwise
 	 */
 
@@ -79,12 +78,11 @@ public enum Directions {
 	}
 
 	/**
-	 * Returns an integer which can be used to identify the vertical
-	 * component of the direction, and can be used to calculate positions
-	 * ahead in the direction.
+	 * Returns an integer which can be used to identify the vertical component
+	 * of the direction, and can be used to calculate positions ahead in the
+	 * direction.
 	 * 
-	 * @return an integer identifying the vertical component of the
-	 *         direction:<br>
+	 * @return an integer identifying the vertical component of the direction:<br>
 	 *         -1, if this is UP, 1, if this is DOWN 0 otherwise
 	 */
 	public int getYMultiplier() {

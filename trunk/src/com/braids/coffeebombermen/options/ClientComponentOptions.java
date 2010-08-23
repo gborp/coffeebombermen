@@ -1,9 +1,4 @@
-package classes.options;
-
-import static classes.options.Consts.DEFAULT_GAME_PORT;
-import static classes.options.Consts.MAXIMUM_GAME_PORT;
-import static classes.options.Consts.MAX_PLAYERS_FROM_A_COMPUTER;
-import static classes.options.Consts.MINIMUM_GAME_PORT;
+package com.braids.coffeebombermen.options;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -31,17 +26,17 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerNumberModel;
 
-import classes.client.graphics.GraphicsManager;
-import classes.client.sound.SoundManager;
-import classes.options.Consts.ImageScalingAlgorithms;
-import classes.options.Consts.PlayerColors;
-import classes.options.Consts.PlayerControlKeys;
-import classes.options.Consts.SceneRefreshModes;
-import classes.options.model.ClientOptions;
-import classes.server.Server;
-import classes.utils.ColorIcon;
-import classes.utils.GeneralStringTokenizer;
-import classes.utils.GeneralUtilities;
+import com.braids.coffeebombermen.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.client.sound.SoundManager;
+import com.braids.coffeebombermen.options.OptConsts.ImageScalingAlgorithms;
+import com.braids.coffeebombermen.options.OptConsts.PlayerColors;
+import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
+import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
+import com.braids.coffeebombermen.options.model.ClientOptions;
+import com.braids.coffeebombermen.server.Server;
+import com.braids.coffeebombermen.utils.ColorIcon;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.GeneralUtilities;
 
 /**
  * This class makes the client options available for viewing and changing on the
@@ -53,9 +48,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	/** Default value of client name. */
 	private static final String                 DEFAULT_CLIENT_NAME                     = "UNNAMED CLIENT";
 	/** Default values of player names. */
-	private static final String[]               DEFAULT_PLAYER_NAMES                    = new String[MAX_PLAYERS_FROM_A_COMPUTER];
+	private static final String[]               DEFAULT_PLAYER_NAMES                    = new String[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 	/** Default values of colors of players. */
-	private static final PlayerColors[]         DEFAULT_PLAYER_COLORS                   = new PlayerColors[MAX_PLAYERS_FROM_A_COMPUTER];
+	private static final PlayerColors[]         DEFAULT_PLAYER_COLORS                   = new PlayerColors[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 	/** Default value of movement sensitivites of the players. */
 	private static final int                    MINIMUM_MOVEMENT_CORRECTION_SENSITIVITY = 0;
 	/** Default value of movement sensitivites of the players. */
@@ -81,7 +76,7 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	/** Default value of players from host option. */
 	private static final int                    DEFAULT_PLAYERS_FROM_HOST               = 1;
 	/** Maximum value of players from host option. */
-	private static final int                    MAXIMUM_PLAYERS_FROM_HOST               = MAX_PLAYERS_FROM_A_COMPUTER;
+	private static final int                    MAXIMUM_PLAYERS_FROM_HOST               = OptConsts.MAX_PLAYERS_FROM_A_COMPUTER;
 	/** Default value of password option. */
 	private static final String                 DEFAULT_PASSWORD                        = "";
 
@@ -95,8 +90,8 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	/** Default value of graphical theme option. */
 	private static final String                 DEFAULT_GRAPHICAL_THEME                 = "test";
 	/** Default value of sound theme option. */
-	private static final String                 DEFAULT_SOUND_THEME                     = "<not given yet>";                                                          // TODO:
-																																									   // ...
+	private static final String                 DEFAULT_SOUND_THEME                     = "<not given yet>";                                                  // TODO:
+	// ...
 
 	/** Default value of show player names option. */
 	private static final boolean                DEFAULT_SHOW_PLAYER_NAMES               = true;
@@ -113,11 +108,11 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	/** Component for client name option. */
 	private final JTextField                    clientName_c                            = new JTextField(15);
 	/** Components for the names of the players options. */
-	private final JTextField[]                  playerNames_cs                          = new JTextField[MAX_PLAYERS_FROM_A_COMPUTER];
+	private final JTextField[]                  playerNames_cs                          = new JTextField[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 	/** Components for the colors of the players options. */
-	private final JComboBox[]                   playerColors_cs                         = new JComboBox[MAX_PLAYERS_FROM_A_COMPUTER];
+	private final JComboBox[]                   playerColors_cs                         = new JComboBox[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 	/** Components for the movement correction sensitivities of the players. */
-	private final JSpinner[]                    movementCorrectionSensitivities_cs      = new JSpinner[MAX_PLAYERS_FROM_A_COMPUTER];
+	private final JSpinner[]                    movementCorrectionSensitivities_cs      = new JSpinner[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 
 	/** Component for server URL option. */
 	private final JTextField                    serverURL_c                             = new JTextField(15);
@@ -128,9 +123,11 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	private final JTextField                    password_c                              = new JTextField(15);
 
 	/** Components for players control keys options. */
-	private final JButton[][]                   playersControlKeys_cs                   = new JButton[MAX_PLAYERS_FROM_A_COMPUTER][PlayerControlKeys.values().length];
+	private final JButton[][]                   playersControlKeys_cs                   = new JButton[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER][PlayerControlKeys
+	                                                                                            .values().length];
 	/** Values of components for players control keys. */
-	private final int[][]                       playersControlKeys_cvalues              = new int[MAX_PLAYERS_FROM_A_COMPUTER][PlayerControlKeys.values().length];
+	private final int[][]                       playersControlKeys_cvalues              = new int[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER][PlayerControlKeys
+	                                                                                            .values().length];
 
 	/** Component for graphical theme option. */
 	private final JComboBox                     graphicalTheme_c                        = new JComboBox(GraphicsManager.getAvailableGraphicalThemes());
@@ -148,8 +145,8 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	private final JComboBox                     imageScalingAlgorithm_c                 = new JComboBox(ImageScalingAlgorithms.values());
 
 	/** Component for game port option. */
-	private final JSpinner                      gamePort_c                              = new JSpinner(new SpinnerNumberModel(DEFAULT_GAME_PORT,
-	                                                                                            MINIMUM_GAME_PORT, MAXIMUM_GAME_PORT, 1));
+	private final JSpinner                      gamePort_c                              = new JSpinner(new SpinnerNumberModel(OptConsts.DEFAULT_GAME_PORT,
+	                                                                                            OptConsts.MINIMUM_GAME_PORT, OptConsts.MAXIMUM_GAME_PORT, 1));
 
 	/**
 	 * Creates a new ClientComponentOptions.
@@ -164,14 +161,15 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 			playerNames_cs[i] = new JTextField(10);
 
 		final ListCellRenderer listCellRenderer = new DefaultListCellRenderer() { // We
-																				  // want
-																				  // color
-																				  // icons
-																				  // beside
-																				  // the
-																				  // names
-																				  // of
-																				  // colors
+
+			// want
+			// color
+			// icons
+			// beside
+			// the
+			// names
+			// of
+			// colors
 
 			public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected,
 			        final boolean cellHasFocus) {
@@ -228,7 +226,7 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		panel.add(box);
 		optionsTabbedPane.addTab("Main", panel);
 
-		for (int i = 0; i < MAX_PLAYERS_FROM_A_COMPUTER; i++) {
+		for (int i = 0; i < OptConsts.MAX_PLAYERS_FROM_A_COMPUTER; i++) {
 			box = Box.createVerticalBox();
 			panel = new JPanel();
 			panel.add(new JLabel("Player name:"));
@@ -335,7 +333,7 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		sceneRefreshMode_c.setSelectedItem(DEFAULT_SCENE_REFRESH_MODE);
 		imageScalingAlgorithm_c.setSelectedItem(DEFAULT_IMAGE_SCALING_ALGORITHM);
 
-		gamePort_c.setValue(DEFAULT_GAME_PORT);
+		gamePort_c.setValue(OptConsts.DEFAULT_GAME_PORT);
 	}
 
 	/**
@@ -438,7 +436,7 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		        "Define new key", true);
 		final JButton messageButton = new JButton("Press a key for the selected action...");
 		final int final_i = i, final_j = j; // Final variables for the inner
-											// class
+		// class
 		messageButton.addKeyListener(new KeyAdapter() {
 
 			public void keyPressed(final KeyEvent ke) {

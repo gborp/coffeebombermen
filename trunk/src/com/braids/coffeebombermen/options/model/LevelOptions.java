@@ -1,18 +1,13 @@
-/*
- * Created on July 5, 2004
- */
-package classes.options.model;
-
-import static classes.options.Consts.ACCUMULATEABLE_ITEMS;
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
+package com.braids.coffeebombermen.options.model;
 
 import java.util.EnumMap;
 
-import classes.options.Diseases;
-import classes.options.Shrinkers;
-import classes.options.Consts.Items;
-import classes.utils.GeneralStringTokenizer;
-import classes.utils.MathHelper;
+import com.braids.coffeebombermen.options.OptConsts;
+import com.braids.coffeebombermen.options.Diseases;
+import com.braids.coffeebombermen.options.Shrinkers;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 /**
  * This class holds the options of a complete level options (not included
@@ -42,11 +37,11 @@ public class LevelOptions extends Options<LevelOptions> {
 	 * accumulateableItemQuantitiesMap and hasNonAccumulateableItemsMap.
 	 */
 	public LevelOptions() {
-		for (final Items accumulateableItem : ACCUMULATEABLE_ITEMS)
+		for (final Items accumulateableItem : OptConsts.ACCUMULATEABLE_ITEMS)
 			getAccumulateableItemQuantitiesMap().put(accumulateableItem, new Integer(0));
 
 		for (final Items item : Items.values())
-			if (!ACCUMULATEABLE_ITEMS.contains(item))
+			if (!OptConsts.ACCUMULATEABLE_ITEMS.contains(item))
 				getHasNonAccumulateableItemsMap().put(item, new Boolean(false));
 	}
 
@@ -62,27 +57,27 @@ public class LevelOptions extends Options<LevelOptions> {
 	public String packToString() {
 		StringBuilder buffer = new StringBuilder();
 
-		buffer.append(getLevelWidth()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getLevelHeight()).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(getLevelWidth()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getLevelHeight()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		for (final Integer accumulateableItemQuantity : getAccumulateableItemQuantitiesMap().values()) {
-			buffer.append(accumulateableItemQuantity.intValue()).append(GENERAL_SEPARATOR_CHAR);
+			buffer.append(accumulateableItemQuantity.intValue()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		}
 
 		for (final Boolean hasNonAccumulateableItem : getHasNonAccumulateableItemsMap().values()) {
-			buffer.append(hasNonAccumulateableItem.booleanValue()).append(GENERAL_SEPARATOR_CHAR);
+			buffer.append(hasNonAccumulateableItem.booleanValue()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		}
 
 		for (final int itemWeight : getItemWeights()) {
-			buffer.append(itemWeight).append(GENERAL_SEPARATOR_CHAR);
+			buffer.append(itemWeight).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		}
 
 		for (final int diseaseWeight : getDiseaseWeights()) {
-			buffer.append(diseaseWeight).append(GENERAL_SEPARATOR_CHAR);
+			buffer.append(diseaseWeight).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		}
 
 		for (int shrinkerWeight : getShrinkerWeights()) {
-			buffer.append(shrinkerWeight).append(GENERAL_SEPARATOR_CHAR);
+			buffer.append(shrinkerWeight).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		}
 
 		return buffer.toString();
@@ -102,11 +97,11 @@ public class LevelOptions extends Options<LevelOptions> {
 		levelOptions.setLevelWidth(optionsTokenizer.nextIntToken());
 		levelOptions.setLevelHeight(optionsTokenizer.nextIntToken());
 
-		for (final Items accumulateableItem : ACCUMULATEABLE_ITEMS)
+		for (final Items accumulateableItem : OptConsts.ACCUMULATEABLE_ITEMS)
 			levelOptions.getAccumulateableItemQuantitiesMap().put(accumulateableItem, optionsTokenizer.nextIntToken());
 
 		for (final Items item : Items.values())
-			if (!ACCUMULATEABLE_ITEMS.contains(item))
+			if (!OptConsts.ACCUMULATEABLE_ITEMS.contains(item))
 				levelOptions.getHasNonAccumulateableItemsMap().put(item, optionsTokenizer.nextBooleanToken());
 
 		for (int i = 0; i < levelOptions.getItemWeights().length; i++)

@@ -1,4 +1,4 @@
-package classes;
+package com.braids.coffeebombermen;
 
 /**
  * Defines services needed to be implemented for an object who handles the main

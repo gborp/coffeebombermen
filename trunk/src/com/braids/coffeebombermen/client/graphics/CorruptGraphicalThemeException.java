@@ -1,4 +1,4 @@
-package classes.client.graphics;
+package com.braids.coffeebombermen.client.graphics;
 
 /**
  * Thrown when loading a graphical theme fails because there are missing or

@@ -1,4 +1,4 @@
-package classes.utils;
+package com.braids.coffeebombermen.utils;
 
 /**
  * Defines a method which can be called to time the object if it is timeable

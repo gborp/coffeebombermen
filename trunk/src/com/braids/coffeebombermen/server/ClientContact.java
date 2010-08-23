@@ -1,7 +1,7 @@
-package classes.server;
+package com.braids.coffeebombermen.server;
 
-import classes.options.model.PublicClientOptions;
-import classes.utils.ConnectionStub;
+import com.braids.coffeebombermen.options.model.PublicClientOptions;
+import com.braids.coffeebombermen.utils.ConnectionStub;
 
 /**
  * Represents a contact with a client. This includes storing the connection stub

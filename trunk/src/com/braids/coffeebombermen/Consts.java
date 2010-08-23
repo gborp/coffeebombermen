@@ -1,4 +1,4 @@
-package classes;
+package com.braids.coffeebombermen;
 
 /**
  * Holds constants for the game describing it as a software and about the

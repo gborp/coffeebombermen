@@ -1,10 +1,6 @@
-/*
- * Created on October 16, 2004
- */
+package com.braids.coffeebombermen.client.gamecore.model.level;
 
-package classes.client.gamecore.model.level;
-
-import classes.options.model.LevelOptions;
+import com.braids.coffeebombermen.options.model.LevelOptions;
 
 /**
  * The model of the level where bombermen take their fight.

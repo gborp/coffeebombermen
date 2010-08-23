@@ -1,4 +1,4 @@
-package classes.client;
+package com.braids.coffeebombermen.client;
 
 /**
  * Represents a connecting to server failed exception.<br>

@@ -1,14 +1,14 @@
-package classes.client.shrink;
+package com.braids.coffeebombermen.client.shrink;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import classes.client.gamecore.Directions;
-import classes.client.gamecore.control.GameCoreHandler;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.options.Shrinkers;
-import classes.options.Consts.Walls;
-import classes.utils.MathHelper;
+import com.braids.coffeebombermen.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.options.Shrinkers;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 public class BombShrinkPerformer extends AbstractShrinkPerformer {
 

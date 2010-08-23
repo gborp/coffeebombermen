@@ -1,4 +1,4 @@
-package classes.options;
+package com.braids.coffeebombermen.options;
 
 /**
  * The available diseases in the game.

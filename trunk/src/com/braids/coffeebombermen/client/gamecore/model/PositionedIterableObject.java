@@ -1,7 +1,7 @@
-package classes.client.gamecore.model;
+package com.braids.coffeebombermen.client.gamecore.model;
 
-import static classes.client.gamecore.Consts.LEVEL_COMPONENT_GRANULARITY;
-import classes.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.CoreConsts;
+import com.braids.coffeebombermen.client.gamecore.Directions;
 
 /**
  * Represents an iterable object which has a position and a direction.
@@ -32,7 +32,7 @@ public class PositionedIterableObject extends IterableObject {
 	 *         belongs to
 	 */
 	public int getComponentPosX() {
-		return posX / LEVEL_COMPONENT_GRANULARITY;
+		return posX / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class PositionedIterableObject extends IterableObject {
 	 *         belongs to
 	 */
 	public int getComponentPosY() {
-		return posY / LEVEL_COMPONENT_GRANULARITY;
+		return posY / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class PositionedIterableObject extends IterableObject {
 	 * component this position is on.
 	 */
 	public void alignPosXToComponentCenter() {
-		posX += LEVEL_COMPONENT_GRANULARITY / 2 - posX % LEVEL_COMPONENT_GRANULARITY;
+		posX += CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2 - posX % CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 	}
 
 	/**
@@ -133,7 +133,7 @@ public class PositionedIterableObject extends IterableObject {
 	 * component this position is on.
 	 */
 	public void alignPosYToComponentCenter() {
-		posY += LEVEL_COMPONENT_GRANULARITY / 2 - posY % LEVEL_COMPONENT_GRANULARITY;
+		posY += CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2 - posY % CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 	}
 
 }

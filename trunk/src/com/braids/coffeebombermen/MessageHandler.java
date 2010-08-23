@@ -1,4 +1,4 @@
-package classes;
+package com.braids.coffeebombermen;
 
 /**
  * Defines a method to handle new messages.

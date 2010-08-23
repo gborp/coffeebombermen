@@ -1,9 +1,9 @@
-package classes.client.gamecore.view;
+package com.braids.coffeebombermen.client.gamecore.view;
 
 import java.awt.Image;
 
-import classes.client.gamecore.model.PlayerModel;
-import classes.client.graphics.ImageHandler;
+import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
+import com.braids.coffeebombermen.client.graphics.ImageHandler;
 
 public class PlayerGraphic {
 

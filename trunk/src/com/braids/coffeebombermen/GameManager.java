@@ -1,9 +1,4 @@
-package classes;
-
-import static classes.Consts.LEVELS_DIRECTORY_NAME;
-import static classes.Consts.LEVEL_FILE_EXTENSION;
-import static classes.Consts.OPTIONS_FILE_NAME;
-import static classes.options.ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME;
+package com.braids.coffeebombermen;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -13,22 +8,22 @@ import java.io.PrintWriter;
 
 import javax.swing.JOptionPane;
 
-import classes.MainMenuBar.GameStates;
-import classes.client.Client;
-import classes.client.ConnectingToServerFailedException;
-import classes.client.gamecore.model.level.LevelModel;
-import classes.client.graphics.AnimationDatas;
-import classes.client.graphics.CorruptGraphicalThemeException;
-import classes.client.graphics.GraphicsManager;
-import classes.client.graphics.ImageHandler;
-import classes.options.ClientComponentOptions;
-import classes.options.OptionsChangeListener;
-import classes.options.OptionsManager;
-import classes.options.ServerComponentOptions;
-import classes.options.model.ClientOptions;
-import classes.options.model.ServerOptions;
-import classes.server.Server;
-import classes.utils.DataTextFileReader;
+import com.braids.coffeebombermen.MainMenuBar.GameStates;
+import com.braids.coffeebombermen.client.Client;
+import com.braids.coffeebombermen.client.ConnectingToServerFailedException;
+import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.client.graphics.AnimationDatas;
+import com.braids.coffeebombermen.client.graphics.CorruptGraphicalThemeException;
+import com.braids.coffeebombermen.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.client.graphics.ImageHandler;
+import com.braids.coffeebombermen.options.ClientComponentOptions;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
+import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.ServerComponentOptions;
+import com.braids.coffeebombermen.options.model.ClientOptions;
+import com.braids.coffeebombermen.options.model.ServerOptions;
+import com.braids.coffeebombermen.server.Server;
+import com.braids.coffeebombermen.utils.DataTextFileReader;
 
 /**
  * Manages the whole game (as software), which includes:
@@ -142,7 +137,7 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 		// precede
 		// closeGame().
 		loadGraphicalTheme(clientOptionsManager.getOptions().graphicalTheme);
-		loadLevel(RANDOMLY_GENERATED_LEVEL_NAME);
+		loadLevel(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME);
 
 		// At the beginning we must be in the same state we're in after games.
 		closeGame();
@@ -160,7 +155,7 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 		ClientComponentOptions clientComponentOptions;
 		ServerComponentOptions serverComponentOptions;
 		try {
-			final DataTextFileReader optionsFileReader = new DataTextFileReader(OPTIONS_FILE_NAME);
+			final DataTextFileReader optionsFileReader = new DataTextFileReader(Consts.OPTIONS_FILE_NAME);
 
 			clientComponentOptions = new ClientComponentOptions(ClientOptions.parseFromString(optionsFileReader.readNextDataLine()));
 			serverComponentOptions = new ServerComponentOptions(ServerOptions.parseFromString(optionsFileReader.readNextDataLine()));
@@ -201,7 +196,7 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 */
 	private void saveOptions() {
 		try {
-			final PrintWriter optionsFileWriter = new PrintWriter(new FileWriter(OPTIONS_FILE_NAME));
+			final PrintWriter optionsFileWriter = new PrintWriter(new FileWriter(Consts.OPTIONS_FILE_NAME));
 
 			optionsFileWriter.println(DataTextFileReader.COMMENT_LINE_CHAR + " Options file holding the persistent datas of " + Consts.APPLICATION_NAME + ".");
 			optionsFileWriter.println(DataTextFileReader.COMMENT_LINE_CHAR
@@ -293,10 +288,10 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 */
 	public void loadLevel(final String oldLevelName) {
 		final String levelName = serverOptionsManager.getOptions().getLevelName();
-		if (levelName.equals(RANDOMLY_GENERATED_LEVEL_NAME))
+		if (levelName.equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME))
 			level = null;
 		else {
-			final String levelFileName = LEVELS_DIRECTORY_NAME + levelName + LEVEL_FILE_EXTENSION;
+			final String levelFileName = Consts.LEVELS_DIRECTORY_NAME + levelName + Consts.LEVEL_FILE_EXTENSION;
 			try {
 				final BufferedReader levelFile = new BufferedReader(new FileReader(levelFileName));
 				level = LevelModel.parseFromString(levelFile.readLine());

@@ -1,10 +1,9 @@
-package classes.options.model;
+package com.braids.coffeebombermen.options.model;
 
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
-import classes.options.Consts.GameTypes;
-import classes.options.Consts.KillsBelongTos;
-import classes.options.Consts.NetworkLatencies;
-import classes.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.options.OptConsts.GameTypes;
+import com.braids.coffeebombermen.options.OptConsts.KillsBelongTos;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
 
 /**
  * Holds all the server options; contains a reference to a level options object.
@@ -90,29 +89,29 @@ public class ServerOptions extends Options<ServerOptions> {
 	public String packToString() {
 		StringBuilder buffer = new StringBuilder();
 
-		buffer.append(getLevelName()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getGameType().ordinal()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getRoundTimeLimit()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getGamePointLimit()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getPassword()).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(getLevelName()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getGameType().ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getRoundTimeLimit()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getGamePointLimit()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getPassword()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
-		buffer.append(getDamageOfWholeBombFire()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isExplosionAnnihilatesDiseases()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isFireDoesntHurtTeammates()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isNewRandomPositionsAfterRounds()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isBombsExplodeAfterOneRemained()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isBuildingUpWallsStopsAfterOneRemained()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isItemsStopRollingBombs()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isPunchedBombsComeBackAtTheOppositeEnd()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(isMultipleFire()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getKillsBelongTo().ordinal()).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(getDamageOfWholeBombFire()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isExplosionAnnihilatesDiseases()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isFireDoesntHurtTeammates()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isNewRandomPositionsAfterRounds()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isBombsExplodeAfterOneRemained()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isBuildingUpWallsStopsAfterOneRemained()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isItemsStopRollingBombs()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isPunchedBombsComeBackAtTheOppositeEnd()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isMultipleFire()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getKillsBelongTo().ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
-		buffer.append(getAmountOfBrickWalls()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getGettingItemProbability()).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(getAmountOfBrickWalls()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getGettingItemProbability()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
-		buffer.append(getGameCycleFrequency()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getGamePort()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(getNetworkLatency().ordinal()).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(getGameCycleFrequency()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getGamePort()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getNetworkLatency().ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		buffer.append(getLevelOptions().packToString()); // This ends with
 		// GENERAL_SEPARATOR_CHAR

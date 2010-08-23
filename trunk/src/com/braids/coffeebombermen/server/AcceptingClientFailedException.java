@@ -1,4 +1,4 @@
-package classes.server;
+package com.braids.coffeebombermen.server;
 
 /**
  * Represents an exception occuring when accepting a new client fails.<br>

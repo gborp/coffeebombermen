@@ -1,12 +1,12 @@
-package classes.client.gamecore.view;
+package com.braids.coffeebombermen.client.gamecore.view;
 
 import javax.swing.SwingUtilities;
 
-import classes.MainComponentHandler;
-import classes.MainFrame;
-import classes.client.Client;
-import classes.options.OptionsManager;
-import classes.options.model.ClientOptions;
+import com.braids.coffeebombermen.MainComponentHandler;
+import com.braids.coffeebombermen.MainFrame;
+import com.braids.coffeebombermen.client.Client;
+import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.model.ClientOptions;
 
 /**
  * A main component handler where the main comonent is the game scene component.

@@ -1,15 +1,11 @@
-/*
- * Created on October 26, 2004
- */
-
-package classes.client.gamecore.model.level;
+package com.braids.coffeebombermen.client.gamecore.model.level;
 
 import java.util.ArrayList;
 
-import classes.client.gamecore.model.FireModel;
-import classes.client.gamecore.model.IterableObject;
-import classes.options.Consts.Items;
-import classes.options.Consts.Walls;
+import com.braids.coffeebombermen.client.gamecore.model.FireModel;
+import com.braids.coffeebombermen.client.gamecore.model.IterableObject;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
 
 /**
  * A component of the level (the level consists of level components).

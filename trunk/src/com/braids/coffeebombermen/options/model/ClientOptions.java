@@ -1,11 +1,10 @@
-package classes.options.model;
+package com.braids.coffeebombermen.options.model;
 
-import static classes.options.Consts.MAX_PLAYERS_FROM_A_COMPUTER;
-import static classes.utils.GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR;
-import classes.options.Consts.ImageScalingAlgorithms;
-import classes.options.Consts.PlayerControlKeys;
-import classes.options.Consts.SceneRefreshModes;
-import classes.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.options.OptConsts;
+import com.braids.coffeebombermen.options.OptConsts.ImageScalingAlgorithms;
+import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
+import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
+import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
 
 /**
  * Holds all the client options; contains a reference to the public client
@@ -24,7 +23,7 @@ public class ClientOptions extends Options<ClientOptions> {
 	public String                 password            = new String();
 
 	/** The control keys of the players. */
-	public int[][]                playersControlKeys  = new int[MAX_PLAYERS_FROM_A_COMPUTER][PlayerControlKeys.values().length];
+	public int[][]                playersControlKeys  = new int[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER][PlayerControlKeys.values().length];
 
 	/**
 	 * The graphical theme. We store theme by name (not by index), because the
@@ -55,27 +54,27 @@ public class ClientOptions extends Options<ClientOptions> {
 	public String packToString() {
 		final StringBuilder buffer = new StringBuilder();
 
-		buffer.append(serverURL).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(playersFromHost).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(password).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(serverURL).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(playersFromHost).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(password).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		for (final int[] playerControlKeys : playersControlKeys)
 			for (final int playerControlKey : playerControlKeys) {
-				buffer.append(playerControlKey).append(GENERAL_SEPARATOR_CHAR);
+				buffer.append(playerControlKey).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 			}
 
-		buffer.append(graphicalTheme).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(soundTheme).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(showPlayerNames).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(showBombermenLives).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(graphicalTheme).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(soundTheme).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(showPlayerNames).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(showBombermenLives).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
-		buffer.append(sceneRefreshMode.ordinal()).append(GENERAL_SEPARATOR_CHAR);
-		buffer.append(imageScalingAlgorithm.ordinal()).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(sceneRefreshMode.ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(imageScalingAlgorithm.ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
-		buffer.append(gamePort).append(GENERAL_SEPARATOR_CHAR);
+		buffer.append(gamePort).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		buffer.append(publicClientOptions.packToString()); // This ends with
-														   // GENERAL_SEPARATOR_CHAR
+		// GENERAL_SEPARATOR_CHAR
 
 		return buffer.toString();
 	}

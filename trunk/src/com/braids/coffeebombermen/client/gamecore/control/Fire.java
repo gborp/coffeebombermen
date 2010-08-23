@@ -1,11 +1,7 @@
-/*
- * Created on Dcember 13, 2005
- */
+package com.braids.coffeebombermen.client.gamecore.control;
 
-package classes.client.gamecore.control;
-
-import static classes.client.gamecore.Consts.FIRE_ITERATIONS;
-import classes.client.gamecore.model.FireModel;
+import com.braids.coffeebombermen.client.gamecore.CoreConsts;
+import com.braids.coffeebombermen.client.gamecore.model.FireModel;
 
 /**
  * The control layer of the fire.<br>
@@ -56,7 +52,7 @@ public class Fire {
 	 * Performs operations which are requried by passing the time.
 	 */
 	public void nextIteration() {
-		if (model.getIterationCounter() + 1 < FIRE_ITERATIONS) {
+		if (model.getIterationCounter() + 1 < CoreConsts.FIRE_ITERATIONS) {
 			model.nextIteration();
 		} else {
 			gameCoreHandler.removeFireFromComponentPos(this, componentPosX, componentPosY);

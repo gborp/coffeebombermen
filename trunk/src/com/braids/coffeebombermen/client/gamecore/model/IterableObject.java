@@ -1,4 +1,4 @@
-package classes.client.gamecore.model;
+package com.braids.coffeebombermen.client.gamecore.model;
 
 /**
  * This class represents an iterable object. An iterable object can be stepped

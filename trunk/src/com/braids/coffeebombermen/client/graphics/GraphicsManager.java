@@ -1,6 +1,4 @@
-package classes.client.graphics;
-
-import static classes.Consts.GRAPHICS_DIRECTORY_NAME;
+package com.braids.coffeebombermen.client.graphics;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -17,13 +15,14 @@ import java.util.StringTokenizer;
 
 import javax.swing.ImageIcon;
 
-import classes.client.gamecore.Activities;
-import classes.client.gamecore.BombTypes;
-import classes.client.gamecore.Directions;
-import classes.client.gamecore.FireShapes;
-import classes.client.gamecore.view.PlayerGraphic;
-import classes.utils.DataTextFileReader;
-import classes.utils.GeneralUtilities;
+import com.braids.coffeebombermen.Consts;
+import com.braids.coffeebombermen.client.gamecore.Activities;
+import com.braids.coffeebombermen.client.gamecore.BombTypes;
+import com.braids.coffeebombermen.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.FireShapes;
+import com.braids.coffeebombermen.client.gamecore.view.PlayerGraphic;
+import com.braids.coffeebombermen.utils.DataTextFileReader;
+import com.braids.coffeebombermen.utils.GeneralUtilities;
 
 /**
  * Manages the graphic resources of the game.<br>
@@ -110,7 +109,7 @@ public class GraphicsManager {
 	 * @return array of the names of available graphical themes
 	 */
 	public static String[] getAvailableGraphicalThemes() {
-		return GeneralUtilities.getSubdirectoryNames(GRAPHICS_DIRECTORY_NAME);
+		return GeneralUtilities.getSubdirectoryNames(Consts.GRAPHICS_DIRECTORY_NAME);
 	}
 
 	/**
@@ -125,7 +124,7 @@ public class GraphicsManager {
 	 */
 	public static GraphicsManager loadGraphicalTheme(final String theme) throws CorruptGraphicalThemeException {
 		final GraphicsManager graphicsManager = new GraphicsManager();
-		final String themeDirectoryName = GRAPHICS_DIRECTORY_NAME + theme + "/";
+		final String themeDirectoryName = Consts.GRAPHICS_DIRECTORY_NAME + theme + "/";
 		final String themePropertyFileFullName = themeDirectoryName + THEME_PROPERTY_FILE_NAME;
 		DataTextFileReader themePropertyFileReader = null;
 
