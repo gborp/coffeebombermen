@@ -42,7 +42,6 @@ import classes.utils.MathHelper;
 public class Player {
 
 	private static final int      PLACEABLE_WALLS     = 5;
-	private static final int      MAX_REGEN           = 500;
 	private static final long     SPIDER_BOMB_LATENCY = 6;
 	/** The client index where this player belogns to. */
 	private int                   clientIndex;
@@ -146,9 +145,11 @@ public class Player {
 					gameCoreHandler.replaceItemOnLevel(item);
 				}
 				// spider bomb in the place of the died bomberman
-				// TODO make it configurable
-				 model.setSpiderBombRounds(model.accumulateableItemQuantitiesMap.get(Items.BOMB));
-				 model.setSpiderBombEnabled(true);
+
+				// zeroing if the user is currently throwing spider bombs
+				model.setSpiderBombRounds(0);
+				// throw only the standard number of spider bombs on dying
+				model.setSpiderBombEnabled(true);
 			}
 		} else {
 
