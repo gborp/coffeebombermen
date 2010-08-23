@@ -539,7 +539,6 @@ public class GameCoreHandler {
 	private void killPlayer(PlayerModel playerModel) {
 		playerModel.setVitality(0);
 		playerModel.setActivity(Activities.DYING);
-		mainFrame.receiveMessage(playerModel.getName() + " died.");
 	}
 
 	/**
