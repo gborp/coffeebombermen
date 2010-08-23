@@ -424,7 +424,8 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	private void handleClientLeaving(final ClientContact clientContact) {
 		clientContacts.remove(clientContact);
 		clientContact.connectionStub.close();
-		broadcastCommand(Client.Commands.A_CLIENT_HAS_LEFT_THE_GAME.ordinal() + GENERAL_SEPARATOR_STRING);
+
+		broadcastCommand(Client.Commands.A_CLIENT_HAS_LEFT_THE_GAME.ordinal() + GENERAL_SEPARATOR_STRING + clientContact.ownIndex + GENERAL_SEPARATOR_STRING);
 		broadcastMessage(SERVER_CHAT_NAME + clientContact.publicClientOptions.clientName + " has left the game.");
 	}
 
