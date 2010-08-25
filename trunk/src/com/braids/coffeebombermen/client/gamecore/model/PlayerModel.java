@@ -19,7 +19,7 @@ import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
 public class PlayerModel extends PositionedIterableObject {
 
 	/** game core tick frequency is 30hz */
-	public static final long             DISEASE_DURATION                = 4 * 30;
+	public static final long             DISEASE_DURATION                = 6 * 30;
 
 	/** game core tick frequency is 30hz */
 	public static final long             SUPER_DISEASE_DURATION          = DISEASE_DURATION * 2;
