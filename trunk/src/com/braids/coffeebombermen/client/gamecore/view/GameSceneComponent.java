@@ -47,6 +47,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 	private static final long                   FLASH_EVERY_NTH_TICK     = 4;
 
+	private static final int                    MAX_VISIBILITY_IN_FOG    = 10;
+
 	/** Reference to the client options manager. */
 	private final OptionsManager<ClientOptions> clientOptionsManager;
 	/** (Reference to) the control keys of players. */
@@ -92,6 +94,16 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	private AlphaComposite                      fireLightComposite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
 	private AlphaComposite                      hallOfFameComposite      = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f);
 
+	private AlphaComposite                      fogOfWar1Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .90f);
+	private AlphaComposite                      fogOfWar2Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
+	private AlphaComposite                      fogOfWar3Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .70f);
+	private AlphaComposite                      fogOfWar4Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .60f);
+	private AlphaComposite                      fogOfWar5Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .50f);
+	private AlphaComposite                      fogOfWar6Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .40f);
+	private AlphaComposite                      fogOfWar7Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .30f);
+	private AlphaComposite                      fogOfWar8Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .20f);
+	private AlphaComposite                      fogOfWar9Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .10f);
+
 	private long                                blackOutDuration         = 30;
 	private long                                flashDuration            = 3;
 	private long                                nextFlashStart           = -1;
@@ -100,6 +112,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	private float                               hallOfFameY;
 	private int                                 hallOfFameWidth;
 	private int                                 hallOfFameHeight;
+
+	private int[][]                             mVisibility;
 
 	/**
 	 * Creates a new GameSceneComponent.
@@ -142,6 +156,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		long now = gameCoreHandler.getTick();
 
 		boolean blackOut = false;
+		boolean fogOfWar = false;
 		boolean colorBlind = false;
 
 		int ourIndex = client.getOurIndex();
@@ -153,6 +168,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				for (PlayerModel playerModel : clientPlayerModels.get(i)) {
 					if (playerModel.hasDisease(Diseases.BLACK_OUT)) {
 						blackOut = true;
+					}
+					if (playerModel.hasDisease(Diseases.FOG_OF_WAR)) {
+						fogOfWar = true;
 					}
 					if (playerModel.getOwnedDiseases().containsKey(Diseases.COLOR_BLIND)) {
 						colorBlind = true;
@@ -183,11 +201,115 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		paintBombermen(g, colorBlind);
 
 		if (gameCoreHandler.getHasMoreThanOneAlivePlayer()) {
+			if (fogOfWar) {
+				paintFogOfWar(g);
+			}
+
 			if (blackOut) {
 				paintBlackout(g);
 			}
 		} else {
 			paintHallOfFrame(g);
+		}
+	}
+
+	private void paintFogOfWar(Graphics graphics) {
+
+		graphics.setColor(Color.BLACK);
+		Graphics2D g2 = (Graphics2D) graphics;
+
+		final List<PlayerModel[]> clientPlayerModels = gameCoreHandler.getClientsPlayerModels();
+		LevelModel levelModel = gameCoreHandler.getLevelModel();
+
+		if (mVisibility == null) {
+			mVisibility = new int[levelModel.getHeight()][levelModel.getWidth()];
+			for (int y = 0; y < levelModel.getHeight(); y++) {
+				for (int x = 0; x < levelModel.getWidth(); x++) {
+					mVisibility[y][x] = MAX_VISIBILITY_IN_FOG;
+				}
+			}
+		}
+
+		int ourIndex = client.getOurIndex();
+
+		PlayerModel ownPlayerModel = null;
+		for (int i = 0; i < clientPlayerModels.size(); i++) {
+			// Easy with the enhanced for: modifying is possible during a
+			// paint()
+
+			final PlayerModel[] playerModels = clientPlayerModels.get(i);
+
+			if (ourIndex == i) {
+				ownPlayerModel = playerModels[0];
+			}
+		}
+
+		if (ownPlayerModel == null) {
+			return;
+		}
+
+		int px = ownPlayerModel.getComponentPosX();
+		int py = ownPlayerModel.getComponentPosY();
+		for (int y = -1; y < 2; y++) {
+			for (int x = -1; x < 2; x++) {
+				mVisibility[py + y][px + x] = MAX_VISIBILITY_IN_FOG;
+			}
+		}
+
+		int dy = -2;
+		while (py + dy >= 0 && levelModel.getComponent(px, py + dy + 1).getWall() == Walls.EMPTY) {
+			mVisibility[py + dy][px] = MAX_VISIBILITY_IN_FOG;
+			dy--;
+		}
+		dy = 2;
+		while (py + dy < levelModel.getHeight() && levelModel.getComponent(px, py + dy - 1).getWall() == Walls.EMPTY) {
+			mVisibility[py + dy][px] = MAX_VISIBILITY_IN_FOG;
+			dy++;
+		}
+
+		int dx = -2;
+		while (px + dx >= 0 && levelModel.getComponent(px + dx + 1, py).getWall() == Walls.EMPTY) {
+			mVisibility[py][px + dx] = MAX_VISIBILITY_IN_FOG;
+			dx--;
+		}
+		dx = 2;
+		while (px + dx < levelModel.getWidth() && levelModel.getComponent(px + dx - 1, py).getWall() == Walls.EMPTY) {
+			mVisibility[py][px + dx] = MAX_VISIBILITY_IN_FOG;
+			dx++;
+		}
+
+		for (int i = 0, y = 0; i < levelModel.getHeight(); i++, y += levelComponentSize) {
+			for (int j = 0, x = 0; j < levelModel.getWidth(); j++, x += levelComponentSize) {
+				int visibility = mVisibility[i][j];
+				if (visibility == 0) {
+					g2.setComposite(normalComposit);
+				} else if (visibility == 1) {
+					g2.setComposite(fogOfWar1Composite);
+				} else if (visibility == 2) {
+					g2.setComposite(fogOfWar2Composite);
+				} else if (visibility == 3) {
+					g2.setComposite(fogOfWar3Composite);
+				} else if (visibility == 4) {
+					g2.setComposite(fogOfWar4Composite);
+				} else if (visibility == 5) {
+					g2.setComposite(fogOfWar5Composite);
+				} else if (visibility == 6) {
+					g2.setComposite(fogOfWar6Composite);
+				} else if (visibility == 7) {
+					g2.setComposite(fogOfWar7Composite);
+				} else if (visibility == 8) {
+					g2.setComposite(fogOfWar8Composite);
+				} else if (visibility == 9) {
+					g2.setComposite(fogOfWar9Composite);
+				}
+
+				if (visibility != MAX_VISIBILITY_IN_FOG) {
+					g2.fillRect(x, y, levelComponentSize, levelComponentSize);
+				}
+				if (visibility > 0 && (gameCoreHandler.getTick() & 7) == 0) {
+					mVisibility[i][j] = visibility - 1;
+				}
+			}
 		}
 	}
 
@@ -767,14 +889,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 *            the new client options are about to become effective
 	 */
 	public void optionsChanged(final ClientOptions oldOptions, final ClientOptions newOptions) {
-		final int gamePlayersFromHost = playersControlKeyStates.length; // Might
-		// not
-		// equals
-		// to
-		// the
-		// one
-		// at
-		// cilentOptions...
+		final int gamePlayersFromHost = playersControlKeyStates.length;
+		// Might not equals to the one at cilentOptions...
 
 		cycle1: for (int i = 0; i < gamePlayersFromHost; i++)
 			for (int j = 0; j < newOptions.playersControlKeys[i].length; j++)
@@ -788,27 +904,12 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 * Called when new game starts.
 	 */
 	public void handleGameStarting() {
-		final int playersFromHost = clientOptionsManager.getOptions().playersFromHost; // Number
-		// of
-		// players
-		// from
-		// host
-		// cannot
-		// (must
-		// not)
-		// be
-		// change
-		// during
-		// a
-		// game,
-		// but
-		// can
-		// be
-		// changed
-		// between
-		// games.
+		final int playersFromHost = clientOptionsManager.getOptions().playersFromHost;
+		// Number of players from host cannot (must not) be change during a
+		// game, but can be changed between games.
 		playersControlKeyStates = new boolean[playersFromHost][playersControlKeys[0].length];
 		actions = "";
+		mVisibility = null;
 	}
 
 }

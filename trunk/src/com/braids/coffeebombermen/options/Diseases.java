@@ -69,5 +69,11 @@ public enum Diseases {
 		public String toString() {
 			return "Body builder";
 		}
+	},
+	FOG_OF_WAR {
+
+		public String toString() {
+			return "Fog of war";
+		}
 	}
 }
