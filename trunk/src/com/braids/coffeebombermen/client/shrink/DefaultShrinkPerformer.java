@@ -12,7 +12,9 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
 	private static final int   MAX_SPEEDUP_STEPS   = 12;
 	private static final int   SPEEDUP_RATIO       = 30;
-	private static final float SPEEDUP_POSSIBILITY = 0.1f;
+	// FIXME debug
+	private static final float SPEEDUP_POSSIBILITY = 1f;
+	// private static final float SPEEDUP_POSSIBILITY = 0.1f;
 	private static final int   PRE_SPEEDUP_TICKS   = 2;
 
 	private ShrinkDirection    lastShrinkDirection;
@@ -72,7 +74,8 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
 			if (isTimeToFirstShrink() || isTimeToNextShrink((gso.getGameCycleFrequency() / (speedupSteps > 0 ? SPEEDUP_RATIO : 1)))) {
 
-				if (speedupSteps <= 0 && preSpeedupWarn <= 0 && lastNewWallX != -1 && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
+				if (!isTimeToFirstShrink() && speedupSteps <= 0 && preSpeedupWarn <= 0 && lastNewWallX != -1
+				        && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
 					preSpeedupWarn = PRE_SPEEDUP_TICKS;
 				}
 				if (preSpeedupWarn > 0) {
