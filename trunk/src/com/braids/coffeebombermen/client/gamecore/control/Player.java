@@ -130,10 +130,11 @@ public class Player {
 				}
 				// spider bomb in the place of the died bomberman
 
-				// zeroing if the user is currently throwing spider bombs
-				model.setSpiderBombRounds(0);
-				// throw only the standard number of spider bombs on dying
-				model.setSpiderBombEnabled(true);
+				int spiderBombsOnDeath = gameCoreHandler.getGlobalServerOptions().getThrowSpiderOnDeath();
+				if (spiderBombsOnDeath > 0) {
+					model.setSpiderBombEnabled(true);
+					model.setSpiderBombRounds(spiderBombsOnDeath);
+				}
 			}
 		} else {
 
