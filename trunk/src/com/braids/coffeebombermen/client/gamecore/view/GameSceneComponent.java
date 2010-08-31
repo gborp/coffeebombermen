@@ -115,6 +115,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 	private int[][]                             mVisibility;
 
+	private int                                 levelWidth;
+
+	private int                                 levelHeight;
+
 	/**
 	 * Creates a new GameSceneComponent.
 	 * 
@@ -343,7 +347,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			}
 		}
 		hallOfFameWidth = maxWidth;
-		hallOfFameHeight = (int) (lstMessage.size() * fontSize + 0.5 * fontSize - 0.5 * fontSize);
+		hallOfFameHeight = (int) (lstMessage.size() * fontSize * 1.5 - 0.5 * fontSize);
 
 		int y = (int) hallOfFameY;
 		g2.setColor(Color.BLACK);
@@ -368,27 +372,26 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		int tx = 0;
 		int ty = 0;
 		if (playerWon == null) {
-			tx = getWidth() / 2;
-			ty = getHeight() / 2;
+			tx = levelWidth * levelComponentSize / 2 - hallOfFameWidth / 2;
+			ty = levelHeight * levelComponentSize / 2 - hallOfFameHeight / 2;
 		} else {
 			tx = (playerWon.getPosX() + 0) * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 			ty = (playerWon.getPosY() + 0) * levelComponentSize / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
-		}
 
-		tx = tx - hallOfFameWidth / 2;
-		ty = ty - hallOfFameHeight / 2;
-		if (tx < 0) {
-			tx = 0;
-		} else if (tx > getWidth() - hallOfFameWidth) {
-			tx = getWidth() - hallOfFameWidth;
-		}
+			tx = tx - hallOfFameWidth / 2;
+			ty = ty - hallOfFameHeight / 2;
+			if (tx < 0) {
+				tx = 0;
+			} else if (tx > levelWidth * levelComponentSize - hallOfFameWidth) {
+				tx = levelWidth * levelComponentSize - hallOfFameWidth;
+			}
 
-		if (ty < 0) {
-			ty = 0;
-		} else if (ty > getHeight() - hallOfFameHeight) {
-			ty = getHeight() - hallOfFameHeight;
+			if (ty < 0) {
+				ty = 0;
+			} else if (ty > levelHeight * levelComponentSize - hallOfFameHeight) {
+				ty = levelHeight * levelComponentSize - hallOfFameHeight;
+			}
 		}
-
 		hallOfFameX = (hallOfFameX * 14 + tx) / 15;
 		hallOfFameY = (hallOfFameY * 14 + ty) / 15;
 	}
@@ -481,8 +484,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		int sceneWidth = getWidth();
 		int sceneHeight = getHeight();
 
-		int levelWidth = levelModel.getWidth();
-		int levelHeight = levelModel.getHeight();
+		levelWidth = levelModel.getWidth();
+		levelHeight = levelModel.getHeight();
 		float zoomFactor = Math.min((float) sceneWidth / (levelWidth * originalLevelComponentSize), (float) sceneHeight
 		        / (levelHeight * originalLevelComponentSize));
 
