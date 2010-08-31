@@ -51,9 +51,11 @@ import com.braids.coffeebombermen.utils.MathHelper;
 public class GameCoreHandler {
 
 	/** in tick */
-	private static final int                LAST_PLAYER_COUNT_DOWN_BEFORE_WIN = 30;
+	private static final int                LAST_PLAYER_COUNT_DOWN_BEFORE_WIN       = 30;
 
-	private static final int                MATCH_WON_SPIDER_BOMB_ROUNDS      = 16;
+	private static final int                MATCH_WON_SPIDER_BOMB_ROUNDS            = 16;
+
+	private static final long               MATCH_WON_HAPPY_PLAYER_ACTION_FREQUENCY = 64;
 
 	/** Reference to the game manager. */
 	private final GameManager               gameManager;
@@ -100,7 +102,7 @@ public class GameCoreHandler {
 	private boolean                         hasMoreThanOneAlivePlayer;
 	private long                            lastPlayerCountDownStartedAt;
 
-	private PlayerModelComparatorByPoint    playerModelComparatorByPoint      = new PlayerModelComparatorByPoint();
+	private PlayerModelComparatorByPoint    playerModelComparatorByPoint            = new PlayerModelComparatorByPoint();
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -446,7 +448,7 @@ public class GameCoreHandler {
 					}
 				}
 		} else {
-			if (tick % 64 == 0) {
+			if (tick % MATCH_WON_HAPPY_PLAYER_ACTION_FREQUENCY == 0) {
 				PlayerModel lastPlayer = getTheLastRemainingPlyer();
 				if (lastPlayer != null) {
 					lastPlayer.setSpiderBombEnabled(true);
