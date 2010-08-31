@@ -80,6 +80,8 @@ public class ServerOptions extends Options<ServerOptions> {
 	/** The network latency. */
 	private NetworkLatencies networkLatency;
 
+	private int              spiderBombOnDeath;
+
 	/**
 	 * Packs this object to a String so it can be transferred or stored. Enums
 	 * are packed by their ordinals.
@@ -337,6 +339,18 @@ public class ServerOptions extends Options<ServerOptions> {
 
 	public NetworkLatencies getNetworkLatency() {
 		return networkLatency;
+	}
+
+	public int getThrowSpiderOnDeath() {
+		return getSpiderBombOnDeath();
+	}
+
+	public void setSpiderBombOnDeath(int spiderBombOnDeath) {
+		this.spiderBombOnDeath = spiderBombOnDeath;
+	}
+
+	public int getSpiderBombOnDeath() {
+		return spiderBombOnDeath;
 	}
 
 }
