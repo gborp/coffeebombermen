@@ -331,7 +331,12 @@ public class Player {
 		int componentPosY = playerComponentPosY;
 		int maxPlacableBombs = Math.min(1, model.accumulateableItemQuantitiesMap.get(Items.BOMB));
 
+		if (gameCoreHandler.getLevelModel().getComponent(componentPosX, componentPosY).hasFire()) {
+			return;
+		}
+
 		final Integer bombIndexAtComponentPosition = gameCoreHandler.getBombIndexAtComponentPosition(componentPosX, componentPosY);
+
 		if (bombIndexAtComponentPosition != null) {
 			if (model.hasNonAccumulateableItemsMap.get(Items.BLUE_GLOVES)) {
 				if (gameCoreHandler.getBombModels().get(bombIndexAtComponentPosition).getOwnerPlayer() != model) {
