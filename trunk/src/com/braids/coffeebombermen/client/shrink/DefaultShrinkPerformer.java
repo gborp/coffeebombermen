@@ -12,9 +12,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
 	private static final int   MAX_SPEEDUP_STEPS   = 12;
 	private static final int   SPEEDUP_RATIO       = 30;
-	// FIXME debug
-	private static final float SPEEDUP_POSSIBILITY = 1f;
-	// private static final float SPEEDUP_POSSIBILITY = 0.1f;
+	private static final float SPEEDUP_POSSIBILITY = 0.5f;
 	private static final int   PRE_SPEEDUP_TICKS   = 2;
 
 	private ShrinkDirection    lastShrinkDirection;
