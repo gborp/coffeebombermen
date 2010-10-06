@@ -2,6 +2,7 @@ package com.braids.coffeebombermen.client.shrink;
 
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.options.Shrinkers;
+import com.braids.coffeebombermen.options.model.ServerOptions;
 
 public class MassKillShrinkPerformer extends AbstractShrinkPerformer {
 
@@ -24,5 +25,10 @@ public class MassKillShrinkPerformer extends AbstractShrinkPerformer {
 			}
 			setLastShrinkOperationAt();
 		}
+	}
+
+	protected boolean isTimeToShrink() {
+		ServerOptions gso = getGlobalServerOptions();
+		return getTick() > gso.getRoundTimeLimit() * 2 * gso.getGameCycleFrequency();
 	}
 }
