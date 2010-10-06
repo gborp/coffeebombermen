@@ -1,7 +1,10 @@
 package com.braids.coffeebombermen.client.graphics;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -22,6 +25,7 @@ public class AnimationComponent extends JComponent implements Timeable {
 	private ControlledTimer      frameTimer;
 	/** Index of the actual frame. */
 	private volatile int         actualFrameIndex;
+	private List<String>         message;
 
 	/**
 	 * Creates a new AnimationComponent. The view of the component will be the
@@ -78,6 +82,10 @@ public class AnimationComponent extends JComponent implements Timeable {
 		repaint();
 	}
 
+	public void setMessage(List<String> message) {
+		this.message = message;
+	}
+
 	/**
 	 * Paints the actual view of the component. Draws the actual frame on the
 	 * component.
@@ -129,8 +137,21 @@ public class AnimationComponent extends JComponent implements Timeable {
 			// clipped
 		}
 
-		if (frameTimer != null)
+		if (message != null) {
+			graphics.setFont(graphics.getFont().deriveFont(12).deriveFont(Font.BOLD));
+			int yc = 20;
+			for (String line : message) {
+				graphics.setColor(Color.LIGHT_GRAY);
+				graphics.drawString(line, 0, yc);
+				graphics.setColor(Color.BLACK);
+				graphics.drawString(line, 1, yc + 1);
+				yc += 12;
+			}
+		}
+
+		if (frameTimer != null) {
 			frameTimer.setReadyForNextIteration();
+		}
 	}
 
 }

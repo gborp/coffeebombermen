@@ -84,4 +84,8 @@ public abstract class AbstractAnimationMainComponentHandler implements MainCompo
 		animationComponent.pauseAnimation();
 	}
 
+	public AnimationComponent getAnimationComponent() {
+		return animationComponent;
+	}
+
 }
