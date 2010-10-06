@@ -30,5 +30,12 @@ public enum Shrinkers {
 		public String toString() {
 			return "MassKill";
 		}
+	},
+
+	Desease {
+
+		public String toString() {
+			return "Desease";
+		}
 	};
 }
