@@ -34,7 +34,7 @@ public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 				for (int i = 1; i < getWidth() - 1; i++) {
 					for (int j = 1; j < getHeight() - 1; j++) {
 						if (MathHelper.checkRandomEvent(chance)) {
-							if (getRandomInt(2) == 1) {
+							if (MathHelper.checkRandomEvent(chance)) {
 								setItem(i, j, Items.DISEASE);
 							} else {
 								setItem(i, j, Items.SUPER_DISEASE);
@@ -51,14 +51,6 @@ public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 			} else {}
 		}
 
-	}
-
-	private int getRandomInt(int number) {
-		if (randomGenerator == null) {
-			randomGenerator = new Random();
-		}
-
-		return randomGenerator.nextInt(number);
 	}
 
 }
