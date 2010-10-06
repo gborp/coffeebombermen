@@ -10,7 +10,6 @@ import java.util.Random;
 import com.braids.coffeebombermen.AbstractAnimationMainComponentHandler;
 import com.braids.coffeebombermen.Consts;
 import com.braids.coffeebombermen.GameManager;
-import com.braids.coffeebombermen.MainComponentHandler;
 import com.braids.coffeebombermen.MainFrame;
 import com.braids.coffeebombermen.MainMenuBar;
 import com.braids.coffeebombermen.MessageHandler;
@@ -104,7 +103,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	private int                                  ourIndex;
 
 	/** Handler of the main component being the waiting animation component. */
-	private final MainComponentHandler           waitingAnimationMainComponentHandler;
+	private final WaitingAnimMainCompHandler     waitingAnimationMainComponentHandler;
 	/** Handler of the main component being the game scene component. */
 	private final GameSceneMainComponentHandler  gameSceneMainComponentHandler;
 
@@ -165,12 +164,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		connectToServer(serverOptions);
 		clientOptionsManager.registerOptionsChangeListener(this);
 
-		waitingAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
-
-			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
-			}
-		};
+		waitingAnimationMainComponentHandler = new WaitingAnimMainCompHandler(this.mainFrame);
 		this.gameManager.setMainComponentHandler(waitingAnimationMainComponentHandler);
 
 		gameSceneMainComponentHandler = new GameSceneMainComponentHandler(this, this.mainFrame, clientOptionsManager);
@@ -190,6 +184,8 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		ourIndex = clientsPublicClientOptions.size() - 1; // We are placed
 		// always to the last
 		// position
+
+		waitingAnimationMainComponentHandler.refreshJoinedPlayerList();
 
 		// If scene refresh mode is NORMAL, we refresh scene in every iteration,
 		// if it's SLOW, we refersh scene in every 2, and if it's EXTRA_SLOW, we
@@ -328,6 +324,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 						break;
 					case A_CLIENT_HAS_JOINED_THE_GAME:
 						clientsPublicClientOptions.add(PublicClientOptions.parseFromString(commandTokenizer.remainingString()));
+						waitingAnimationMainComponentHandler.refreshJoinedPlayerList();
 						break;
 					case A_CLIENT_HAS_LEFT_THE_GAME:
 						final int clientIndex = commandTokenizer.nextIntToken();
@@ -566,6 +563,29 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 
 	public int getOurIndex() {
 		return ourIndex;
+	}
+
+	private final class WaitingAnimMainCompHandler extends AbstractAnimationMainComponentHandler {
+
+		private WaitingAnimMainCompHandler(MainFrame mainFrame) {
+			super(mainFrame);
+		}
+
+		protected AnimationDatas getNewAnimationDatas() {
+			return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
+		}
+
+		public void refreshJoinedPlayerList() {
+			ArrayList<String> joinedPlayers = new ArrayList<String>();
+			joinedPlayers.add("Joined players:");
+			joinedPlayers.add("");
+			for (PublicClientOptions li : clientsPublicClientOptions) {
+				for (String playerName : li.playerNames) {
+					joinedPlayers.add(playerName);
+				}
+			}
+			getAnimationComponent().setMessage(joinedPlayers);
+		}
 	}
 
 }
