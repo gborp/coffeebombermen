@@ -29,6 +29,7 @@ import com.braids.coffeebombermen.client.graphics.GraphicsManager;
 import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.DiseaseShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.MassKillShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.ShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.SpiderBombShrinkPerformer;
@@ -136,7 +137,7 @@ public class GameCoreHandler {
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
-		        new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this) };
+		        new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this), new DiseaseShrinkPerformer(this) };
 
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
@@ -185,12 +186,15 @@ public class GameCoreHandler {
 		clientsPlayers.remove(clientIndex);
 		clientsPlayerModels.remove(clientIndex);
 
-		if (ourClientIndex > clientIndex)
+		if (ourClientIndex > clientIndex) {
 			ourClientIndex--;
+		}
 
-		for (int i = clientIndex; i < clientsPlayers.size(); i++)
-			for (final Player player : clientsPlayers.get(i))
+		for (int i = clientIndex; i < clientsPlayers.size(); i++) {
+			for (final Player player : clientsPlayers.get(i)) {
 				player.setClientIndex(i);
+			}
+		}
 	}
 
 	/**
@@ -221,7 +225,7 @@ public class GameCoreHandler {
 		// dont care if even there is concrete wall in that position
 		int positioningAlgoritmQuality = 0;
 
-		for (final Player[] players : clientsPlayers)
+		for (final Player[] players : clientsPlayers) {
 			for (final Player player : players) {
 				// Now we generate random position
 
@@ -232,27 +236,34 @@ public class GameCoreHandler {
 					trialCycle: for (int trialsCount = (maxComponentPosX - 1) * (maxComponentPosY - 1); trialsCount >= 0; trialsCount--) {
 						if (--componentPosX < 1) {
 							componentPosX = maxComponentPosX;
-							if (--componentPosY < 1)
+							if (--componentPosY < 1) {
 								componentPosY = maxComponentPosY;
+							}
 						}
 
-						if (positioningAlgoritmQuality < 4)
-							if (levelModel.getComponent(componentPosX, componentPosY).getWall() == Walls.CONCRETE)
+						if (positioningAlgoritmQuality < 4) {
+							if (levelModel.getComponent(componentPosX, componentPosY).getWall() == Walls.CONCRETE) {
 								continue; // Obvious...
+							}
+						}
 
 						if (positioningAlgoritmQuality < 2) {
-							if (levelModel.getComponent(componentPosX - 1, componentPosY).getWall() == Walls.CONCRETE
-							        && levelModel.getComponent(componentPosX + 1, componentPosY).getWall() == Walls.CONCRETE)
+							if ((levelModel.getComponent(componentPosX - 1, componentPosY).getWall() == Walls.CONCRETE)
+							        && (levelModel.getComponent(componentPosX + 1, componentPosY).getWall() == Walls.CONCRETE)) {
 								continue; // Horizontally not open the component
-							if (levelModel.getComponent(componentPosX, componentPosY - 1).getWall() == Walls.CONCRETE
-							        && levelModel.getComponent(componentPosX, componentPosY + 1).getWall() == Walls.CONCRETE)
+							}
+							if ((levelModel.getComponent(componentPosX, componentPosY - 1).getWall() == Walls.CONCRETE)
+							        && (levelModel.getComponent(componentPosX, componentPosY + 1).getWall() == Walls.CONCRETE)) {
 								continue; // Vertically not open the component
+							}
 						}
 
-						for (final int[] startPosition : generatedStartPositions)
-							if (Math.abs(componentPosX - startPosition[0]) + Math.abs(componentPosY - startPosition[1]) < 4 - positioningAlgoritmQuality)
+						for (final int[] startPosition : generatedStartPositions) {
+							if (Math.abs(componentPosX - startPosition[0]) + Math.abs(componentPosY - startPosition[1]) < 4 - positioningAlgoritmQuality) {
 								continue trialCycle; // Too close to another
-						// player
+								// player
+							}
+						}
 
 						generatedStartPositions.add(new int[] { componentPosX, componentPosY });
 						break qualityCycle;
@@ -266,8 +277,8 @@ public class GameCoreHandler {
 				// We clear the level around the player.
 				final int[][] DELTA_COORDS = new int[][] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }; // Delta
 				// coordinates of the clearable components
-				for (int i = 0; i < DELTA_COORDS.length; i++) {
-					final LevelComponent levelComponent = levelModel.getComponent(componentPosX + DELTA_COORDS[i][1], componentPosY + DELTA_COORDS[i][0]);
+				for (int[] element : DELTA_COORDS) {
+					final LevelComponent levelComponent = levelModel.getComponent(componentPosX + element[1], componentPosY + element[0]);
 					if (levelComponent.getWall() != Walls.CONCRETE) {
 						levelComponent.setWall(Walls.EMPTY);
 						levelComponent.setItem(null);
@@ -277,6 +288,7 @@ public class GameCoreHandler {
 				player.initForNextRound(CoreConsts.LEVEL_COMPONENT_GRANULARITY * componentPosX + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2,
 				        CoreConsts.LEVEL_COMPONENT_GRANULARITY * componentPosY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 			}
+		}
 
 		bombs = new ArrayList<Bomb>();
 		bombModels = new ArrayList<BombModel>();
@@ -362,7 +374,7 @@ public class GameCoreHandler {
 
 		boolean newHasMoreThanOneALivePlayer = hasMoreThanOneAlivePlayer;
 
-		if (hasMoreThanOneAlivePlayer && getAlivePlayerCount() <= 1) {
+		if (hasMoreThanOneAlivePlayer && (getAlivePlayerCount() <= 1)) {
 			if (lastPlayerCountDownStartedAt == -1) {
 				lastPlayerCountDownStartedAt = tick;
 			} else if ((tick - lastPlayerCountDownStartedAt) > LAST_PLAYER_COUNT_DOWN_BEFORE_WIN) {
@@ -424,16 +436,17 @@ public class GameCoreHandler {
 			shrinkPerformer.nextIteration();
 
 			// Now we damage players being in fire.
-			for (PlayerModel playerModel : getAllPlayerModels())
+			for (PlayerModel playerModel : getAllPlayerModels()) {
 				if (playerModel.getActivity() != Activities.DYING) {
 					LevelComponent comp = getLevelModel().getComponent(playerModel.getComponentPosX(), playerModel.getComponentPosY());
 					int firesCount = comp.getFireCount();
-					if (!globalServerOptions.isMultipleFire() && firesCount > 1) {
+					if (!globalServerOptions.isMultipleFire() && (firesCount > 1)) {
 						firesCount = 1;
 					}
 					if (firesCount > 0) {
 						int damage = firesCount
-						        * (int) (CoreConsts.MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * CoreConsts.FIRE_ITERATIONS) + 0.5); // +0.5
+						        * (int) (CoreConsts.MAX_PLAYER_VITALITY * globalServerOptions.getDamageOfWholeBombFire() / (100.0 * CoreConsts.FIRE_ITERATIONS) + 0.5); // +
+						// 0.5
 						// for ceiling (can't flooring, cause 100% damage might
 						// cause remainder, would let the player live!)
 						playerModel.setVitality(Math.max(0, playerModel.getVitality() - damage));
@@ -447,6 +460,7 @@ public class GameCoreHandler {
 						killPlayer(playerModel);
 					}
 				}
+			}
 		} else {
 			if (tick % MATCH_WON_HAPPY_PLAYER_ACTION_FREQUENCY == 0) {
 				PlayerModel lastPlayer = getTheLastRemainingPlyer();
@@ -511,7 +525,7 @@ public class GameCoreHandler {
 		for (int y = 0; y < levelModel.getHeight(); y++) {
 			for (int x = 0; x < levelModel.getWidth(); x++) {
 				LevelComponent comp = levelModel.getComponent(x, y);
-				if (comp.getWall() != Walls.EMPTY && comp.getWall() != Walls.BRICK) {
+				if ((comp.getWall() != Walls.EMPTY) && (comp.getWall() != Walls.BRICK)) {
 					comp.setWall(Walls.DEATH_WARN);
 				}
 			}
@@ -582,7 +596,7 @@ public class GameCoreHandler {
 		// First we check the fire triggered bombs...
 		for (final BombModel bombModel : bombModels) {
 			LevelComponent levelComp = levelModel.getComponent(bombModel.getComponentPosX(), bombModel.getComponentPosY());
-			if (bombModel.getPhase() != BombPhases.FLYING && !bombModel.isAboutToDetonate() && levelComp.hasFire()) {
+			if ((bombModel.getPhase() != BombPhases.FLYING) && !bombModel.isAboutToDetonate() && levelComp.hasFire()) {
 				bombModel.setAboutToDetonate(true);
 				bombModel.setTriggererPlayer(levelComp.getLastFire().getTriggererPlayer());
 			}
@@ -592,13 +606,14 @@ public class GameCoreHandler {
 			// The fact that we didn't check all of 'em will be known if we find
 			// one that hasn't been checked out yet.
 
-			for (final BombModel bombModel : bombModels)
+			for (final BombModel bombModel : bombModels) {
 				if (!bombModel.isDetonated() && bombModel.isAboutToDetonate()) {
 					bombModel.setTriggererPlayer(bombModel.getOwnerPlayer());
 					detonatableBombModels.add(bombModel);
 					checkedAllBombModels = false;
 					break;
 				}
+			}
 
 			for (int i = 0; i < detonatableBombModels.size(); i++) {
 				// Not enhanced for: we may add new detonatable bombs inside the
@@ -607,22 +622,25 @@ public class GameCoreHandler {
 				final int detonatedBombComponentPosX = detonatedBombModel.getComponentPosX();
 				final int detonatedBombComponentPosY = detonatedBombModel.getComponentPosY();
 
-				for (final Directions direction : Directions.values())
+				for (final Directions direction : Directions.values()) {
 					for (int range = direction == Directions.values()[0] ? 0 : 1; range < detonatedBombModel.getRange(); range++) {
-						if (range > 0 && detonatedBombModel.excludedDetonationDirections.contains(direction))
+						if ((range > 0) && detonatedBombModel.excludedDetonationDirections.contains(direction)) {
 							break;
+						}
 
 						final int componentPosX = detonatedBombComponentPosX + direction.getXMultiplier() * range;
 						final int componentPosY = detonatedBombComponentPosY + direction.getYMultiplier() * range;
 
-						if (componentPosX < 0 || componentPosX > levelModel.getWidth() - 1 || componentPosY < 0 || componentPosY > levelModel.getHeight() - 1) {
+						if ((componentPosX < 0) || (componentPosX > levelModel.getWidth() - 1) || (componentPosY < 0)
+						        || (componentPosY > levelModel.getHeight() - 1)) {
 							break;
 						}
 						LevelComponent levelComponent = levelModel.getComponent(componentPosX, componentPosY);
 
-						if (levelComponent.getWall() == Walls.CONCRETE || levelComponent.getWall() == Walls.DEATH
-						        || levelComponent.getWall() == Walls.DEATH_WARN)
+						if ((levelComponent.getWall() == Walls.CONCRETE) || (levelComponent.getWall() == Walls.DEATH)
+						        || (levelComponent.getWall() == Walls.DEATH_WARN)) {
 							break;
+						}
 
 						final Integer bombIndexAtComponentPos = range == 0 ? null : getBombIndexAtComponentPosition(componentPosX, componentPosY);
 
@@ -646,10 +664,12 @@ public class GameCoreHandler {
 
 							level.addFireToComponentPos(fire, componentPosX, componentPosY);
 
-							if (levelComponent.getWall() == Walls.BRICK || levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null)
+							if ((levelComponent.getWall() == Walls.BRICK) || ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null))) {
 								break;
+							}
 						}
 					}
+				}
 
 				detonatedBombModel.setDetonated(true);
 			}
@@ -741,10 +761,12 @@ public class GameCoreHandler {
 	public Integer getBombIndexAtComponentPosition(final int componentPosX, final int componentPosY) {
 		for (int i = bombModels.size() - 1; i >= 0; i--) {
 			final BombModel bombModel = bombModels.get(i);
-			if (bombModel.getPhase() != BombPhases.FLYING)
+			if (bombModel.getPhase() != BombPhases.FLYING) {
 				// Flying bombs "aren't" in the level.
-				if (bombModel.getComponentPosX() == componentPosX && bombModel.getComponentPosY() == componentPosY)
+				if ((bombModel.getComponentPosX() == componentPosX) && (bombModel.getComponentPosY() == componentPosY)) {
 					return i;
+				}
+			}
 		}
 
 		return null;
@@ -764,15 +786,20 @@ public class GameCoreHandler {
 	 *         one that hangs down into it; false otherwise
 	 */
 	public boolean isPlayerAtComponentPositionExcludePlayer(final int componentPosX, final int componentPosY, final PlayerModel playerModelToExclude) {
-		for (final PlayerModel[] playerModels : clientsPlayerModels)
-			for (final PlayerModel playerModel : playerModels)
-				if (playerModel != playerModelToExclude)
-					if (playerModel.getActivity() != Activities.DYING) // "Dead"
+		for (final PlayerModel[] playerModels : clientsPlayerModels) {
+			for (final PlayerModel playerModel : playerModels) {
+				if (playerModel != playerModelToExclude) {
+					if (playerModel.getActivity() != Activities.DYING) {
 						// players
 						// doesn't
 						// count...
-						if (playerModel.getComponentPosX() == componentPosX && playerModel.getComponentPosY() == componentPosY)
+						if ((playerModel.getComponentPosX() == componentPosX) && (playerModel.getComponentPosY() == componentPosY)) {
 							return true;
+						}
+					}
+				}
+			}
+		}
 
 		return false;
 	}
@@ -833,12 +860,13 @@ public class GameCoreHandler {
 	public void validateAndSetFlyingTargetPosX(final BombModel bombModel, final int flyingTargetPosX) {
 		LevelModel levelModel = getLevelModel();
 
-		if (flyingTargetPosX < 0)
+		if (flyingTargetPosX < 0) {
 			bombModel.setFlyingTargetPosX((levelModel.getWidth() - 1) * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
-		else if (flyingTargetPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY)
+		} else if (flyingTargetPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY) {
 			bombModel.setFlyingTargetPosX(CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
-		else
+		} else {
 			bombModel.setFlyingTargetPosX(flyingTargetPosX);
+		}
 	}
 
 	/**
@@ -854,12 +882,13 @@ public class GameCoreHandler {
 	public void validateAndSetFlyingTargetPosY(final BombModel bombModel, final int flyingTargetPosY) {
 		LevelModel levelModel = getLevelModel();
 
-		if (flyingTargetPosY < 0)
+		if (flyingTargetPosY < 0) {
 			bombModel.setFlyingTargetPosY((levelModel.getHeight() - 1) * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
-		else if (flyingTargetPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY)
+		} else if (flyingTargetPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY) {
 			bombModel.setFlyingTargetPosY(CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
-		else
+		} else {
 			bombModel.setFlyingTargetPosY(flyingTargetPosY);
+		}
 	}
 
 	/**
@@ -877,24 +906,27 @@ public class GameCoreHandler {
 	public boolean canBombRollToComponentPosition(final BombModel bombModel, final int componentPosX, final int componentPosY) {
 
 		LevelModel levelModel = getLevelModel();
-		if (componentPosX < 0 || componentPosX >= levelModel.getWidth() || componentPosY < 0 || componentPosY >= levelModel.getHeight()) {
+		if ((componentPosX < 0) || (componentPosX >= levelModel.getWidth()) || (componentPosY < 0) || (componentPosY >= levelModel.getHeight())) {
 			return false;
 		}
 
 		final LevelComponent levelComponentAheadAhead = levelModel.getComponent(componentPosX, componentPosY);
-		if (levelComponentAheadAhead.getWall() != Walls.EMPTY)
+		if (levelComponentAheadAhead.getWall() != Walls.EMPTY) {
 			return false;
-		if (levelComponentAheadAhead.getWall() == Walls.EMPTY && levelComponentAheadAhead.getItem() != null
-		        && getGlobalServerOptions().isItemsStopRollingBombs())
+		}
+		if ((levelComponentAheadAhead.getWall() == Walls.EMPTY) && (levelComponentAheadAhead.getItem() != null)
+		        && getGlobalServerOptions().isItemsStopRollingBombs()) {
 			return false;
+		}
 
 		// Collision with players:
 		for (final PlayerModel[] playerModels : getClientsPlayerModels()) {
 			for (final PlayerModel playerModel : playerModels) {
 				if (playerModel.getActivity() != Activities.DYING) {
 					// "Dead" players doesn't count...
-					if (playerModel.getComponentPosX() == componentPosX && playerModel.getComponentPosY() == componentPosY) {
-						if (playerModel.getComponentPosX() != bombModel.getComponentPosX() || playerModel.getComponentPosY() != bombModel.getComponentPosY()) {
+					if ((playerModel.getComponentPosX() == componentPosX) && (playerModel.getComponentPosY() == componentPosY)) {
+						if ((playerModel.getComponentPosX() != bombModel.getComponentPosX())
+						        || (playerModel.getComponentPosY() != bombModel.getComponentPosY())) {
 							return false;
 						}
 					}
@@ -903,10 +935,11 @@ public class GameCoreHandler {
 		}
 
 		final Integer bombIndexAhead = getBombIndexAtComponentPosition(componentPosX, componentPosY);
-		if (bombIndexAhead != null && getBombModels().get(bombIndexAhead) != bombModel) // There's
+		if ((bombIndexAhead != null) && (getBombModels().get(bombIndexAhead) != bombModel)) {
 			// another
 			// bomb
 			return false;
+		}
 
 		return true;
 	}
@@ -931,20 +964,24 @@ public class GameCoreHandler {
 		for (int trialsCount = (maxComponentPosX - 1) * (maxComponentPosY - 1); trialsCount >= 0; trialsCount--) {
 			if (--componentPosX < 1) {
 				componentPosX = maxComponentPosX;
-				if (--componentPosY < 1)
+				if (--componentPosY < 1) {
 					componentPosY = maxComponentPosY;
+				}
 			}
 
 			final LevelComponent levelComponent = levelModel.getComponent(componentPosX, componentPosY);
 
-			if (levelComponent.getWall() != Walls.EMPTY || levelComponent.getItem() != null)
+			if ((levelComponent.getWall() != Walls.EMPTY) || (levelComponent.getItem() != null)) {
 				continue;
+			}
 
-			if (isBombAtComponentPosition(componentPosX, componentPosY))
+			if (isBombAtComponentPosition(componentPosX, componentPosY)) {
 				continue;
+			}
 
-			if (isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, null))
+			if (isPlayerAtComponentPositionExcludePlayer(componentPosX, componentPosY, null)) {
 				continue;
+			}
 
 			levelComponent.setItem(item);
 			break;
@@ -964,13 +1001,14 @@ public class GameCoreHandler {
 	public void removeFireFromComponentPos(final Fire fire, final int componentPosX, final int componentPosY) {
 		final LevelComponent levelComponent = getLevelModel().getComponent(componentPosX, componentPosY);
 
-		if (levelComponent.getWall() == Walls.BRICK)
+		if (levelComponent.getWall() == Walls.BRICK) {
 			levelComponent.setWall(Walls.EMPTY);
-		else if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) {
+		} else if ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null)) {
 			final Items item = levelComponent.getItem();
 			levelComponent.setItem(null);
-			if (item == Items.DISEASE && !getGlobalServerOptions().isExplosionAnnihilatesDiseases())
+			if ((item == Items.DISEASE) && !getGlobalServerOptions().isExplosionAnnihilatesDiseases()) {
 				replaceItemOnLevel(item);
+			}
 		}
 
 		level.removeFireFromComponentPos(fire, componentPosX, componentPosY);
