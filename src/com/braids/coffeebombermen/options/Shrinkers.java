@@ -32,10 +32,10 @@ public enum Shrinkers {
 		}
 	},
 
-	Desease {
+	Disease {
 
 		public String toString() {
-			return "Desease";
+			return "Disease";
 		}
 	};
 }
