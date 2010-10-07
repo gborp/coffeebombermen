@@ -19,7 +19,7 @@ public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 	}
 
 	public Shrinkers getType() {
-		return Shrinkers.Desease;
+		return Shrinkers.Disease;
 	}
 
 	protected void initNextRoundImpl() {
@@ -30,7 +30,6 @@ public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 	protected void nextIterationImpl() {
 		if (isTimeToShrink()) {
 			if (isTimeToFirstShrink() || isTimeToNextShrink(getGlobalServerOptions().getGameCycleFrequency() * GAME_CYCLE_FREQUENCY_MULTIPLIER)) {
-				System.out.println("DiseaseShrinkPerformer.nextIterationImpl()" + chance);
 				for (int i = 1; i < getWidth() - 1; i++) {
 					for (int j = 1; j < getHeight() - 1; j++) {
 						if (MathHelper.checkRandomEvent(chance)) {
