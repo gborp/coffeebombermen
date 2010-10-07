@@ -1,12 +1,18 @@
 package com.braids.coffeebombermen.client.graphics;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
+import java.util.HashMap;
 
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptConsts.ImageScalingAlgorithms;
@@ -27,6 +33,10 @@ public class ImageHandler {
 	private final Image                                      originalImage;
 	/** The lastly requested scaled image. */
 	private Image                                            scaledImage;
+
+	private HashMap<Color, Image>                            mapColoredScaledImage;
+	private ColorFilter                                      colorFilter;
+
 	/** Scale factor of the lastly produced image. */
 	private float                                            scaleFactor;
 	/** Used image scaling algorithm for the lastly produced image. */
@@ -107,6 +117,62 @@ public class ImageHandler {
 		setScaledImage(newCompatibleScaledImage, scaleFactor, imageScalingAlgorithm);
 
 		return scaledImage;
+	}
+
+	public Image getScaledImage(final float scaleFactor, boolean transparent, Color fromChange, Color toChange) {
+		if (this.scaleFactor != scaleFactor) {
+			mapColoredScaledImage = null;
+		}
+
+		if (mapColoredScaledImage == null) {
+			mapColoredScaledImage = new HashMap<Color, Image>();
+		}
+		Image result = mapColoredScaledImage.get(toChange);
+		if (result != null) {
+			return result;
+		}
+
+		if (colorFilter == null) {
+			colorFilter = new ColorFilter();
+		}
+
+		colorFilter.fromColor = fromChange.getRGB();
+		colorFilter.toColor = toChange.getRGB();
+
+		ImageProducer ip = new FilteredImageSource(originalImage.getSource(), colorFilter);
+		Image coloredImage = Toolkit.getDefaultToolkit().createImage(ip);
+		// Invoking Math.max() because with or height cannot be zero (and that
+		// amount is calculated when the divider of JSplitPane is in outside)
+		Image newScaledImage = coloredImage.getScaledInstance(Math.max((int) (originalImage.getWidth(null) * scaleFactor), 1), Math.max((int) (originalImage
+		        .getHeight(null) * scaleFactor), 1), imageScalingAlgorithm == ImageScalingAlgorithms.FAST ? Image.SCALE_FAST : Image.SCALE_SMOOTH);
+
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		GraphicsConfiguration gc = gd.getDefaultConfiguration();
+
+		BufferedImage newCompatibleScaledImage = gc.createCompatibleImage(newScaledImage.getWidth(null), newScaledImage.getHeight(null),
+		        transparent ? Transparency.BITMASK : Transparency.OPAQUE);
+		Graphics2D g = newCompatibleScaledImage.createGraphics();
+		g.drawImage(newScaledImage, 0, 0, null);
+		g.dispose();
+
+		mapColoredScaledImage.put(toChange, newCompatibleScaledImage);
+		this.scaleFactor = scaleFactor;
+
+		return newCompatibleScaledImage;
+	}
+
+	private static class ColorFilter extends RGBImageFilter {
+
+		public int fromColor;
+		public int toColor;
+
+		public int filterRGB(int x, int y, int rgb) {
+			if (rgb == fromColor) {
+				return toColor;
+			}
+			return rgb;
+		}
+
 	}
 
 	/**

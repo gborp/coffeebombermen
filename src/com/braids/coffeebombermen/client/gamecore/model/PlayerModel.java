@@ -9,6 +9,7 @@ import com.braids.coffeebombermen.client.sound.SoundEffect;
 import com.braids.coffeebombermen.options.Diseases;
 import com.braids.coffeebombermen.options.LevelComponentOptions;
 import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.OptConsts.PlayerColors;
 import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
 
 /**
@@ -67,6 +68,8 @@ public class PlayerModel extends PositionedIterableObject {
 	private boolean                      spiderBombEnabled;
 	private int                          spiderBombRounds;
 	private int                          points;
+
+	private PlayerColors                 color;
 
 	/**
 	 * Returns the vitality of the player.
@@ -312,6 +315,14 @@ public class PlayerModel extends PositionedIterableObject {
 
 	public void setPoints(int points) {
 		this.points = points;
+	}
+
+	public PlayerColors getColor() {
+		return color;
+	}
+
+	public void setColor(PlayerColors color) {
+		this.color = color;
 	}
 
 }

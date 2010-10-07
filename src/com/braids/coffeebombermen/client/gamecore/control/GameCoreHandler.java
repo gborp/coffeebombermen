@@ -10,9 +10,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
-import com.braids.coffeebombermen.AbstractAnimationMainComponentHandler;
 import com.braids.coffeebombermen.GameManager;
-import com.braids.coffeebombermen.MainComponentHandler;
 import com.braids.coffeebombermen.MainFrame;
 import com.braids.coffeebombermen.client.gamecore.Activities;
 import com.braids.coffeebombermen.client.gamecore.BombPhases;
@@ -24,8 +22,6 @@ import com.braids.coffeebombermen.client.gamecore.model.FireModel;
 import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
-import com.braids.coffeebombermen.client.graphics.AnimationDatas;
-import com.braids.coffeebombermen.client.graphics.GraphicsManager;
 import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
@@ -90,12 +86,15 @@ public class GameCoreHandler {
 	/** Shortcut for the models of the bombs. */
 	private List<BombModel>                 bombModels;
 
-	/** Handler of the main component being the draw game animation component. */
-	private final MainComponentHandler      drawGameAnimationMainComponentHandler;
-	/** Handler of the main component being the losing animation component. */
-	private final MainComponentHandler      losingAnimationMainComponentHandler;
-	/** Handler of the main component being the winning animation component. */
-	private final MainComponentHandler      winningAnimationMainComponentHandler;
+	// /** Handler of the main component being the draw game animation
+	// component. */
+	// private final MainComponentHandler drawGameAnimationMainComponentHandler;
+	// /** Handler of the main component being the losing animation component.
+	// */
+	// private final MainComponentHandler losingAnimationMainComponentHandler;
+	// /** Handler of the main component being the winning animation component.
+	// */
+	// private final MainComponentHandler winningAnimationMainComponentHandler;
 
 	private long                            tick;
 	private ShrinkPerformer[]               shrinkPerformers;
@@ -150,30 +149,37 @@ public class GameCoreHandler {
 			for (int j = 0; j < players.length; j++) {
 				players[j] = new Player(ourClientIndex == i, i, j, this, publicClientOptions.playerNames[j]);
 				playerModels[j] = players[j].getModel();
+				playerModels[j].setColor(publicClientOptions.playerColors[j]);
 			}
 
 			clientsPlayers.add(players);
 			clientsPlayerModels.add(playerModels);
 		}
 
-		drawGameAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
-
-			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
-			}
-		};
-		losingAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
-
-			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
-			}
-		};
-		winningAnimationMainComponentHandler = new AbstractAnimationMainComponentHandler(this.mainFrame) {
-
-			protected AnimationDatas getNewAnimationDatas() {
-				return GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
-			}
-		};
+		// drawGameAnimationMainComponentHandler = new
+		// AbstractAnimationMainComponentHandler(this.mainFrame) {
+		//
+		// protected AnimationDatas getNewAnimationDatas() {
+		// return
+		// GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
+		// }
+		// };
+		// losingAnimationMainComponentHandler = new
+		// AbstractAnimationMainComponentHandler(this.mainFrame) {
+		//
+		// protected AnimationDatas getNewAnimationDatas() {
+		// return
+		// GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
+		// }
+		// };
+		// winningAnimationMainComponentHandler = new
+		// AbstractAnimationMainComponentHandler(this.mainFrame) {
+		//
+		// protected AnimationDatas getNewAnimationDatas() {
+		// return
+		// GraphicsManager.getCurrentManager().getWaitingAnimationDatas();
+		// }
+		// };
 	}
 
 	/**
