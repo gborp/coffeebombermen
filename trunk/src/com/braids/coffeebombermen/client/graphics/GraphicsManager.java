@@ -350,7 +350,7 @@ public class GraphicsManager {
 
 	private static List<PlayerGraphic> loadPlayerGraphics(final String fileName, final int width, final int height, final int[] activityPhasesCounts)
 	        throws CorruptGraphicalThemeException {
-		List<PlayerGraphic> result = new ArrayList<PlayerGraphic>(8);
+		List<PlayerGraphic> result = new ArrayList<PlayerGraphic>(2);
 
 		final int DIRECTIONS_COUNT = Directions.values().length;
 
@@ -363,7 +363,7 @@ public class GraphicsManager {
 			}
 		}
 
-		for (int player = 0; player < 7; player++) {
+		for (int player = 0; player < 2; player++) {
 
 			ImageHandler[][] phaseHandlers = getOnePlayerGraphic(fileName + Integer.toString(player) + BOMBERMAN_PHASES_FILE_NAME_POSTFIX, width, height,
 			        phasesCounts, player);

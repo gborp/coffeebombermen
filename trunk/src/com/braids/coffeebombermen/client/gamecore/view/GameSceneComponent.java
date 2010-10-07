@@ -39,15 +39,16 @@ import com.braids.coffeebombermen.options.model.PublicClientOptions;
 public class GameSceneComponent extends JComponent implements KeyListener, OptionsChangeListener<ClientOptions> {
 
 	/** A string containing only a space. Used several times on keyboard events. */
-	private static final String                 SPACE_STRING             = " ";
+	private static final String                 SPACE_STRING           = " ";
 
-	private static final int                    PLAYER_GFX_FLASH         = 0;
-	private static final int                    PLAYER_GFX_COLOR_BLIND   = 1;
-	private static final int                    PLAYER_GFX_NORMAL_OFFSET = 2;
+	private static final Color                  PLAYER_GFX_FLASH       = Color.WHITE;
+	private static final Color                  PLAYER_GFX_COLOR_BLIND = Color.BLACK;
 
-	private static final long                   FLASH_EVERY_NTH_TICK     = 4;
+	private static final long                   FLASH_EVERY_NTH_TICK   = 4;
 
-	private static final int                    MAX_VISIBILITY_IN_FOG    = 10;
+	private static final int                    MAX_VISIBILITY_IN_FOG  = 10;
+
+	public static final Color                   COLORIZATION_COLOR     = new Color(255, 0, 255);
 
 	/** Reference to the client options manager. */
 	private final OptionsManager<ClientOptions> clientOptionsManager;
@@ -84,29 +85,27 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 	private List<PlayerGraphic>                 playerGraphics;
 
-	private Color[]                             playerHudColor;
-
 	private final Client                        client;
 
-	private AlphaComposite                      normalComposit           = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
-	private AlphaComposite                      infectedComposite        = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
-	private AlphaComposite                      blackoutComposite        = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
-	private AlphaComposite                      fireLightComposite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
-	private AlphaComposite                      hallOfFameComposite      = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f);
+	private AlphaComposite                      normalComposit         = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+	private AlphaComposite                      infectedComposite      = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+	private AlphaComposite                      blackoutComposite      = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
+	private AlphaComposite                      fireLightComposite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .25f);
+	private AlphaComposite                      hallOfFameComposite    = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f);
 
-	private AlphaComposite                      fogOfWar1Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .90f);
-	private AlphaComposite                      fogOfWar2Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
-	private AlphaComposite                      fogOfWar3Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .70f);
-	private AlphaComposite                      fogOfWar4Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .60f);
-	private AlphaComposite                      fogOfWar5Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .50f);
-	private AlphaComposite                      fogOfWar6Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .40f);
-	private AlphaComposite                      fogOfWar7Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .30f);
-	private AlphaComposite                      fogOfWar8Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .20f);
-	private AlphaComposite                      fogOfWar9Composite       = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .10f);
+	private AlphaComposite                      fogOfWar1Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .90f);
+	private AlphaComposite                      fogOfWar2Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .80f);
+	private AlphaComposite                      fogOfWar3Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .70f);
+	private AlphaComposite                      fogOfWar4Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .60f);
+	private AlphaComposite                      fogOfWar5Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .50f);
+	private AlphaComposite                      fogOfWar6Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .40f);
+	private AlphaComposite                      fogOfWar7Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .30f);
+	private AlphaComposite                      fogOfWar8Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .20f);
+	private AlphaComposite                      fogOfWar9Composite     = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .10f);
 
-	private long                                blackOutDuration         = 30;
-	private long                                flashDuration            = 3;
-	private long                                nextFlashStart           = -1;
+	private long                                blackOutDuration       = 30;
+	private long                                flashDuration          = 3;
+	private long                                nextFlashStart         = -1;
 
 	private float                               hallOfFameX;
 	private float                               hallOfFameY;
@@ -567,12 +566,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 					}
 				} else {
 					final FireModel fireModel = levelComponent.getLastFire();
-					final int firePhasesCount = firePhaseHandlers[fireModel.getShape().ordinal()].length;
 
 					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() == null) {
 						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
-						g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * fireModel.getIterationCounter()
-						        / CoreConsts.FIRE_ITERATIONS].getScaledImage(fireScaleFactor), x, y, null);
+						paintFire(g, fireModel, x, y, fireScaleFactor);
 					} else {
 						if (fireModel.getIterationCounter() < CoreConsts.FIRE_ITERATIONS / 2) {
 							// The original wall or item is burning.
@@ -695,7 +692,6 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			if (playerNumberForGfx == playerGraphics.size()) {
 				playerNumberForGfx = 0;
 			}
-			int effectivePlayerNumberForGx = playerNumberForGfx + PLAYER_GFX_NORMAL_OFFSET;
 			playerNumberForGfx++;
 
 			final PlayerModel playerModel = playerModels[j];
@@ -708,18 +704,20 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				continue;
 			}
 
+			Color effectivePlayerColor = playerModel.getColor().value;
+
 			if (colorBlind) {
-				effectivePlayerNumberForGx = PLAYER_GFX_COLOR_BLIND;
+				effectivePlayerColor = PLAYER_GFX_COLOR_BLIND;
 			}
 
 			if (playerModel.hasDiseases()) {
 				if ((gameCoreHandler.getTick() % FLASH_EVERY_NTH_TICK) == 0) {
 					g2.setComposite(infectedComposite);
-					effectivePlayerNumberForGx = PLAYER_GFX_FLASH;
+					effectivePlayerColor = PLAYER_GFX_FLASH;
 				}
 			}
 
-			Image bombermanImage = playerGraphics.get(effectivePlayerNumberForGx).getImage(playerModel, scaleFactor);
+			Image bombermanImage = playerGraphics.get(1).getImage(playerModel, scaleFactor, effectivePlayerColor);
 
 			g2.setComposite(normalComposit);
 
@@ -737,7 +735,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 				graphics.setColor(Color.BLACK);
 				graphics.drawString(playerName, stringPosX, stringPosY);
-				graphics.setColor(playerHudColor[playerNumberForGfx]);
+				graphics.setColor(playerModel.getColor().value);
 				graphics.drawString(playerName, stringPosX - 1, stringPosY - 1);
 			}
 			if (clientOptions.showBombermenLives) {
@@ -790,10 +788,6 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		firePhaseHandlers = graphicsManager.getFirePhaseHandlers();
 		burningPhaseHandlers = graphicsManager.getBurningPhaseHandlers();
 
-		playerHudColor = new Color[256];
-		for (int i = 0; i < 256; i++) {
-			playerHudColor[i] = new Color((i & 1) * 255, ((i & 2) >> 1) * 255, ((i & 4) >> 2) * 255);
-		}
 	}
 
 	/**
@@ -913,6 +907,19 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		playersControlKeyStates = new boolean[playersFromHost][playersControlKeys[0].length];
 		actions = "";
 		mVisibility = null;
+	}
+
+	public void paintFire(Graphics g, FireModel fireModel, int x, int y, float fireScaleFactor) {
+		int firePhasesCount = firePhaseHandlers[fireModel.getShape().ordinal()].length;
+		PlayerModel ownerPlayer = fireModel.getOwnerPlayer();
+		Color color;
+		if (ownerPlayer != null) {
+			color = fireModel.getOwnerPlayer().getColor().value;
+		} else {
+			color = Color.BLACK;
+		}
+		g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * fireModel.getIterationCounter() / CoreConsts.FIRE_ITERATIONS]
+		        .getScaledImage(fireScaleFactor, true, COLORIZATION_COLOR, color), x, y, null);
 	}
 
 }
