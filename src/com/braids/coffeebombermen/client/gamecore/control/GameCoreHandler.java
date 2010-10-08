@@ -1012,7 +1012,7 @@ public class GameCoreHandler {
 		} else if ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null)) {
 			final Items item = levelComponent.getItem();
 			levelComponent.setItem(null);
-			if ((item == Items.DISEASE) && !getGlobalServerOptions().isExplosionAnnihilatesDiseases()) {
+			if (((item == Items.DISEASE) || (item == Items.SUPER_DISEASE)) && !getGlobalServerOptions().isExplosionAnnihilatesDiseases()) {
 				replaceItemOnLevel(item);
 			}
 		}
