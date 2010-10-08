@@ -33,7 +33,7 @@ public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 				for (int i = 1; i < getWidth() - 1; i++) {
 					for (int j = 1; j < getHeight() - 1; j++) {
 						if (MathHelper.checkRandomEvent(chance)) {
-							if (MathHelper.checkRandomEvent(chance)) {
+							if (MathHelper.checkRandomEvent(0.5f)) {
 								setItem(i, j, Items.DISEASE);
 							} else {
 								setItem(i, j, Items.SUPER_DISEASE);
@@ -42,7 +42,7 @@ public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 					}
 				}
 
-				// increase chance for laying spider bomb
+				// increase chance for laying disease
 				if ((chance < 1.0f) && MathHelper.checkRandomEvent(0.002f)) {
 					chance = Math.min(chance + PLACE_DISEASE_CHANCE, 1.0f);
 				}
