@@ -620,8 +620,17 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			// paint()
 			final BombModel bombModel = bombModels.get(i);
 			final int phasesCount = bombPhaseHandlers[bombModel.getType().ordinal()].length;
+
+			PlayerModel ownerPlayer = bombModel.getOwnerPlayer();
+			Color color;
+			if (ownerPlayer != null) {
+				color = bombModel.getOwnerPlayer().getColor().value;
+			} else {
+				color = Color.BLACK;
+			}
+
 			final Image bombImage = bombPhaseHandlers[bombModel.getType().ordinal()][bombModel.isDeadBomb() ? 0 : phasesCount * bombModel.getIterationCounter()
-			        / CoreConsts.BOMB_ITERATIONS].getScaledImage(scaleFactor);
+			        / CoreConsts.BOMB_ITERATIONS].getScaledImage(scaleFactor, true, COLORIZATION_COLOR, color);
 
 			int posYCorrection = 0;
 			if (bombModel.getPhase() == BombPhases.FLYING) {
