@@ -2,8 +2,8 @@ package com.braids.coffeebombermen.options.model;
 
 import java.util.EnumMap;
 
-import com.braids.coffeebombermen.options.OptConsts;
 import com.braids.coffeebombermen.options.Diseases;
+import com.braids.coffeebombermen.options.OptConsts;
 import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
@@ -180,6 +180,10 @@ public class LevelOptions extends Options<LevelOptions> {
 
 	public int[] getDiseaseWeights() {
 		return diseaseWeights;
+	}
+
+	public void forbidDisease(Diseases disease) {
+		diseaseWeights[disease.ordinal()] = 0;
 	}
 
 	public int[] getShrinkerWeights() {
