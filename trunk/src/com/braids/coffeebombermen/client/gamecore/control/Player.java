@@ -96,12 +96,12 @@ public class Player {
 		model.setPickedUpBombModel(null);
 
 		model.accumulateableItemQuantitiesMap.putAll(gameCoreHandler.getLevelModel().getLevelOptions().getAccumulateableItemQuantitiesMap());
-		model.hasNonAccumulateableItemsMap.putAll(gameCoreHandler.getLevelModel().getLevelOptions().getHasNonAccumulateableItemsMap());
+		model.setAllNonAccumItems(gameCoreHandler.getLevelModel().getLevelOptions().getHasNonAccumulateableItemsMap());
 		model.pickedUpAccumulateableItems.clear();
 		model.pickedUpNonAccumulateableItems.clear();
 		model.setPlaceableWalls(0);
 
-		model.setPlacableTriggeredBombs(model.hasNonAccumulateableItemsMap.get(Items.TRIGGER) ? model.accumulateableItemQuantitiesMap.get(Items.BOMB) : 0);
+		model.setPlacableTriggeredBombs(model.hasNonAccumItem(Items.TRIGGER) ? model.accumulateableItemQuantitiesMap.get(Items.BOMB) : 0);
 
 		for (final PlayerControlKeys playerControlKey : PlayerControlKeys.values()) {
 			// Twice, so we delete the last key state also
@@ -208,12 +208,12 @@ public class Player {
 		final Bomb newBomb = new Bomb(model, gameCoreHandler);
 		final BombModel newBombModel = newBomb.getModel();
 		newBombModel.setDeadBomb(useDeadBombs);
-		newBombModel.setRange(model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? CoreConsts.SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap
-		        .get(Items.FIRE) + 1);
+		newBombModel
+		        .setRange(model.hasNonAccumItem(Items.SUPER_FIRE) ? CoreConsts.SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap.get(Items.FIRE) + 1);
 		newBombModel.setPosX(componentPosX * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 		newBombModel.setPosY(componentPosY * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 
-		if (model.hasNonAccumulateableItemsMap.get(Items.JELLY)) {
+		if (model.hasNonAccumItem(Items.JELLY)) {
 			newBombModel.setType(BombTypes.JELLY);
 		} else {
 			newBombModel.setType(BombTypes.NORMAL);
@@ -338,7 +338,7 @@ public class Player {
 		final Integer bombIndexAtComponentPosition = gameCoreHandler.getBombIndexAtComponentPosition(componentPosX, componentPosY);
 
 		if (bombIndexAtComponentPosition != null) {
-			if (model.hasNonAccumulateableItemsMap.get(Items.BLUE_GLOVES)) {
+			if (model.hasNonAccumItem(Items.BLUE_GLOVES)) {
 				if (gameCoreHandler.getBombModels().get(bombIndexAtComponentPosition).getOwnerPlayer() != model) {
 					return; // We can only pick up our own bombs
 				}
@@ -347,7 +347,7 @@ public class Player {
 				model.setActivity(Activities.PICKING_UP);
 				return;
 			}
-			if (model.hasNonAccumulateableItemsMap.get(Items.BOMB_SPRINKLE)) {
+			if (model.hasNonAccumItem(Items.BOMB_SPRINKLE)) {
 				maxPlacableBombs = model.accumulateableItemQuantitiesMap.get(Items.BOMB);
 				// The position of the first bomb is ahead of us.
 				componentPosX += model.getDirectionXMultiplier();
@@ -376,8 +376,7 @@ public class Player {
 			final Bomb newBomb = new Bomb(model, gameCoreHandler);
 			final BombModel newBombModel = newBomb.getModel();
 
-			int bombRange = model.hasNonAccumulateableItemsMap.get(Items.SUPER_FIRE) ? CoreConsts.SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap
-			        .get(Items.FIRE) + 1;
+			int bombRange = model.hasNonAccumItem(Items.SUPER_FIRE) ? CoreConsts.SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap.get(Items.FIRE) + 1;
 
 			if (model.getOwnedDiseases().containsKey(Diseases.SHORT_RANGE)) {
 				bombRange = 2;
@@ -387,9 +386,9 @@ public class Player {
 			newBombModel.setPosX(componentPosX * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 			newBombModel.setPosY(componentPosY * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 
-			if (model.hasNonAccumulateableItemsMap.get(Items.JELLY)) {
+			if (model.hasNonAccumItem(Items.JELLY)) {
 				newBombModel.setType(BombTypes.JELLY);
-			} else if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER) && (model.getPlacableTriggeredBombs() > 0)) {
+			} else if (model.hasNonAccumItem(Items.TRIGGER) && (model.getPlacableTriggeredBombs() > 0)) {
 				newBombModel.setType(BombTypes.TRIGGERED);
 				model.setPlacableTriggeredBombs(model.getPlacableTriggeredBombs() - 1);
 			} else {
@@ -449,7 +448,7 @@ public class Player {
 			}
 		}
 
-		if (model.hasNonAccumulateableItemsMap.get(Items.BOXING_GLOVES)) {
+		if (model.hasNonAccumItem(Items.BOXING_GLOVES)) {
 			model.setActivity(Activities.PUNCHING);
 
 			final Integer bombIndexAhead = gameCoreHandler.getBombIndexAtComponentPosition(model.getComponentPosX() + model.getDirectionXMultiplier(), model
@@ -470,7 +469,7 @@ public class Player {
 			}
 		}
 
-		else if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER)) {
+		else if (model.hasNonAccumItem(Items.TRIGGER)) {
 			for (final BombModel bombModel : gameCoreHandler.getBombModels()) {
 				if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.TRIGGERED) && (bombModel.getPhase() != BombPhases.FLYING)) {
 					bombModel.setAboutToDetonate(true);
@@ -479,7 +478,7 @@ public class Player {
 			}
 		}
 
-		else if (model.hasNonAccumulateableItemsMap.get(Items.WALL_BUILDING)) {
+		else if (model.hasNonAccumItem(Items.WALL_BUILDING)) {
 			final int componentPosX = model.getComponentPosX() + model.getDirectionXMultiplier();
 			final int componentPosY = model.getComponentPosY() + model.getDirectionYMultiplier();
 			if (isComponentPositionFreeForWallBuilding(componentPosX, componentPosY) && (model.getPlaceableWalls() > 0)) {
@@ -487,7 +486,7 @@ public class Player {
 				model.setPlaceableWalls(model.getPlaceableWalls() - 1);
 				SoundEffect.PLACE_WALL.play();
 				if (model.getPlaceableWalls() == 0) {
-					model.hasNonAccumulateableItemsMap.put(Items.WALL_BUILDING, false);
+					model.setNonAccumItem(Items.WALL_BUILDING, false);
 				}
 			}
 		}
@@ -615,7 +614,7 @@ public class Player {
 				model.setPosY(model.getPosY() + model.getDirectionYMultiplier() * speed);
 				checkAndHandleItemPickingUp();
 			} // ...else we check for kick
-			else if (model.hasNonAccumulateableItemsMap.get(Items.BOOTS) || model.hasNonAccumulateableItemsMap.get(Items.CRAZY_BOOTS)) {
+			else if (model.hasNonAccumItem(Items.BOOTS) || model.hasNonAccumItem(Items.CRAZY_BOOTS)) {
 				tryToKick();
 			}
 		}
@@ -646,7 +645,7 @@ public class Player {
 					model.pickedUpAccumulateableItems.add(item);
 				}
 			} else {
-				model.hasNonAccumulateableItemsMap.put(item, true);
+				model.setNonAccumItem(item, true);
 				if (!model.pickedUpNonAccumulateableItems.contains(item)) {
 					model.pickedUpNonAccumulateableItems.add(item);
 				}
@@ -654,9 +653,9 @@ public class Player {
 				final EnumSet<Items> neutralizedItems = OptConsts.NEUTRALIZER_ITEMS_MAP.get(item);
 				if (neutralizedItems != null) {
 					for (final Items neutralizedItem : neutralizedItems) {
-						if (model.hasNonAccumulateableItemsMap.get(neutralizedItem)) {
+						if (model.hasNonAccumItem(neutralizedItem)) {
 
-							model.hasNonAccumulateableItemsMap.put(neutralizedItem, false);
+							model.setNonAccumItem(neutralizedItem, false);
 							if (model.pickedUpNonAccumulateableItems.remove(neutralizedItem)) {
 								gameCoreHandler.replaceItemOnLevel(neutralizedItem);
 							}
@@ -667,7 +666,7 @@ public class Player {
 							if (neutralizedItem == Items.TRIGGER) {
 								for (final BombModel bombModel : gameCoreHandler.getBombModels()) {
 									if ((bombModel.getOwnerPlayer() == model) && (bombModel.getType() == BombTypes.TRIGGERED)) {
-										bombModel.setType(model.hasNonAccumulateableItemsMap.get(Items.JELLY) ? BombTypes.JELLY : BombTypes.NORMAL);
+										bombModel.setType(model.hasNonAccumItem(Items.JELLY) ? BombTypes.JELLY : BombTypes.NORMAL);
 										bombModel.setIterationCounter(0);
 										bombModel.setTickingIterations(0);
 									}
@@ -691,7 +690,7 @@ public class Player {
 					}
 					break;
 				case BOMB:
-					if (model.hasNonAccumulateableItemsMap.get(Items.TRIGGER)) {
+					if (model.hasNonAccumItem(Items.TRIGGER)) {
 						model.setPlacableTriggeredBombs(model.getPlacableTriggeredBombs() + 1);
 					}
 					break;
@@ -953,7 +952,7 @@ public class Player {
 			}
 		}
 
-		if (model.hasNonAccumulateableItemsMap.get(Items.WALL_CLIMBING)) {
+		if (model.hasNonAccumItem(Items.WALL_CLIMBING)) {
 			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH) || (wall == Walls.DEATH_WARN)) {
 				return false;
 			}
