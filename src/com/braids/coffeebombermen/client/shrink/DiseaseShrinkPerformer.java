@@ -1,8 +1,7 @@
 package com.braids.coffeebombermen.client.shrink;
 
-import java.util.Random;
-
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
+import com.braids.coffeebombermen.options.Diseases;
 import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.utils.MathHelper;
@@ -10,7 +9,6 @@ import com.braids.coffeebombermen.utils.MathHelper;
 public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 
 	private float              chance;
-	private Random             randomGenerator;
 	private static final int   GAME_CYCLE_FREQUENCY_MULTIPLIER = 2;
 	private static final float PLACE_DISEASE_CHANCE            = 0.09f;
 
@@ -29,6 +27,10 @@ public class DiseaseShrinkPerformer extends AbstractShrinkPerformer {
 
 	protected void nextIterationImpl() {
 		if (isTimeToShrink()) {
+			if (isTimeToFirstShrink()) {
+				getGameCoreHandler().getGlobalServerOptions().getLevelOptions().forbidDisease(Diseases.CEASEFIRE);
+			}
+
 			if (isTimeToFirstShrink() || isTimeToNextShrink(getGlobalServerOptions().getGameCycleFrequency() * GAME_CYCLE_FREQUENCY_MULTIPLIER)) {
 				for (int i = 1; i < getWidth() - 1; i++) {
 					for (int j = 1; j < getHeight() - 1; j++) {
