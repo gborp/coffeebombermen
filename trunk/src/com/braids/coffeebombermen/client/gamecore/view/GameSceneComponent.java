@@ -42,7 +42,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	/** A string containing only a space. Used several times on keyboard events. */
 	private static final String                 SPACE_STRING           = " ";
 
-	private static final Color                  PLAYER_GFX_FLASH       = Color.WHITE;
+	private static final Color                  PLAYER_GFX_FLASH_1     = Color.WHITE;
+	private static final Color                  PLAYER_GFX_FLASH_2     = Color.BLACK;
+
 	private static final Color                  PLAYER_GFX_COLOR_BLIND = Color.BLACK;
 
 	private static final long                   FLASH_EVERY_NTH_TICK   = 4;
@@ -727,7 +729,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 			if (playerModel.hasDiseases()) {
 				if ((gameCoreHandler.getTick() % FLASH_EVERY_NTH_TICK) == 0) {
 					g2.setComposite(infectedComposite);
-					effectivePlayerColor = PLAYER_GFX_FLASH;
+					effectivePlayerColor = PLAYER_GFX_FLASH_1;
+				} else if ((gameCoreHandler.getTick() % FLASH_EVERY_NTH_TICK) == FLASH_EVERY_NTH_TICK / 2) {
+					g2.setComposite(infectedComposite);
+					effectivePlayerColor = PLAYER_GFX_FLASH_2;
 				}
 			}
 
