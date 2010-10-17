@@ -29,6 +29,7 @@ import com.braids.coffeebombermen.client.graphics.ImageHandler;
 import com.braids.coffeebombermen.options.Diseases;
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.model.ClientOptions;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
@@ -507,18 +508,22 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		float fireScaleFactor = (float) levelComponentSize / firePhaseHandlers[0][0].getOriginalWidth();
 		float burningScaleFactor = (float) levelComponentSize / burningPhaseHandlers[0].getOriginalWidth();
 
-		for (int i = 0, y = 0; i < levelModel.getHeight(); i++, y += levelComponentSize) {
-			for (int j = 0, x = 0; j < levelModel.getWidth(); j++, x += levelComponentSize) {
-				final LevelComponent levelComponent = levelModel.getComponent(j, i);
+		int height = levelModel.getHeight();
+		int width = levelModel.getWidth();
 
+		for (int i = 0, y = 0; i < height; i++, y += levelComponentSize) {
+			for (int j = 0, x = 0; j < width; j++, x += levelComponentSize) {
+				final LevelComponent levelComponent = levelModel.getComponent(j, i);
+				Walls wall = levelComponent.getWall();
+				Items item = levelComponent.getItem();
 				if (!levelComponent.hasFire()) {
-					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null) {
+					if (wall == Walls.EMPTY && item != null) {
 						// item
-						g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
+						g.drawImage(itemImageHandlers[item.ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 					} else {
 						// wall
-						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
-						if (!levelComponent.getWall().equals(Walls.EMPTY)) {
+						g.drawImage(wallImageHandlers[wall.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
+						if (!wall.equals(Walls.EMPTY)) {
 							boolean fwTop = false;
 							boolean fwBottom = false;
 							boolean fwLeft = false;
@@ -567,25 +572,25 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				} else {
 					final FireModel fireModel = levelComponent.getLastFire();
 
-					if (levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() == null) {
-						g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
+					if (wall == Walls.EMPTY && item == null) {
+						g.drawImage(wallImageHandlers[wall.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 						paintFire(g, fireModel, x, y, fireScaleFactor);
 					} else {
 						if (fireModel.getIterationCounter() < CoreConsts.FIRE_ITERATIONS / 2) {
 							// The original wall or item is burning.
-							if (levelComponent.getWall() == Walls.EMPTY) {
+							if (wall == Walls.EMPTY) {
 								// item
-								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
+								g.drawImage(itemImageHandlers[item.ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 							} else {
 								// wall
-								g.drawImage(wallImageHandlers[levelComponent.getWall().ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
+								g.drawImage(wallImageHandlers[wall.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 							}
 						} else {
 							// Now the item or the empty wall what will remain
 							// after the burning is visible through the burning.
-							if (levelComponent.getWall() != Walls.EMPTY && levelComponent.getItem() != null) {
+							if (wall != Walls.EMPTY && item != null) {
 								// An item will remain
-								g.drawImage(itemImageHandlers[levelComponent.getItem().ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
+								g.drawImage(itemImageHandlers[item.ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 							} else {
 								// Empty wall will remain
 								g.drawImage(wallImageHandlers[Walls.EMPTY.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);

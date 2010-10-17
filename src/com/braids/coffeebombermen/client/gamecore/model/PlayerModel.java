@@ -20,56 +20,56 @@ import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
 public class PlayerModel extends PositionedIterableObject {
 
 	/** game core tick frequency is 30hz */
-	public static final long             DISEASE_DURATION                = 6 * 30;
+	public static final long              DISEASE_DURATION                = 6 * 30;
 
 	/** game core tick frequency is 30hz */
-	public static final long             SUPER_DISEASE_DURATION          = DISEASE_DURATION * 2;
+	public static final long              SUPER_DISEASE_DURATION          = DISEASE_DURATION * 2;
 
-	private static final int             SPIDER_BOMB_ROUNDS              = 4;
+	private static final int              SPIDER_BOMB_ROUNDS              = 4;
 
-	private String                       name;
+	private String                        name;
 
 	/** Vitality of the player. */
-	private int                          vitality;
+	private int                           vitality;
 	/** The current activity of the player. */
-	private Activities                   activity;
+	private Activities                    activity;
 	/** Number of placable triggered bombs. */
-	private int                          placableTriggeredBombs;
+	private int                           placableTriggeredBombs;
 
-	private int                          placableWalls;
+	private int                           placableWalls;
 	/** Model of the picked up bomb, or null, if there is no picked up bomb. */
-	private BombModel                    pickedUpBombModel;
+	private BombModel                     pickedUpBombModel;
 
 	/** Quantities of the accumulateable items owned by the player. */
-	public final EnumMap<Items, Integer> accumulateableItemQuantitiesMap = new EnumMap<Items, Integer>(Items.class);
+	public final EnumMap<Items, Integer>  accumulateableItemQuantitiesMap = new EnumMap<Items, Integer>(Items.class);
 	/** Tells whether we have the non-accumulateable items owned by the player. */
-	public final EnumMap<Items, Boolean> hasNonAccumulateableItemsMap    = new EnumMap<Items, Boolean>(Items.class);
+	private final EnumMap<Items, Boolean> hasNonAccumulateableItemsMap    = new EnumMap<Items, Boolean>(Items.class);
 
 	// I seperate the next two entity in order to determine fast whether we
 	// picked up a non accumulateable item and in order to be able to remove it
 	// fast.
 	/** Quantities of the accumulateable items picked up by the player. */
-	public final ArrayList<Items>        pickedUpAccumulateableItems     = new ArrayList<Items>();
+	public final ArrayList<Items>         pickedUpAccumulateableItems     = new ArrayList<Items>();
 	/**
 	 * Tells whether we have the non-accumulateable items picked up by the
 	 * player.
 	 */
-	public final ArrayList<Items>        pickedUpNonAccumulateableItems  = new ArrayList<Items>();
+	public final ArrayList<Items>         pickedUpNonAccumulateableItems  = new ArrayList<Items>();
 
 	/** disease - when will it expire */
-	public final HashMap<Diseases, Long> mapOwnedDiseases                = new HashMap<Diseases, Long>();
+	public final HashMap<Diseases, Long>  mapOwnedDiseases                = new HashMap<Diseases, Long>();
 
 	/** The states of the control keys of the player. */
-	private boolean[]                    controlKeyStates                = new boolean[PlayerControlKeys.values().length];
+	private boolean[]                     controlKeyStates                = new boolean[PlayerControlKeys.values().length];
 	/** The previous states of the control keys of the player. */
-	private boolean[]                    lastControlKeyStates            = new boolean[PlayerControlKeys.values().length];
-	private int                          regenerateWeight;
-	private boolean                      autoDropBombEnabled;
-	private boolean                      spiderBombEnabled;
-	private int                          spiderBombRounds;
-	private int                          points;
+	private boolean[]                     lastControlKeyStates            = new boolean[PlayerControlKeys.values().length];
+	private int                           regenerateWeight;
+	private boolean                       autoDropBombEnabled;
+	private boolean                       spiderBombEnabled;
+	private int                           spiderBombRounds;
+	private int                           points;
 
-	private PlayerColors                 color;
+	private PlayerColors                  color;
 
 	/**
 	 * Returns the vitality of the player.
@@ -257,7 +257,15 @@ public class PlayerModel extends PositionedIterableObject {
 	}
 
 	public boolean hasNonAccumItem(Items i) {
-		return hasNonAccumulateableItemsMap.containsKey(i);
+		return hasNonAccumulateableItemsMap.get(i);
+	}
+
+	public void setAllNonAccumItems(EnumMap<Items, Boolean> allNonAccumItems) {
+		hasNonAccumulateableItemsMap.putAll(allNonAccumItems);
+	}
+
+	public void setNonAccumItem(Items wallBuilding, boolean b) {
+		hasNonAccumulateableItemsMap.put(wallBuilding, b);
 	}
 
 	public void addDisease(Diseases disease, Long expire) {
