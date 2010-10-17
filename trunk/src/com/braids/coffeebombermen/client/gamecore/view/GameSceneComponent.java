@@ -47,7 +47,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 	private static final Color                  PLAYER_GFX_COLOR_BLIND = Color.BLACK;
 
-	private static final long                   FLASH_EVERY_NTH_TICK   = 4;
+	private static final long                   FLASH_EVERY_NTH_TICK   = 6;
 
 	private static final int                    MAX_VISIBILITY_IN_FOG  = 10;
 
