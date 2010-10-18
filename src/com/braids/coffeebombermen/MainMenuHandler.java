@@ -62,6 +62,8 @@ interface MainMenuHandler {
 	 */
 	void setFullScreenMode(final boolean fullScreen);
 
+	void setShowTrayIcon(boolean state);
+
 	/** sound effects menu item. */
 	/** Level editor menu item. */
 	/** Manual menu item. */
@@ -69,5 +71,4 @@ interface MainMenuHandler {
 	/** Show my host name and ip menu item. */
 	/** Credits menu item. */
 	/** About menu item. */
-
 }

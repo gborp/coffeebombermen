@@ -507,6 +507,8 @@ public class GameCoreHandler {
 
 	private void matchJustWon() {
 
+		gameManager.showTrayMessage("The match is over...");
+
 		PlayerModel lastPlayerModel = getTheLastRemainingPlyer();
 		if (lastPlayerModel == null) {
 			mainFrame.receiveMessage("Everyone died.");
