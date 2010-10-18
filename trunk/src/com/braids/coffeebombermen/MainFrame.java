@@ -1,6 +1,7 @@
 package com.braids.coffeebombermen;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -78,6 +79,8 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 
 		setMainComponent(new JLabel("No graphical theme has been loaded...", JLabel.CENTER));
 
+		messagesTextArea.setBackground(Color.GRAY);
+		messagesTextArea.setForeground(Color.WHITE);
 		messagesTextArea.setRows(5);
 		messagesTextArea.setEditable(false);
 		messagesTextArea.setLineWrap(true);
