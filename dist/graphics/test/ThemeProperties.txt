@@ -6,7 +6,7 @@
 288 240 1
 #
 # Properties of the waiting animation (width height fps):
-342 159 3
+288 240 1
 #
 # Properties of the wall images (size):
 32
