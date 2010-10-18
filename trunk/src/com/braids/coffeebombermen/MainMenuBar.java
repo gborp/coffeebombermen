@@ -103,7 +103,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	        { new MID("Game"), new MID("Create"), new MID("Join"), new MID("Start current game"), new MID("End current game"),
 	        new MID("Close", 0, false, true), new MID("Exit", 1) },
 	        { new MID("Settings"), new MID("Client options"), new MID("Server options"), new MID("View global server options", 0, false, true),
-	        new MID("Fullscreen window", 0, true, true), new MID("Sound effects", 1, true) },
+	        new MID("Fullscreen window", 0, true, true), new MID("Sound effects", 1, true), new MID("Show Tray Icon", 0, true, false) },
 	        { new MID("Help"), new MID("Keys"), new MID("Manual"), new MID("Faqs"), new MID("Tips"), new MID("My host name and ip", 3),
 	        new MID("Credits", 0, false, true), new MID("About") } };
 
@@ -133,6 +133,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		FULLSCREEN_WINDOW,
 		/** sound effects menu item. */
 		SOUND_EFFECTS,
+		/** tray icon */
+		TRAY_ICON,
 		/** Level editor menu item. */
 		LEVEL_EDITOR,
 		/** Keys menu item. */
@@ -279,6 +281,9 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 						mainMenuHandler.setFullScreenMode(((JCheckBoxMenuItem) menuItems[MenuItems.FULLSCREEN_WINDOW.ordinal()]).getState());
 						break;
 					case SOUND_EFFECTS:
+						break;
+					case TRAY_ICON:
+						mainMenuHandler.setShowTrayIcon(((JCheckBoxMenuItem) menuItems[MenuItems.TRAY_ICON.ordinal()]).getState());
 						break;
 					case LEVEL_EDITOR:
 						break;

@@ -291,6 +291,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 
 				Commands command = Commands.values()[commandTokenizer.nextIntToken()];
 
+				String message;
 				switch (command) {
 					// The message loop checks Commands.STARTING_NEXT_ITERATION
 					// and Commands.MESSAGE first,
@@ -299,7 +300,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 						newClientsActions = commandTokenizer.hasRemainingString() ? commandTokenizer.remainingString() : "";
 						break;
 					case MESSAGE:
-						mainFrame.receiveMessage(commandTokenizer.remainingString());
+						String messageText = commandTokenizer.remainingString();
+						mainFrame.receiveMessage(messageText);
+						gameManager.showTrayMessage(messageText);
 						break;
 					case SENDING_SERVER_OPTIONS:
 						globalServerOptionsManager.setOptions(ServerOptions.parseFromString(commandTokenizer.remainingString()));
@@ -314,9 +317,11 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 						}.start();
 						break;
 					case STARTING_GAME:
+						gameManager.showTrayMessage("The game started!");
 						handleGameStarting();
 						break;
 					case ENDING_GAME:
+						// gameManager.showTrayMessage("The game ended");
 						handleGameEnding();
 						break;
 					case STARTING_NEXT_ROUND:

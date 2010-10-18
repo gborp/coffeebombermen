@@ -1,5 +1,9 @@
 package com.braids.coffeebombermen;
 
+import java.awt.AWTException;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,6 +11,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import com.braids.coffeebombermen.MainMenuBar.GameStates;
 import com.braids.coffeebombermen.client.Client;
@@ -84,6 +89,7 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 			                                                                               GameManager.this.optionsChanged(oldOptions, newOptions);
 		                                                                               }
 	                                                                               };
+	private TrayIcon                                   trayIcon;
 
 	/**
 	 * Creates a GameManager. Does all the job needed to start the game. After
@@ -92,6 +98,12 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 * frame visible.
 	 */
 	public GameManager() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		mainFrame = new MainFrame(this);
 		mainMenuBar = mainFrame.getMainMenuBar();
 
@@ -464,6 +476,35 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 */
 	public void setFullScreenMode(final boolean fullScreen) {
 		mainFrame.setFullScreenMode(fullScreen);
+	}
+
+	public void setShowTrayIcon(boolean state) {
+		if (SystemTray.isSupported()) {
+			SystemTray tray = SystemTray.getSystemTray();
+			if (state) {
+				if (trayIcon == null) {
+					trayIcon = new TrayIcon(GraphicsManager.getCurrentManager().getWindowIconImage(), "cbm");
+					trayIcon.setImageAutoSize(true);
+
+					try {
+						tray.add(trayIcon);
+					} catch (AWTException ex) {
+						ex.printStackTrace();
+					}
+				}
+			} else {
+				if (trayIcon == null) {
+					tray.remove(trayIcon);
+					trayIcon = null;
+				}
+			}
+		}
+	}
+
+	public void showTrayMessage(String message) {
+		if (trayIcon != null) {
+			trayIcon.displayMessage(message, null, MessageType.NONE);
+		}
 	}
 
 }
