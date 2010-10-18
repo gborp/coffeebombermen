@@ -159,6 +159,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		if (gameCoreHandler.getLevelModel() == null) // No level created yet
 			return;
 
+		g.setColor(Color.GRAY);
+		g.fillRect(0, 0, getWidth(), getHeight());
+
 		long now = gameCoreHandler.getTick();
 
 		boolean blackOut = false;
