@@ -9,6 +9,8 @@ import com.braids.coffeebombermen.utils.GeneralUtilities;
  */
 public class SoundManager {
 
+	private static boolean enableSounds = true;
+
 	/**
 	 * This private SoundManager constructor disables the creation of instances.
 	 */
@@ -27,6 +29,14 @@ public class SoundManager {
 
 	public static String getActiveSoundTheme() {
 		return "classic";
+	}
+
+	public static void setEnableSounds(boolean enableSounds) {
+		SoundManager.enableSounds = enableSounds;
+	}
+
+	public static boolean isEnableSounds() {
+		return enableSounds;
 	}
 
 }

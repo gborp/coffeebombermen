@@ -86,7 +86,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	/** Displayable size of the level components. */
 	private int                                 levelComponentSize;
 
-	private List<PlayerGraphic>                 playerGraphics;
+	private PlayerGraphic                       playerGraphics;
 
 	private final Client                        client;
 
@@ -669,49 +669,33 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	private void paintBombermen(final Graphics graphics, boolean colorBlind) {
 		final List<PlayerModel[]> clientPlayerModels = gameCoreHandler.getClientsPlayerModels();
 
-		final float scaleFactor = (float) levelComponentSize / playerGraphics.get(0).getOriginalWidth();
+		final float scaleFactor = (float) levelComponentSize / playerGraphics.getOriginalWidth();
 		final ClientOptions clientOptions = clientOptionsManager.getOptions();
 
 		int ourIndex = client.getOurIndex();
-		int playerNumberForGfx = 0;
 		for (int i = 0; i < clientPlayerModels.size(); i++) {
-			// Easy with the enhanced for: modifying is possible during a
-			// paint()
-
-			final PlayerModel[] playerModels = clientPlayerModels.get(i);
-
 			if (ourIndex != i) {
+				final PlayerModel[] playerModels = clientPlayerModels.get(i);
 				PublicClientOptions publicClientOptions = gameCoreHandler.getClientsPublicClientOptions().get(i);
-				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor, colorBlind);
+				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, scaleFactor, colorBlind);
 			}
 
-			playerNumberForGfx += playerModels.length;
 		}
-		playerNumberForGfx = 0;
 		for (int i = 0; i < clientPlayerModels.size(); i++) { // Easy with the
-			// enhanced for: modifying is possible during a paint()
-
-			final PlayerModel[] playerModels = clientPlayerModels.get(i);
-
 			if (ourIndex == i) {
+				final PlayerModel[] playerModels = clientPlayerModels.get(i);
 				PublicClientOptions publicClientOptions = gameCoreHandler.getClientsPublicClientOptions().get(i);
-				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, playerNumberForGfx, scaleFactor, colorBlind);
+				paintOneBomberMan(graphics, clientOptions, publicClientOptions, playerModels, scaleFactor, colorBlind);
 			}
-
-			playerNumberForGfx += playerModels.length;
 		}
 	}
 
 	public void paintOneBomberMan(Graphics graphics, ClientOptions clientOptions, PublicClientOptions publicClientOptions, PlayerModel[] playerModels,
-	        int playerNumberForGfx, float scaleFactor, boolean colorBlind) {
+	        float scaleFactor, boolean colorBlind) {
 
 		Graphics2D g2 = (Graphics2D) graphics;
 
 		for (int j = 0; j < playerModels.length; j++) {
-			if (playerNumberForGfx == playerGraphics.size()) {
-				playerNumberForGfx = 0;
-			}
-			playerNumberForGfx++;
 
 			final PlayerModel playerModel = playerModels[j];
 			if (playerModel.getActivity() == Activities.DYING && playerModel.getIterationCounter() + 1 >= playerModel.getActivity().activityIterations) {
@@ -739,7 +723,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				}
 			}
 
-			Image bombermanImage = playerGraphics.get(1).getImage(playerModel, scaleFactor, effectivePlayerColor);
+			Image bombermanImage = playerGraphics.getImage(playerModel, scaleFactor, effectivePlayerColor);
 
 			g2.setComposite(normalComposit);
 
