@@ -65,6 +65,8 @@ interface MainMenuHandler {
 	void setShowTrayIcon(boolean state);
 
 	/** sound effects menu item. */
+	void setSoundEffects(boolean state);
+
 	/** Level editor menu item. */
 	/** Manual menu item. */
 	/** Faqs menu item. */

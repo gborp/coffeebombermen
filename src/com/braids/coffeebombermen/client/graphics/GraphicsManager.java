@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -31,27 +30,25 @@ import com.braids.coffeebombermen.utils.GeneralUtilities;
 public class GraphicsManager {
 
 	/** Name of the theme property file. */
-	private static final String    THEME_PROPERTY_FILE_NAME           = "ThemeProperties.txt";
+	private static final String    THEME_PROPERTY_FILE_NAME     = "ThemeProperties.txt";
 	/** Name of the window icon image file. */
-	private static final String    WINDOW_ICON_IMAGE_FILE_NAME        = "WindowIcon.png";
+	private static final String    WINDOW_ICON_IMAGE_FILE_NAME  = "WindowIcon.png";
 	/** Name of the title animation file. */
-	private static final String    TITLE_ANIMATION_FILE_NAME          = "TitleAnimation.png";
+	private static final String    TITLE_ANIMATION_FILE_NAME    = "TitleAnimation.png";
 	/** Name of the waiting animation file. */
-	private static final String    WAITING_ANIMATION_FILE_NAME        = "WaitingAnimation.png";
+	private static final String    WAITING_ANIMATION_FILE_NAME  = "WaitingAnimation.png";
 	/** Name of the file containing the wall images. */
-	private static final String    WALL_IMAGES_FILE_NAME_PREFIX       = "Walls";
+	private static final String    WALL_IMAGES_FILE_NAME_PREFIX = "Walls";
 	/** Name of the file containing the item images. */
-	private static final String    ITEM_IMAGES_FILE_NAME              = "Items.png";
+	private static final String    ITEM_IMAGES_FILE_NAME        = "Items.png";
 	/** Name of the file containing the phases of a bomberman. */
-	private static final String    BOMBERMAN_PHASES_FILE_NAME_PREFIX  = "Bomberman";
-	private static final String    BOMBERMAN_PHASES_FILE_NAME_POSTFIX = ".png";
-
+	private static final String    BOMBERMAN_PHASES_FILE_NAME   = "Bomberman.png";
 	/** Name of the file containing the phases of a bomb. */
-	private static final String    BOMB_PHASES_FILE_NAME              = "Bomb.png";
+	private static final String    BOMB_PHASES_FILE_NAME        = "Bomb.png";
 	/** Name of the file containing the phases of a fire. */
-	private static final String    FIRE_PHASES_FILE_NAME              = "Fire.png";
+	private static final String    FIRE_PHASES_FILE_NAME        = "Fire.png";
 	/** Name of the file containing the phases of the burning. */
-	private static final String    BURNING_PHASES_FILE_NAME           = "Burning.png";
+	private static final String    BURNING_PHASES_FILE_NAME     = "Burning.png";
 
 	/**
 	 * Reference to the current graphics manager (the manager that has been
@@ -84,7 +81,7 @@ public class GraphicsManager {
 
 	/** Handlers of the images of the items. */
 	private ImageHandler[]         burningPhaseHandlers;
-	private List<PlayerGraphic>    playerGraphics;
+	private PlayerGraphic          playerGraphics;
 
 	/**
 	 * This private GraphicsManager constructor disables the creation of
@@ -180,7 +177,7 @@ public class GraphicsManager {
 			for (int i = 0; i < activityPhasesCounts.length; i++)
 				activityPhasesCounts[i] = Integer.parseInt(lineTokenizer.nextToken());
 
-			graphicsManager.playerGraphics = loadPlayerGraphics(themeDirectoryName + BOMBERMAN_PHASES_FILE_NAME_PREFIX, width, height, activityPhasesCounts);
+			graphicsManager.playerGraphics = loadPlayerGraphics(themeDirectoryName + BOMBERMAN_PHASES_FILE_NAME, width, height, activityPhasesCounts);
 
 			lineTokenizer = nextDataLineStringTokenizer(themePropertyFileReader);
 			size = Integer.parseInt(lineTokenizer.nextToken());
@@ -348,9 +345,8 @@ public class GraphicsManager {
 		return imageHandlers.toArray(new ImageHandler[imageHandlers.size()]);
 	}
 
-	private static List<PlayerGraphic> loadPlayerGraphics(final String fileName, final int width, final int height, final int[] activityPhasesCounts)
+	private static PlayerGraphic loadPlayerGraphics(final String fileName, final int width, final int height, final int[] activityPhasesCounts)
 	        throws CorruptGraphicalThemeException {
-		List<PlayerGraphic> result = new ArrayList<PlayerGraphic>(2);
 
 		final int DIRECTIONS_COUNT = Directions.values().length;
 
@@ -363,24 +359,19 @@ public class GraphicsManager {
 			}
 		}
 
-		for (int player = 0; player < 2; player++) {
+		ImageHandler[][] phaseHandlers = getOnePlayerGraphic(fileName, width, height, phasesCounts);
+		ImageHandler[][][] bombermanPhaseHandlers = new ImageHandler[activityPhasesCounts.length][DIRECTIONS_COUNT][];
 
-			ImageHandler[][] phaseHandlers = getOnePlayerGraphic(fileName + Integer.toString(player) + BOMBERMAN_PHASES_FILE_NAME_POSTFIX, width, height,
-			        phasesCounts, player);
-			ImageHandler[][][] bombermanPhaseHandlers = new ImageHandler[activityPhasesCounts.length][DIRECTIONS_COUNT][];
-
-			for (int i = 0; i < activityPhasesCounts.length; i++) {
-				for (int j = 0; j < DIRECTIONS_COUNT; j++) {
-					bombermanPhaseHandlers[i][j] = phaseHandlers[i * DIRECTIONS_COUNT + j];
-				}
+		for (int i = 0; i < activityPhasesCounts.length; i++) {
+			for (int j = 0; j < DIRECTIONS_COUNT; j++) {
+				bombermanPhaseHandlers[i][j] = phaseHandlers[i * DIRECTIONS_COUNT + j];
 			}
-			result.add(new PlayerGraphic(bombermanPhaseHandlers));
 		}
+		return new PlayerGraphic(bombermanPhaseHandlers);
 
-		return result;
 	}
 
-	private static ImageHandler[][] getOnePlayerGraphic(final String fileName, final int width, final int height, final int[] phasesCounts, int player)
+	private static ImageHandler[][] getOnePlayerGraphic(final String fileName, final int width, final int height, final int[] phasesCounts)
 	        throws CorruptGraphicalThemeException {
 
 		return loadPhases(fileName, width, height, phasesCounts, null);
@@ -504,7 +495,7 @@ public class GraphicsManager {
 		return itemImageHandlers;
 	}
 
-	public List<PlayerGraphic> getPlayerGraphics() {
+	public PlayerGraphic getPlayerGraphics() {
 		return playerGraphics;
 	}
 

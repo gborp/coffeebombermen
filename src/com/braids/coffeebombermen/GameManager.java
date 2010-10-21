@@ -21,6 +21,7 @@ import com.braids.coffeebombermen.client.graphics.AnimationDatas;
 import com.braids.coffeebombermen.client.graphics.CorruptGraphicalThemeException;
 import com.braids.coffeebombermen.client.graphics.GraphicsManager;
 import com.braids.coffeebombermen.client.graphics.ImageHandler;
+import com.braids.coffeebombermen.client.sound.SoundManager;
 import com.braids.coffeebombermen.options.ClientComponentOptions;
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptionsManager;
@@ -493,7 +494,7 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 					}
 				}
 			} else {
-				if (trayIcon == null) {
+				if (trayIcon != null) {
 					tray.remove(trayIcon);
 					trayIcon = null;
 				}
@@ -505,6 +506,10 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 		if (trayIcon != null) {
 			trayIcon.displayMessage(message, null, MessageType.NONE);
 		}
+	}
+
+	public void setSoundEffects(boolean enableSounds) {
+		SoundManager.setEnableSounds(enableSounds);
 	}
 
 }

@@ -281,6 +281,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 						mainMenuHandler.setFullScreenMode(((JCheckBoxMenuItem) menuItems[MenuItems.FULLSCREEN_WINDOW.ordinal()]).getState());
 						break;
 					case SOUND_EFFECTS:
+						mainMenuHandler.setSoundEffects(((JCheckBoxMenuItem) menuItems[MenuItems.SOUND_EFFECTS.ordinal()]).getState());
 						break;
 					case TRAY_ICON:
 						mainMenuHandler.setShowTrayIcon(((JCheckBoxMenuItem) menuItems[MenuItems.TRAY_ICON.ordinal()]).getState());

@@ -84,6 +84,7 @@ public class AnimationComponent extends JComponent implements Timeable {
 
 	public void setMessage(List<String> message) {
 		this.message = message;
+		repaint();
 	}
 
 	/**
