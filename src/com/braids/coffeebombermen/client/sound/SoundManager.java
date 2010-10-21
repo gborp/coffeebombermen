@@ -1,5 +1,8 @@
 package com.braids.coffeebombermen.client.sound;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.braids.coffeebombermen.Consts;
 import com.braids.coffeebombermen.utils.GeneralUtilities;
 
@@ -9,7 +12,8 @@ import com.braids.coffeebombermen.utils.GeneralUtilities;
  */
 public class SoundManager {
 
-	private static boolean enableSounds = true;
+	private static boolean         enableSounds = true;
+	private static ExecutorService exSounds     = Executors.newCachedThreadPool();
 
 	/**
 	 * This private SoundManager constructor disables the creation of instances.
@@ -37,6 +41,10 @@ public class SoundManager {
 
 	public static boolean isEnableSounds() {
 		return enableSounds;
+	}
+
+	public static void sound() {
+
 	}
 
 }
