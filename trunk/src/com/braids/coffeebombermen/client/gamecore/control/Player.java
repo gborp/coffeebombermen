@@ -1,6 +1,7 @@
 package com.braids.coffeebombermen.client.gamecore.control;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import com.braids.coffeebombermen.client.gamecore.Activities;
 import com.braids.coffeebombermen.client.gamecore.BombPhases;
@@ -717,6 +718,24 @@ public class Player {
 					}
 					break;
 				}
+				case SWAP_TELEPORT:
+					List<PlayerModel> lstPlayers = gameCoreHandler.getAllPlayerModels();
+					int swapWith = playerIndex;
+					while (swapWith == playerIndex) {
+						swapWith = MathHelper.randomInt(lstPlayers.size() - 1);
+					}
+
+					PlayerModel swapModel = lstPlayers.get(swapWith);
+
+					int myPosX = getModel().getPosX();
+					int myPosY = getModel().getPosY();
+
+					getModel().setPosX(swapModel.getPosX());
+					getModel().setPosY(swapModel.getPosY());
+
+					swapModel.setPosX(myPosX);
+					swapModel.setPosY(myPosY);
+					break;
 			}
 		}
 	}

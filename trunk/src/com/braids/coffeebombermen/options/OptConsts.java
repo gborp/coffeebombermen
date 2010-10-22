@@ -242,6 +242,13 @@ public class OptConsts {
 				return "Crazy boots";
 			}
 		},
+		/** The Swap Teleport item. */
+		SWAP_TELEPORT {
+
+			public String toString() {
+				return "Swap teleport";
+			}
+		},
 	}
 
 	/**
