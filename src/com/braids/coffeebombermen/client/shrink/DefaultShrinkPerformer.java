@@ -1,8 +1,6 @@
 package com.braids.coffeebombermen.client.shrink;
 
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
-import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
-import com.braids.coffeebombermen.client.sound.SoundEffect;
 import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.model.ServerOptions;
@@ -62,9 +60,9 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
 		if (preSpeedupWarn > 0) {
 			if ((getTick() & 2) == 0) {
-				getLevel().getModel().getComponent(lastNewWallX, lastNewWallY).setWall(Walls.DEATH_WARN);
+				getGameCoreHandler().setWall(lastNewWallX, lastNewWallY, Walls.DEATH_WARN);
 			} else {
-				getLevel().getModel().getComponent(lastNewWallX, lastNewWallY).setWall(Walls.DEATH);
+				getGameCoreHandler().setWall(lastNewWallX, lastNewWallY, Walls.DEATH);
 			}
 		}
 
@@ -187,10 +185,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 				}
 
 				if (newWallX >= 0 && newWallX < getWidth() && newWallY >= 0 && newWallY < getHeight()) {
-					LevelComponent comp = getLevel().getModel().getComponent(newWallX, newWallY);
-					comp.setItem(null);
-					comp.setWall(Walls.DEATH);
-					SoundEffect.DEATH_WALL.play();
+					addDeathWall(newWallX, newWallY);
 				}
 				setLastShrinkOperationAt();
 
