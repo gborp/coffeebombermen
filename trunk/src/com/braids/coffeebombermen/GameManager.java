@@ -512,4 +512,8 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 		SoundManager.setEnableSounds(enableSounds);
 	}
 
+	public boolean isServer() {
+		return server != null;
+	}
+
 }

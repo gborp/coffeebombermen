@@ -97,7 +97,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		if (x >= 0 && x < width && y >= 0 && y < height) {
 			LevelComponent comp = levelModel.getComponent(x, y);
 			comp.setItem(null);
-			comp.setWall(Walls.DEATH);
+			gameCoreHandler.setWall(x, y, Walls.DEATH);
 			SoundEffect.DEATH_WALL.play();
 		}
 	}

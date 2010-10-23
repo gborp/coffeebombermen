@@ -37,5 +37,12 @@ public enum Shrinkers {
 		public String toString() {
 			return "Disease";
 		}
-	};
+	},
+	BinaryWalking {
+
+		public String toString() {
+			return "Binary walking";
+		}
+	},
+	;
 }

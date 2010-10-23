@@ -23,6 +23,7 @@ import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.BinaryWalkingShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DiseaseShrinkPerformer;
@@ -136,7 +137,8 @@ public class GameCoreHandler {
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
-		        new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this), new DiseaseShrinkPerformer(this) };
+		        new BinaryWalkingShrinkPerformer(this), new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this),
+		        new DiseaseShrinkPerformer(this) };
 
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
@@ -755,6 +757,20 @@ public class GameCoreHandler {
 		return getBombIndexAtComponentPosition(componentPosX, componentPosY) != null;
 	}
 
+	public BombModel getBombAtComponentPosition(final int componentPosX, final int componentPosY) {
+		for (int i = bombModels.size() - 1; i >= 0; i--) {
+			final BombModel bombModel = bombModels.get(i);
+			if (bombModel.getPhase() != BombPhases.FLYING) {
+				// Flying bombs "aren't" in the level.
+				if ((bombModel.getComponentPosX() == componentPosX) && (bombModel.getComponentPosY() == componentPosY)) {
+					return bombModel;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * Returns the bomb being at a component position or the one hanging down
 	 * into the component.
@@ -1045,5 +1061,13 @@ public class GameCoreHandler {
 				pm.setPoints(points);
 			}
 		}
+	}
+
+	public void setWall(int x, int y, Walls wall) {
+		BombModel bomb = getBombAtComponentPosition(x, y);
+		if (bomb != null) {
+			bomb.setAboutToDetonate(true);
+		}
+		getLevel().getModel().getComponent(x, y).setWall(wall);
 	}
 }

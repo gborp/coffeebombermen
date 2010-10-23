@@ -7,26 +7,38 @@ import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.utils.MathHelper;
 
-public class BinaryShrinkPerformer extends AbstractShrinkPerformer {
+public class BinaryWalkingShrinkPerformer extends AbstractShrinkPerformer {
 
-	private static final int GAME_CYCLE_FREQUENCY_MULTIPLIER = 2;
+	private static final int        GAME_CYCLE_FREQUENCY_MULTIPLIER = 2;
+	private static final int        WALKING_SPEED_DIVIDER           = 5;
 
-	private LinkedList<Area> lstArea;
+	private LinkedList<Area>        lstArea;
+	private LinkedList<WalkingLine> lstWalkingLine;
 
-	public BinaryShrinkPerformer(GameCoreHandler gameCoreHandler) {
+	public BinaryWalkingShrinkPerformer(GameCoreHandler gameCoreHandler) {
 		super(gameCoreHandler);
 	}
 
 	public Shrinkers getType() {
-		return Shrinkers.Binary;
+		return Shrinkers.BinaryWalking;
 	}
 
 	protected void initNextRoundImpl() {
 		lstArea = new LinkedList<Area>();
+		lstWalkingLine = new LinkedList<WalkingLine>();
 	}
 
 	protected void nextIterationImpl() {
 		if (isTimeToShrink()) {
+			if ((getTick() % WALKING_SPEED_DIVIDER) == 0) {
+				for (WalkingLine line : new ArrayList<WalkingLine>(lstWalkingLine)) {
+					if (line.isFinished()) {
+						lstWalkingLine.remove(line);
+					} else {
+						line.walk();
+					}
+				}
+			}
 			if (isTimeToFirstShrink() || isTimeToNextShrink(getGlobalServerOptions().getGameCycleFrequency() * GAME_CYCLE_FREQUENCY_MULTIPLIER)) {
 				if (isTimeToFirstShrink()) {
 					lstArea.add(new Area(1, 1, getWidth() - 2, getHeight() - 2));
@@ -50,9 +62,7 @@ public class BinaryShrinkPerformer extends AbstractShrinkPerformer {
 		double positionChance = MathHelper.halfHasMoreChancePossibility();
 		if (a.width > a.height) {
 			int splitAt = (int) (a.width * positionChance);
-			for (int i = 0; i < a.height; i++) {
-				addDeathWall(a.x + splitAt, a.y + i);
-			}
+			lstWalkingLine.add(new WalkingLine(a.x + splitAt, a.y, a.height, false));
 			if (splitAt != 0) {
 				lstArea.add(new Area(a.x, a.y, splitAt, a.height));
 			}
@@ -61,9 +71,7 @@ public class BinaryShrinkPerformer extends AbstractShrinkPerformer {
 			}
 		} else {
 			int splitAt = (int) (a.height * positionChance);
-			for (int i = 0; i < a.width; i++) {
-				addDeathWall(a.x + i, a.y + splitAt);
-			}
+			lstWalkingLine.add(new WalkingLine(a.x, a.y + splitAt, a.width, true));
 			if (splitAt != 0) {
 				lstArea.add(new Area(a.x, a.y, a.width, splitAt));
 			}
@@ -90,6 +98,36 @@ public class BinaryShrinkPerformer extends AbstractShrinkPerformer {
 		public String toString() {
 			return "Area x:" + x + " y:" + y + " width:" + width + " height: " + height;
 		}
+	}
+
+	private class WalkingLine {
+
+		private int           x;
+		private int           y;
+		private final boolean horizontal;
+		private int           size;
+
+		WalkingLine(int x, int y, int size, boolean horizontal) {
+			this.x = x;
+			this.y = y;
+			this.size = size;
+			this.horizontal = horizontal;
+		}
+
+		private void walk() {
+			addDeathWall(x, y);
+			if (horizontal) {
+				x++;
+			} else {
+				y++;
+			}
+			size--;
+		}
+
+		private boolean isFinished() {
+			return size <= 0;
+		}
+
 	}
 
 }
