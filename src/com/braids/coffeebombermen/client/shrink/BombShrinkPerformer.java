@@ -30,8 +30,8 @@ public class BombShrinkPerformer extends AbstractShrinkPerformer {
 	}
 
 	protected void initNextRoundImpl() {
-		numberOfBombs = 1;
-		maxRange = 1;
+		numberOfBombs = 4;
+		maxRange = 2;
 		lstBombsToAppear = new ArrayList<NewBombSlot>();
 		preSpeedupWarn = 0;
 	}
@@ -54,16 +54,14 @@ public class BombShrinkPerformer extends AbstractShrinkPerformer {
 				if (preSpeedupWarn == 0) {
 					for (NewBombSlot slot : lstBombsToAppear) {
 						getLevel().getModel().getComponent(slot.x, slot.y).setWall(Walls.DEATH);
-						addCrazyBomb(slot.x, slot.y, MathHelper.randomInt(1, maxRange), slot.direction);
+						addCrazyBomb(slot.x, slot.y, MathHelper.randomInt(2, maxRange) + 1, slot.direction);
 					}
 
 					if (numberOfBombs < getWidth() * getHeight()) {
-						numberOfBombs = numberOfBombs * 1.3f;
+						numberOfBombs = numberOfBombs * 1.5f;
 					}
 
-					if (MathHelper.randomBoolean()) {
-						maxRange++;
-					}
+					maxRange++;
 				}
 			}
 
