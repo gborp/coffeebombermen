@@ -100,7 +100,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * menu).
 	 */
 	private final static MID[][] MENU_ITEM_DESCRIPTORSS = {
-	        { new MID("Game"), new MID("Create"), new MID("Join"), new MID("Start current game"), new MID("End current game"),
+	        { new MID("Game"), new MID("Create"), new MID("Join"), new MID("Start next round"), new MID("Start current game"), new MID("End current game"),
 	        new MID("Close", 0, false, true), new MID("Exit", 1) },
 	        { new MID("Settings"), new MID("Client options"), new MID("Server options"), new MID("View global server options", 0, false, true),
 	        new MID("Fullscreen window", 0, true, true), new MID("Sound effects", 1, true), new MID("Show Tray Icon", 0, true, false) },
@@ -115,6 +115,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		CREATE,
 		/** Join menu item. */
 		JOIN,
+		/** End current game and start a new game menu item. */
+		START_NEXT_ROUND,
 		/** Start current game menu item. */
 		START_CURRENT_GAME,
 		/** End current game menu item. */
@@ -212,29 +214,32 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			for (final MID menuItemDescriptor : menuItemDescriptors) {
 
 				JMenuItem menuItem;
-				if (firstItem)
+				if (firstItem) {
 					menu = (JMenu) (menuItem = new JMenu(menuItemDescriptor.name));
-				else {
-					if (menuItemDescriptor.hasCheckbox)
+				} else {
+					if (menuItemDescriptor.hasCheckbox) {
 						menuItem = new JCheckBoxMenuItem(menuItemDescriptor.name);
-					else
+					} else {
 						menuItem = new JMenuItem(menuItemDescriptor.name);
+					}
 					menuItems[menuItemCounter++] = menuItem;
 				}
 
 				menuItem.setMnemonic(menuItem.getText().charAt(menuItemDescriptor.mnemonicCharPos));
 				menuItem.addActionListener(this);
 
-				if (firstItem)
+				if (firstItem) {
 					add(menu);
-				else {
+				} else {
 					menu.add(menuItem);
-					if (menuItemDescriptor.followedBySeparator)
+					if (menuItemDescriptor.followedBySeparator) {
 						menu.addSeparator();
+					}
 				}
 
-				if (firstItem)
+				if (firstItem) {
 					firstItem = false;
+				}
 			}
 		}
 	}
@@ -247,7 +252,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 */
 	public void actionPerformed(final ActionEvent ae) {
 		final Object eventSource = ae.getSource();
-		for (final MenuItems menuItem : MenuItems.values())
+		for (final MenuItems menuItem : MenuItems.values()) {
 			if (menuItems[menuItem.ordinal()] == eventSource) {
 				switch (menuItem) {
 					case CREATE:
@@ -255,6 +260,10 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 						break;
 					case JOIN:
 						mainMenuHandler.joinAGame();
+						break;
+					case START_NEXT_ROUND:
+						mainMenuHandler.startCurrentGame();
+						mainMenuHandler.endCurrentGame();
 						break;
 					case START_CURRENT_GAME:
 						mainMenuHandler.startCurrentGame();
@@ -301,6 +310,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				}
 				break;
 			}
+		}
 	}
 
 	/**
@@ -315,8 +325,9 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		menuItems[MenuItems.CREATE.ordinal()].setEnabled(this.gameState == GameStates.IDLE);
 		menuItems[MenuItems.JOIN.ordinal()].setEnabled(this.gameState == GameStates.IDLE);
 
-		menuItems[MenuItems.START_CURRENT_GAME.ordinal()].setEnabled(this.gameState == GameStates.PLAYER_COLLECTING_CONNECTED && ourServerRunning);
-		menuItems[MenuItems.END_CURRENT_GAME.ordinal()].setEnabled(this.gameState == GameStates.PLAYING && ourServerRunning);
+		menuItems[MenuItems.START_NEXT_ROUND.ordinal()].setEnabled((this.gameState == GameStates.PLAYING) && ourServerRunning);
+		menuItems[MenuItems.START_CURRENT_GAME.ordinal()].setEnabled((this.gameState == GameStates.PLAYER_COLLECTING_CONNECTED) && ourServerRunning);
+		menuItems[MenuItems.END_CURRENT_GAME.ordinal()].setEnabled((this.gameState == GameStates.PLAYING) && ourServerRunning);
 
 		menuItems[MenuItems.CLOSE.ordinal()].setEnabled(this.gameState != GameStates.IDLE);
 
