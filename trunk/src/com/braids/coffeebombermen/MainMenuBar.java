@@ -100,8 +100,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * menu).
 	 */
 	private final static MID[][] MENU_ITEM_DESCRIPTORSS = {
-	        { new MID("Game"), new MID("Create"), new MID("Join"), new MID("Start next round"), new MID("Start current game"), new MID("End current game"),
-	        new MID("Close", 0, false, true), new MID("Exit", 1) },
+	        { new MID("Game"), new MID("Create"), new MID("Join"), new MID("Start next round"), new MID("End current game"), new MID("Close", 0, false, true),
+	        new MID("Exit", 1) },
 	        { new MID("Settings"), new MID("Client options"), new MID("Server options"), new MID("View global server options", 0, false, true),
 	        new MID("Fullscreen window", 0, true, true), new MID("Sound effects", 1, true), new MID("Show Tray Icon", 0, true, false) },
 	        { new MID("Help"), new MID("Keys"), new MID("Manual"), new MID("Faqs"), new MID("Tips"), new MID("My host name and ip", 3),
@@ -117,8 +117,6 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		JOIN,
 		/** End current game and start a new game menu item. */
 		START_NEXT_ROUND,
-		/** Start current game menu item. */
-		START_CURRENT_GAME,
 		/** End current game menu item. */
 		END_CURRENT_GAME,
 		/** Close menu item. */
@@ -262,10 +260,9 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 						mainMenuHandler.joinAGame();
 						break;
 					case START_NEXT_ROUND:
-						mainMenuHandler.startCurrentGame();
-						mainMenuHandler.endCurrentGame();
-						break;
-					case START_CURRENT_GAME:
+						if (!(this.gameState == GameStates.PLAYER_COLLECTING_CONNECTED)) {
+							mainMenuHandler.endCurrentGame();
+						}
 						mainMenuHandler.startCurrentGame();
 						break;
 					case END_CURRENT_GAME:
@@ -325,8 +322,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		menuItems[MenuItems.CREATE.ordinal()].setEnabled(this.gameState == GameStates.IDLE);
 		menuItems[MenuItems.JOIN.ordinal()].setEnabled(this.gameState == GameStates.IDLE);
 
-		menuItems[MenuItems.START_NEXT_ROUND.ordinal()].setEnabled((this.gameState == GameStates.PLAYING) && ourServerRunning);
-		menuItems[MenuItems.START_CURRENT_GAME.ordinal()].setEnabled((this.gameState == GameStates.PLAYER_COLLECTING_CONNECTED) && ourServerRunning);
+		menuItems[MenuItems.START_NEXT_ROUND.ordinal()]
+		        .setEnabled(((this.gameState == GameStates.PLAYING) || (this.gameState == GameStates.PLAYER_COLLECTING_CONNECTED)) && ourServerRunning);
 		menuItems[MenuItems.END_CURRENT_GAME.ordinal()].setEnabled((this.gameState == GameStates.PLAYING) && ourServerRunning);
 
 		menuItems[MenuItems.CLOSE.ordinal()].setEnabled(this.gameState != GameStates.IDLE);
