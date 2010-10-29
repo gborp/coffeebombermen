@@ -72,6 +72,8 @@ public class ServerOptions extends Options<ServerOptions> {
 	private int              amountOfBrickWalls;
 	/** Probability of getting itme when a wall brick has been exploded. */
 	private int              gettingItemProbability;
+	/** Maximumm gateway number. */
+	private int              maxGatewayNumber;
 
 	/** Game cycle frequency in 1/s (Hz). */
 	private int              gameCycleFrequency;
@@ -110,6 +112,7 @@ public class ServerOptions extends Options<ServerOptions> {
 
 		buffer.append(getAmountOfBrickWalls()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(getGettingItemProbability()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(getMaxGatewayNumber()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		buffer.append(getGameCycleFrequency()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(getGamePort()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
@@ -151,6 +154,7 @@ public class ServerOptions extends Options<ServerOptions> {
 
 		serverOptions.setAmountOfBrickWalls(optionsTokenizer.nextIntToken());
 		serverOptions.setGettingItemProbability(optionsTokenizer.nextIntToken());
+		serverOptions.setMaxGatewayNumber(optionsTokenizer.nextIntToken());
 
 		serverOptions.setGameCycleFrequency(optionsTokenizer.nextIntToken());
 		serverOptions.setGamePort(optionsTokenizer.nextIntToken());
@@ -195,6 +199,14 @@ public class ServerOptions extends Options<ServerOptions> {
 
 	public int getGettingItemProbability() {
 		return gettingItemProbability;
+	}
+
+	public void setMaxGatewayNumber(int maxGatewayNumber) {
+		this.maxGatewayNumber = maxGatewayNumber;
+	}
+
+	public int getMaxGatewayNumber() {
+		return maxGatewayNumber;
 	}
 
 	public void setLevelOptions(LevelOptions levelOptions) {

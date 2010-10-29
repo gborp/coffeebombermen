@@ -614,9 +614,37 @@ public class Player {
 				model.setPosX(model.getPosX() + model.getDirectionXMultiplier() * speed);
 				model.setPosY(model.getPosY() + model.getDirectionYMultiplier() * speed);
 				checkAndHandleItemPickingUp();
-			} // ...else we check for kick
-			else if (model.hasNonAccumItem(Items.BOOTS) || model.hasNonAccumItem(Items.CRAZY_BOOTS)) {
-				tryToKick();
+			} else
+			// ...else if there is a gateway ahead...
+			if (Walls.GATEWAY == gameCoreHandler.getLevelModel().getComponent(posXAhead / CoreConsts.LEVEL_COMPONENT_GRANULARITY,
+			        posYAhead / CoreConsts.LEVEL_COMPONENT_GRANULARITY).getWall()) {
+
+				// check the other side for walls
+				int nextPosX = model.getPosX() / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
+				int nextPosY = model.getPosY() / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
+				switch (model.getDirection()) {
+					case UP:
+					case DOWN:
+						nextPosY = (gameCoreHandler.getLevelModel().getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - model.getPosY())
+						        / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
+						break;
+					case LEFT:
+					case RIGHT:
+						nextPosX = (gameCoreHandler.getLevelModel().getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - model.getPosX())
+						        / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
+						break;
+				}
+				Walls wall = gameCoreHandler.getLevelModel().getComponent(nextPosX, nextPosY).getWall();
+				if ((wall == Walls.EMPTY) || ((wall == Walls.BRICK) && model.hasNonAccumItem(Items.WALL_CLIMBING))) {
+					// move player to the other side
+					model.setPosY(nextPosY * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+					model.setPosX(nextPosX * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+					checkAndHandleItemPickingUp();
+				}
+			} else {// ...else we check for kick
+				if (model.hasNonAccumItem(Items.BOOTS) || model.hasNonAccumItem(Items.CRAZY_BOOTS)) {
+					tryToKick();
+				}
 			}
 		}
 
@@ -783,8 +811,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				// obstrucion and we're closer than
-				// CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				   // obstrucion and we're closer than
+				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
 				if (posX % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX - CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY + CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.RIGHT);
@@ -823,8 +851,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				// obstrucion and we're closer than
-				// CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				   // obstrucion and we're closer than
+				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
 				if (posX % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX - CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY - CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.RIGHT);
@@ -864,8 +892,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				// obstrucion and we're closer than
-				// CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				   // obstrucion and we're closer than
+				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
 				if (posY % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX - CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY - CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);
@@ -901,8 +929,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				// obstrucion and we're closer than
-				// CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				   // obstrucion and we're closer than
+				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
 				if (posY % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX + CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY - CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);
@@ -962,8 +990,8 @@ public class Player {
 			int dx = componentPosX - model.getComponentPosX();
 			int dy = componentPosY - model.getComponentPosY();
 
-			if ((dx != 0 || dy != 0) && wall == Walls.BRICK && componentPosX > 1 && componentPosY > 1
-			        && componentPosX < gameCoreHandler.getLevelModel().getWidth() - 2 && componentPosY < gameCoreHandler.getLevelModel().getHeight() - 2) {
+			if (((dx != 0) || (dy != 0)) && (wall == Walls.BRICK) && (componentPosX > 1) && (componentPosY > 1)
+			        && (componentPosX < gameCoreHandler.getLevelModel().getWidth() - 2) && (componentPosY < gameCoreHandler.getLevelModel().getHeight() - 2)) {
 
 				int wx = componentPosX + dx;
 				int wy = componentPosY + dy;
@@ -972,7 +1000,7 @@ public class Player {
 		}
 
 		if (model.hasNonAccumItem(Items.WALL_CLIMBING)) {
-			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH) || (wall == Walls.DEATH_WARN)) {
+			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH) || (wall == Walls.DEATH_WARN) || (wall == Walls.GATEWAY)) {
 				return false;
 			}
 		} else {

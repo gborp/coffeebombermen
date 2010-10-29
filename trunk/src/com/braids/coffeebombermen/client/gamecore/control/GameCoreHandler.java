@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 
 import com.braids.coffeebombermen.GameManager;
 import com.braids.coffeebombermen.MainFrame;
@@ -32,11 +32,11 @@ import com.braids.coffeebombermen.client.shrink.ShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.SpiderBombShrinkPerformer;
 import com.braids.coffeebombermen.client.sound.SoundEffect;
 import com.braids.coffeebombermen.options.Diseases;
-import com.braids.coffeebombermen.options.ServerComponentOptions;
-import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.ServerComponentOptions;
+import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 import com.braids.coffeebombermen.options.model.ServerOptions;
 import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
@@ -287,7 +287,7 @@ public class GameCoreHandler {
 				// coordinates of the clearable components
 				for (int[] element : DELTA_COORDS) {
 					final LevelComponent levelComponent = levelModel.getComponent(componentPosX + element[1], componentPosY + element[0]);
-					if (levelComponent.getWall() != Walls.CONCRETE) {
+					if ((levelComponent.getWall() != Walls.CONCRETE) && (levelComponent.getWall() != Walls.GATEWAY)) {
 						levelComponent.setWall(Walls.EMPTY);
 						levelComponent.setItem(null);
 					}
@@ -648,7 +648,7 @@ public class GameCoreHandler {
 						LevelComponent levelComponent = levelModel.getComponent(componentPosX, componentPosY);
 
 						if ((levelComponent.getWall() == Walls.CONCRETE) || (levelComponent.getWall() == Walls.DEATH)
-						        || (levelComponent.getWall() == Walls.DEATH_WARN)) {
+						        || (levelComponent.getWall() == Walls.DEATH_WARN) || (levelComponent.getWall() == Walls.GATEWAY)) {
 							break;
 						}
 
