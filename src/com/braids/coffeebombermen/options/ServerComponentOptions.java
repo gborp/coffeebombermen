@@ -107,6 +107,13 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	/** Maximum value of getting item probability option. */
 	private static final int              MAXIMUM_GETTING_ITEM_PROBABILITY                    = 100;
 
+	/** Minimum value of max gateway number option. */
+	private static final int              MINIMUM_MAX_GATEWAY_NUMBER                          = 0;
+	/** Default value of max gateway number option. */
+	private static final int              DEFAULT_MAX_GATEWAY_NUMBER                          = 1;
+	/** Maximum value of max gateway number option. */
+	private static final int              MAXIMUM_MAX_GATEWAY_NUMBER                          = 10;
+
 	/** Minimum value of game cycle frequency option in 1/s (Hz). */
 	private static final int              MINIMUM_GAME_CYCLE_FREQUENCY                        = 1;
 	/** Default value of game cycle frequency option in 1/s (Hz). */
@@ -168,6 +175,12 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	                                                                                                  DEFAULT_GETTING_ITEM_PROBABILITY,
 	                                                                                                  MINIMUM_GETTING_ITEM_PROBABILITY,
 	                                                                                                  MAXIMUM_GETTING_ITEM_PROBABILITY, 1));
+
+	/** Component for maximum gateway number option. */
+	private final JSpinner                maxGatewayNumber_c                                  = new JSpinner(
+	                                                                                                  new SpinnerNumberModel(DEFAULT_MAX_GATEWAY_NUMBER,
+	                                                                                                          MINIMUM_MAX_GATEWAY_NUMBER,
+	                                                                                                          MAXIMUM_MAX_GATEWAY_NUMBER, 1));
 
 	/** Component for game cycle frequency option. */
 	private final JSpinner                gameCycleFrequency_c                                = new JSpinner(new SpinnerNumberModel(
@@ -343,6 +356,11 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		panel.add(createLabel("%.", componentsEnabled));
 		box.add(panel);
 		panel = new JPanel();
+		panel.add(createLabel("Max gateway number:", componentsEnabled));
+		maxGatewayNumber_c.setEnabled(componentsEnabled);
+		panel.add(maxGatewayNumber_c);
+		box.add(panel);
+		panel = new JPanel();
 		panel.add(box);
 		levelOptionsTabbedPane.addTab("Wall generating", panel);
 		optionsTabbedPane.addTab("Random level", levelOptionsTabbedPane);
@@ -403,6 +421,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 
 		amountOfBrickWalls_c.setValue(DEFAULT_AMOUNT_OF_BRICK_WALLS);
 		gettingItemProbability_c.setValue(DEFAULT_GETTING_ITEM_PROBABILITY);
+		maxGatewayNumber_c.setValue(DEFAULT_MAX_GATEWAY_NUMBER);
 
 		gameCycleFrequency_c.setValue(DEFAULT_GAME_CYCLE_FREQUENCY);
 		gamePort_c.setValue(OptConsts.DEFAULT_GAME_PORT);
@@ -440,6 +459,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 
 		serverOptions.setAmountOfBrickWalls((Integer) amountOfBrickWalls_c.getValue());
 		serverOptions.setGettingItemProbability((Integer) gettingItemProbability_c.getValue());
+		serverOptions.setMaxGatewayNumber((Integer) maxGatewayNumber_c.getValue());
 
 		serverOptions.setGameCycleFrequency((Integer) gameCycleFrequency_c.getValue());
 		serverOptions.setGamePort((Integer) gamePort_c.getValue());
@@ -480,6 +500,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 
 		amountOfBrickWalls_c.setValue(options.getAmountOfBrickWalls());
 		gettingItemProbability_c.setValue(options.getGettingItemProbability());
+		maxGatewayNumber_c.setValue(options.getMaxGatewayNumber());
 
 		gameCycleFrequency_c.setValue(options.getGameCycleFrequency());
 		gamePort_c.setValue(options.getGamePort());

@@ -1,11 +1,11 @@
-# Options file holding the persistent datas of Bombermen.
+# Options file holding the persistent datas of Coffee Bombermen.
 # The file has a specific format, do not remove or change lines unless you know what you're doing!
 # 
 # Client options:
-localhost|3||38|40|39|37|17|16|82|70|71|68|65|81|104|101|102|100|107|109|73|75|76|74|72|89|test|classic|true|true|0|0|43762|4|joe|Coffee|Bomber|Men|Player_4|0|10|20|7|85|85|85|85|
+192.168.96.107|1||38|40|39|37|17|16|87|83|68|65|69|81|104|101|102|100|107|109|73|75|76|74|72|89|test|.svn|true|true|0|0|43762|4||Player_1|Player_2|Player_3|Player_4|0|10|20|7|85|85|85|85|
 # Server options:
-<randomly generated>|0|90|5||50|true|false|true|false|true|false|true|true|1|90|100|30|43762|0|17|13|4|10|1|false|false|false|true|true|true|false|false|false|false|false|false|false|10|2|10|10|10|5|5|5|5|5|2|2|2|10|5|5|10|10|10|10|10|10|10|
+<randomly generated>|0|25|5||75|false|false|true|false|true|false|true|true|1|100|100|1|30|43762|0|11|9|2|2|0|false|false|false|true|false|false|false|false|false|false|false|false|false|false|false|9|3|10|15|10|2|2|5|3|5|2|2|3|7|3|5|2|15|1|10|3|10|9|2|5|10|10|10|10|10|10|5|7|3|5|7|
 # Menu states:
-false|true|
+true|true|
 # Window positions:
-476|24|1023|903|693|837|
+10|10|1165|869|715|N/A|

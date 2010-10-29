@@ -27,15 +27,29 @@ public class RandomLevelBuilder {
 		final int levelWidth = levelModel.getWidth();
 		final int levelHeight = levelModel.getHeight();
 
+		int maxGatewayNumber = gameCoreHandler.getGlobalServerOptions().getMaxGatewayNumber();
+		int chanceForGateway = ((levelWidth + levelHeight) * 2 - 4) / maxGatewayNumber;
+		int nofGateway = 0;
+
 		for (int y = 0; y < levelHeight; y++) {
 			for (int x = 0; x < levelWidth; x++) {
 				Walls wall;
 
-				if (y == 0 || y == levelHeight - 1 || x == 0 || x == levelWidth - 1) {
-					wall = Walls.CONCRETE; // Border
+				if ((y == 0) || (y == levelHeight - 1) || (x == 0) || (x == levelWidth - 1)) {
+					if (((x == 0) && (y == 0)) || ((x == 0) && (y == levelHeight - 1)) || ((x == levelWidth - 1) && (y == 0))
+					        || ((x == levelWidth - 1) && (y == levelHeight - 1))) {
+						wall = Walls.CONCRETE; // Border in corner
+					} else {
+						if ((nofGateway < maxGatewayNumber) && (random.nextInt(chanceForGateway) == 0)) {
+							wall = Walls.GATEWAY; // Gateway
+							nofGateway++;
+						} else {
+							wall = Walls.CONCRETE; // Border
+						}
+					}
 				} else if (random.nextInt(100) > 95) {
 					wall = random.nextInt(100) > 30 ? Walls.BRICK : Walls.CONCRETE;
-				} else if ((x & 0x01) == 0 && (y & 0x01) == 0) {
+				} else if (((x & 0x01) == 0) && ((y & 0x01) == 0)) {
 					wall = Walls.CONCRETE; // Inner concrete matrix
 				} else {
 					wall = random.nextInt(100) < globalServerOptions.getAmountOfBrickWalls() ? Walls.BRICK : Walls.EMPTY;
@@ -44,7 +58,8 @@ public class RandomLevelBuilder {
 				levelModel.getComponent(x, y).setWall(wall);
 			}
 		}
-		levelModel.getComponent(1, 1).setWall(random.nextInt(100) > 50 ? Walls.BRICK : Walls.EMPTY);
+
+		levelModel.getComponent(1, 1).setWall(Walls.EMPTY);
 
 		deblockLevel(levelModel, levelWidth, levelHeight);
 
@@ -72,13 +87,13 @@ public class RandomLevelBuilder {
 			for (int y = 1; y < height - 1; y++) {
 				LEVEL_GEN_ITEM[] row = accessible[y];
 				for (int x = 1; x < width - 1; x++) {
-					if (x == 1 && y == 1) {
+					if ((x == 1) && (y == 1)) {
 						row[1] = LEVEL_GEN_ITEM.ACCESSIBLE;
 						continue;
 					}
 					if (row[x] == LEVEL_GEN_ITEM.UNKNOWN) {
-						boolean hasAccessibleNeighbour = row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE || row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE
-						        || aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE || accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE;
+						boolean hasAccessibleNeighbour = (row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE) || (row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE)
+						        || (aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE) || (accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE);
 
 						if (hasAccessibleNeighbour) {
 							accessible[y][x] = LEVEL_GEN_ITEM.ACCESSIBLE;
@@ -92,7 +107,7 @@ public class RandomLevelBuilder {
 
 		int counter = 0;
 		boolean neededToModify = true;
-		while (neededToModify && counter < 1000) {
+		while (neededToModify && (counter < 1000)) {
 			counter++;
 			neededToModify = false;
 			LEVEL_GEN_ITEM[] aboveRow = accessible[0];
@@ -104,21 +119,21 @@ public class RandomLevelBuilder {
 						boolean vert = (y & 0x01) == 1;
 						boolean horz = (x & 0x01) == 1;
 
-						if (x > 1 && (vert || (!vert && !horz))) {
+						if ((x > 1) && (vert || (!vert && !horz))) {
 							levelModel.getComponent(x - 1, y).setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible || row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || (row[x - 1] == LEVEL_GEN_ITEM.ACCESSIBLE);
 						}
-						if (x < width - 2 && (vert || (!vert && !horz))) {
+						if ((x < width - 2) && (vert || (!vert && !horz))) {
 							levelModel.getComponent(x + 1, y).setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible || row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || (row[x + 1] == LEVEL_GEN_ITEM.ACCESSIBLE);
 						}
-						if (y > 1 && (horz || (!horz && !vert))) {
+						if ((y > 1) && (horz || (!horz && !vert))) {
 							levelModel.getComponent(x, y - 1).setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible || aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || (aboveRow[x] == LEVEL_GEN_ITEM.ACCESSIBLE);
 						}
-						if (y < height - 2 && (horz || (!horz && !vert))) {
+						if ((y < height - 2) && (horz || (!horz && !vert))) {
 							levelModel.getComponent(x, y + 1).setWall(Walls.BRICK);
-							isNowAccessible = isNowAccessible || accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE;
+							isNowAccessible = isNowAccessible || (accessible[y + 1][x] == LEVEL_GEN_ITEM.ACCESSIBLE);
 						}
 						if (isNowAccessible) {
 							row[x] = LEVEL_GEN_ITEM.ACCESSIBLE;
