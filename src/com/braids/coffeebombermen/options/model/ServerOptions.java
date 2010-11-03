@@ -67,6 +67,8 @@ public class ServerOptions extends Options<ServerOptions> {
 	private boolean          multipleFire;
 	/** Swap teleport swap with only living player */
 	private boolean          swapOnlyLivingPlayer;
+	/** Auto restart game */
+	private boolean          autoRestartGame;
 	/** Tells who gets the killing points when bombermen die. */
 	private KillsBelongTos   killsBelongTo = KillsBelongTos.values()[0];
 
@@ -111,6 +113,7 @@ public class ServerOptions extends Options<ServerOptions> {
 		buffer.append(isPunchedBombsComeBackAtTheOppositeEnd()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isMultipleFire()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isSwapOnlyLivingPlayer()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isAutoRestartGame()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(getKillsBelongTo().ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		buffer.append(getAmountOfBrickWalls()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
@@ -154,6 +157,7 @@ public class ServerOptions extends Options<ServerOptions> {
 		serverOptions.setPunchedBombsComeBackAtTheOppositeEnd(optionsTokenizer.nextBooleanToken());
 		serverOptions.setMultipleFire(optionsTokenizer.nextBooleanToken());
 		serverOptions.setSwapOnlyLivingPlayer(optionsTokenizer.nextBooleanToken());
+		serverOptions.setAutoRestartGame(optionsTokenizer.nextBooleanToken());
 		serverOptions.setKillsBelongTo(KillsBelongTos.values()[optionsTokenizer.nextIntToken()]);
 
 		serverOptions.setAmountOfBrickWalls(optionsTokenizer.nextIntToken());
@@ -339,6 +343,14 @@ public class ServerOptions extends Options<ServerOptions> {
 
 	public boolean isSwapOnlyLivingPlayer() {
 		return swapOnlyLivingPlayer;
+	}
+
+	public void setAutoRestartGame(boolean autoRestartGame) {
+		this.autoRestartGame = autoRestartGame;
+	}
+
+	public boolean isAutoRestartGame() {
+		return autoRestartGame;
 	}
 
 	public void setKillsBelongTo(KillsBelongTos killsBelongTo) {

@@ -55,6 +55,8 @@ public class GameCoreHandler {
 
 	private static final long               MATCH_WON_HAPPY_PLAYER_ACTION_FREQUENCY = 64;
 
+	private static final long               NUMBER_OF_TICKS_TO_AUTO_RESTART_GAME    = 90;
+
 	/** Reference to the game manager. */
 	private final GameManager               gameManager;
 	/** Reference to the main frame. */
@@ -104,6 +106,8 @@ public class GameCoreHandler {
 	private long                            lastPlayerCountDownStartedAt;
 
 	private PlayerModelComparatorByPoint    playerModelComparatorByPoint            = new PlayerModelComparatorByPoint();
+
+	private int                             nofTickToRestart;
 
 	/**
 	 * Creates a new GameCoreHandler. A new GameCoreHandler is created for every
@@ -470,6 +474,13 @@ public class GameCoreHandler {
 				}
 			}
 		} else {
+			if (getGlobalServerOptions().isAutoRestartGame()) {
+				nofTickToRestart++;
+				if (nofTickToRestart > NUMBER_OF_TICKS_TO_AUTO_RESTART_GAME) {
+					gameManager.endCurrentGame();
+					gameManager.startCurrentGame();
+				}
+			}
 			if (tick % MATCH_WON_HAPPY_PLAYER_ACTION_FREQUENCY == 0) {
 				PlayerModel lastPlayer = getTheLastRemainingPlyer();
 				if (lastPlayer != null) {
@@ -523,6 +534,7 @@ public class GameCoreHandler {
 	private void matchJustWon() {
 
 		gameManager.showTrayMessage("The match is over...");
+		nofTickToRestart = 0;
 
 		PlayerModel lastPlayerModel = getTheLastRemainingPlyer();
 		if (lastPlayerModel == null) {
