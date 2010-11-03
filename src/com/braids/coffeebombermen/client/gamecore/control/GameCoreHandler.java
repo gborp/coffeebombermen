@@ -490,6 +490,19 @@ public class GameCoreHandler {
 		return result;
 	}
 
+	public List<PlayerModel> getAllLivingPlayerModels() {
+		ArrayList<PlayerModel> result = new ArrayList<PlayerModel>();
+		for (PlayerModel[] playerModels : clientsPlayerModels) {
+			for (PlayerModel playerModel : playerModels) {
+				if (playerModel.getVitality() > 0) {
+					result.add(playerModel);
+				}
+			}
+		}
+
+		return result;
+	}
+
 	public List<PlayerModel> getAllPlayerModelsOrderedByPoint() {
 		List<PlayerModel> result = getAllPlayerModels();
 		Collections.sort(result, playerModelComparatorByPoint);

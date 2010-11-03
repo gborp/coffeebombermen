@@ -91,6 +91,8 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private static final boolean          DEFAULT_PUNCHED_BOMBS_COME_BACK_AT_THE_OPPOSITE_END = true;
 	/** Default value of multiple fire. */
 	private static final boolean          DEFAULT_MULTIPLE_FIRE                               = true;
+	/** Default value of swap only living player. */
+	private static final boolean          DEFAULT_SWAP_ONLY_LIVING_PLAYER                     = true;
 	/** Default value of kills belong to option. */
 	private static final KillsBelongTos   DEFAULT_KILLS_BELONG_TO                             = KillsBelongTos.OWNER_OF_TRIGGERER_BOMB;
 
@@ -162,6 +164,8 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private final JCheckBox               punchedBombsComeBackAtTheOppositeEnd_c              = new JCheckBox("Punched bombs come back at the opposite end");
 	/** Component for multiple fire. */
 	private final JCheckBox               multipleFire_c                                      = new JCheckBox("Multiple fire");
+	/** Component for kills belong to option. */
+	private final JCheckBox               swapOnlyLivingPlayer_c                              = new JCheckBox("Swap only living player");
 	/** Component for kills belong to option. */
 	private final ButtonGroup             killsBelongTo_c                                     = new ButtonGroup();
 
@@ -328,6 +332,10 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		panel.add(multipleFire_c);
 		box.add(panel);
 		panel = new JPanel();
+		swapOnlyLivingPlayer_c.setEnabled(componentsEnabled);
+		panel.add(swapOnlyLivingPlayer_c);
+		box.add(panel);
+		panel = new JPanel();
 		final Box verticalBox = Box.createVerticalBox();
 		for (final Enumeration<AbstractButton> abstractButtons = killsBelongTo_c.getElements(); abstractButtons.hasMoreElements();) {
 			final AbstractButton killsBelongTo_button = abstractButtons.nextElement();
@@ -411,6 +419,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		itemsStopRollingBombs_c.setSelected(DEFAULT_ITEMS_STOP_ROLLING_BOMBS);
 		punchedBombsComeBackAtTheOppositeEnd_c.setSelected(DEFAULT_PUNCHED_BOMBS_COME_BACK_AT_THE_OPPOSITE_END);
 		multipleFire_c.setSelected(DEFAULT_MULTIPLE_FIRE);
+		swapOnlyLivingPlayer_c.setSelected(DEFAULT_SWAP_ONLY_LIVING_PLAYER);
 		for (final Enumeration<AbstractButton> abstractButtons = killsBelongTo_c.getElements(); abstractButtons.hasMoreElements();) {
 			final AbstractButton abstractButton = abstractButtons.nextElement();
 			if (abstractButton.getActionCommand().equals(DEFAULT_KILLS_BELONG_TO.name())) {
@@ -455,6 +464,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		serverOptions.setItemsStopRollingBombs(itemsStopRollingBombs_c.isSelected());
 		serverOptions.setPunchedBombsComeBackAtTheOppositeEnd(punchedBombsComeBackAtTheOppositeEnd_c.isSelected());
 		serverOptions.setMultipleFire(multipleFire_c.isSelected());
+		serverOptions.setSwapOnlyLivingPlayer(swapOnlyLivingPlayer_c.isSelected());
 		serverOptions.setKillsBelongTo(KillsBelongTos.valueOf(killsBelongTo_c.getSelection().getActionCommand()));
 
 		serverOptions.setAmountOfBrickWalls((Integer) amountOfBrickWalls_c.getValue());
@@ -490,6 +500,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		itemsStopRollingBombs_c.setSelected(options.isItemsStopRollingBombs());
 		punchedBombsComeBackAtTheOppositeEnd_c.setSelected(options.isPunchedBombsComeBackAtTheOppositeEnd());
 		multipleFire_c.setSelected(options.isMultipleFire());
+		swapOnlyLivingPlayer_c.setSelected(options.isSwapOnlyLivingPlayer());
 		for (final Enumeration<AbstractButton> abstractButtons = killsBelongTo_c.getElements(); abstractButtons.hasMoreElements();) {
 			final AbstractButton abstractButton = abstractButtons.nextElement();
 			if (abstractButton.getActionCommand().equals(options.getKillsBelongTo().name())) {

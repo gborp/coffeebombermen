@@ -747,12 +747,18 @@ public class Player {
 					break;
 				}
 				case SWAP_TELEPORT:
-					List<PlayerModel> lstPlayers = gameCoreHandler.getAllPlayerModels();
-					int swapWith = playerIndex;
-					while (swapWith == playerIndex) {
-						swapWith = MathHelper.randomInt(lstPlayers.size() - 1);
+					List<PlayerModel> lstPlayers;
+					if (gameCoreHandler.getGlobalServerOptions().isSwapOnlyLivingPlayer()) {
+						lstPlayers = gameCoreHandler.getAllLivingPlayerModels();
+					} else {
+						lstPlayers = gameCoreHandler.getAllPlayerModels();
 					}
-
+					int swapWith = playerIndex;
+					if (lstPlayers.size() != 1) {
+						while (swapWith == playerIndex) {
+							swapWith = MathHelper.randomInt(lstPlayers.size() - 1);
+						}
+					}
 					PlayerModel swapModel = lstPlayers.get(swapWith);
 
 					int myPosX = getModel().getPosX();
