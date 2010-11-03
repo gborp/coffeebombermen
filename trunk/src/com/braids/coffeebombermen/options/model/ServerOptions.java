@@ -65,6 +65,8 @@ public class ServerOptions extends Options<ServerOptions> {
 	 * fire.
 	 */
 	private boolean          multipleFire;
+	/** Swap teleport swap with only living player */
+	private boolean          swapOnlyLivingPlayer;
 	/** Tells who gets the killing points when bombermen die. */
 	private KillsBelongTos   killsBelongTo = KillsBelongTos.values()[0];
 
@@ -108,6 +110,7 @@ public class ServerOptions extends Options<ServerOptions> {
 		buffer.append(isItemsStopRollingBombs()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isPunchedBombsComeBackAtTheOppositeEnd()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isMultipleFire()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		buffer.append(isSwapOnlyLivingPlayer()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(getKillsBelongTo().ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		buffer.append(getAmountOfBrickWalls()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
@@ -150,6 +153,7 @@ public class ServerOptions extends Options<ServerOptions> {
 		serverOptions.setItemsStopRollingBombs(optionsTokenizer.nextBooleanToken());
 		serverOptions.setPunchedBombsComeBackAtTheOppositeEnd(optionsTokenizer.nextBooleanToken());
 		serverOptions.setMultipleFire(optionsTokenizer.nextBooleanToken());
+		serverOptions.setSwapOnlyLivingPlayer(optionsTokenizer.nextBooleanToken());
 		serverOptions.setKillsBelongTo(KillsBelongTos.values()[optionsTokenizer.nextIntToken()]);
 
 		serverOptions.setAmountOfBrickWalls(optionsTokenizer.nextIntToken());
@@ -327,6 +331,14 @@ public class ServerOptions extends Options<ServerOptions> {
 
 	public boolean isMultipleFire() {
 		return multipleFire;
+	}
+
+	public void setSwapOnlyLivingPlayer(boolean swapOnlyLivingPlayer) {
+		this.swapOnlyLivingPlayer = swapOnlyLivingPlayer;
+	}
+
+	public boolean isSwapOnlyLivingPlayer() {
+		return swapOnlyLivingPlayer;
 	}
 
 	public void setKillsBelongTo(KillsBelongTos killsBelongTo) {
