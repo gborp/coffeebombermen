@@ -93,6 +93,8 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private static final boolean          DEFAULT_MULTIPLE_FIRE                               = true;
 	/** Default value of swap only living player. */
 	private static final boolean          DEFAULT_SWAP_ONLY_LIVING_PLAYER                     = true;
+	/** Default value of auto restart game. */
+	private static final boolean          DEFAULT_AUTO_RESTART_GAME                           = true;
 	/** Default value of kills belong to option. */
 	private static final KillsBelongTos   DEFAULT_KILLS_BELONG_TO                             = KillsBelongTos.OWNER_OF_TRIGGERER_BOMB;
 
@@ -164,8 +166,10 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private final JCheckBox               punchedBombsComeBackAtTheOppositeEnd_c              = new JCheckBox("Punched bombs come back at the opposite end");
 	/** Component for multiple fire. */
 	private final JCheckBox               multipleFire_c                                      = new JCheckBox("Multiple fire");
-	/** Component for kills belong to option. */
+	/** Component for swap only living player option. */
 	private final JCheckBox               swapOnlyLivingPlayer_c                              = new JCheckBox("Swap only living player");
+	/** Component for auto restart game option. */
+	private final JCheckBox               autoRestartGame_c                                   = new JCheckBox("Auto restart game");
 	/** Component for kills belong to option. */
 	private final ButtonGroup             killsBelongTo_c                                     = new ButtonGroup();
 
@@ -336,6 +340,10 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		panel.add(swapOnlyLivingPlayer_c);
 		box.add(panel);
 		panel = new JPanel();
+		autoRestartGame_c.setEnabled(componentsEnabled);
+		panel.add(autoRestartGame_c);
+		box.add(panel);
+		panel = new JPanel();
 		final Box verticalBox = Box.createVerticalBox();
 		for (final Enumeration<AbstractButton> abstractButtons = killsBelongTo_c.getElements(); abstractButtons.hasMoreElements();) {
 			final AbstractButton killsBelongTo_button = abstractButtons.nextElement();
@@ -420,6 +428,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		punchedBombsComeBackAtTheOppositeEnd_c.setSelected(DEFAULT_PUNCHED_BOMBS_COME_BACK_AT_THE_OPPOSITE_END);
 		multipleFire_c.setSelected(DEFAULT_MULTIPLE_FIRE);
 		swapOnlyLivingPlayer_c.setSelected(DEFAULT_SWAP_ONLY_LIVING_PLAYER);
+		autoRestartGame_c.setSelected(DEFAULT_AUTO_RESTART_GAME);
 		for (final Enumeration<AbstractButton> abstractButtons = killsBelongTo_c.getElements(); abstractButtons.hasMoreElements();) {
 			final AbstractButton abstractButton = abstractButtons.nextElement();
 			if (abstractButton.getActionCommand().equals(DEFAULT_KILLS_BELONG_TO.name())) {
@@ -465,6 +474,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		serverOptions.setPunchedBombsComeBackAtTheOppositeEnd(punchedBombsComeBackAtTheOppositeEnd_c.isSelected());
 		serverOptions.setMultipleFire(multipleFire_c.isSelected());
 		serverOptions.setSwapOnlyLivingPlayer(swapOnlyLivingPlayer_c.isSelected());
+		serverOptions.setAutoRestartGame(autoRestartGame_c.isSelected());
 		serverOptions.setKillsBelongTo(KillsBelongTos.valueOf(killsBelongTo_c.getSelection().getActionCommand()));
 
 		serverOptions.setAmountOfBrickWalls((Integer) amountOfBrickWalls_c.getValue());
@@ -501,6 +511,7 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		punchedBombsComeBackAtTheOppositeEnd_c.setSelected(options.isPunchedBombsComeBackAtTheOppositeEnd());
 		multipleFire_c.setSelected(options.isMultipleFire());
 		swapOnlyLivingPlayer_c.setSelected(options.isSwapOnlyLivingPlayer());
+		autoRestartGame_c.setSelected(options.isAutoRestartGame());
 		for (final Enumeration<AbstractButton> abstractButtons = killsBelongTo_c.getElements(); abstractButtons.hasMoreElements();) {
 			final AbstractButton abstractButton = abstractButtons.nextElement();
 			if (abstractButton.getActionCommand().equals(options.getKillsBelongTo().name())) {
