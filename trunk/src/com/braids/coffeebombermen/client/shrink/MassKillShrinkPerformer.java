@@ -3,8 +3,8 @@ package com.braids.coffeebombermen.client.shrink;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.sound.SoundEffect;
-import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.model.ServerOptions;
 
 public class MassKillShrinkPerformer extends AbstractShrinkPerformer {

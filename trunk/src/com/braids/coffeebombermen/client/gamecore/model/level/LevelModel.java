@@ -21,9 +21,11 @@ public class LevelModel {
 	public LevelModel(final LevelOptions levelOptions) {
 		this.levelOptions = levelOptions;
 		components = new LevelComponent[levelOptions.getLevelHeight()][levelOptions.getLevelWidth()];
-		for (final LevelComponent[] componentRow : components)
-			for (int i = 0; i < componentRow.length; i++)
+		for (final LevelComponent[] componentRow : components) {
+			for (int i = 0; i < componentRow.length; i++) {
 				componentRow[i] = new LevelComponent();
+			}
+		}
 	}
 
 	/**

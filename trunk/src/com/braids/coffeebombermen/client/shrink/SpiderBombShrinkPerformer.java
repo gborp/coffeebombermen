@@ -1,8 +1,8 @@
 package com.braids.coffeebombermen.client.shrink;
 
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
-import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.utils.MathHelper;
 
 public class SpiderBombShrinkPerformer extends AbstractShrinkPerformer {
@@ -35,7 +35,7 @@ public class SpiderBombShrinkPerformer extends AbstractShrinkPerformer {
 				}
 
 				// increase chance for laying spider bomb
-				if (chance < 1.0f && MathHelper.checkRandomEvent(0.002f)) {
+				if ((chance < 1.0f) && MathHelper.checkRandomEvent(0.002f)) {
 					chance = Math.min(chance + PLACE_SPIDER_CHANCE, 1.0f);
 				}
 				setLastShrinkOperationAt();

@@ -90,7 +90,7 @@ public class Level {
 
 		// We decide what item and if there will be an item after the fire,
 		// cause it has to be appeared from the middle of the fire.
-		if (levelComponent.getWall() == Walls.BRICK && levelComponent.getItem() == null) {
+		if ((levelComponent.getWall() == Walls.BRICK) && (levelComponent.getItem() == null)) {
 			// Item has to be generated once (see: time delayed multiple fire).
 			if (gameCoreHandler.getGlobalServerOptions().getGettingItemProbability() > gameCoreHandler.getRandom().nextInt(100)) {
 				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(gameCoreHandler.getGlobalServerOptions().getLevelOptions()
@@ -118,13 +118,15 @@ public class Level {
 	 * Performs operations which are required by passing the time.
 	 */
 	public void nextIteration() {
-		for (final List<Fire>[] fireVectors : fireVectorss)
-			for (final List<Fire> fireVector : fireVectors)
+		for (final List<Fire>[] fireVectors : fireVectorss) {
+			for (final List<Fire> fireVector : fireVectors) {
 				for (int i = fireVector.size() - 1; i >= 0; i--) {
 					// Cannot be enhanced: fire can remove itself. And because
 					// it can remove itself, cycle must be downward...
 					fireVector.get(i).nextIteration();
 				}
+			}
+		}
 	}
 
 }

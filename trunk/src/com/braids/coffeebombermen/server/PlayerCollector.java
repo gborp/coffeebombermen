@@ -123,7 +123,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 	 * stopAcceptingClients()
 	 */
 	private void closeServerSocket() {
-		if (serverSocket != null)
+		if (serverSocket != null) {
 			try {
 				final ServerSocket serverSocket_copy = serverSocket;
 				serverSocket = null; // First we have to set to null the
@@ -135,6 +135,7 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 			} catch (final IOException ie) {
 				ie.printStackTrace();
 			}
+		}
 	}
 
 	/**
@@ -166,9 +167,10 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 				clientContacts.add(newClientContact);
 
 				newClientContact.connectionStub.sendMessage("" + clientContacts.size());
-				for (final ClientContact clientContact : clientContacts)
+				for (final ClientContact clientContact : clientContacts) {
 					newClientContact.connectionStub.sendMessage(clientContact.publicClientOptions.packToString());
-				// End of joining protocol
+					// End of joining protocol
+				}
 
 				server.broadcastMessage(Server.SERVER_CHAT_NAME + newClientContact.publicClientOptions.clientName + " has joined the game.");
 			} catch (final IOException ie) {
@@ -202,11 +204,13 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 							// Introducing ourself...
 							connectionStub.sendMessage(SERVER_IDENTIFICATION_STRING);
 							// Authentication of the client...
-							if (!connectionStub.receiveMessage().equals(Client.CLIENT_IDENTIFICATION_STRING))
+							if (!connectionStub.receiveMessage().equals(Client.CLIENT_IDENTIFICATION_STRING)) {
 								throw new AcceptingClientFailedException("Client is not a " + Consts.APPLICATION_NAME + " cilent");
+							}
 							connectionStub.sendMessage(Consts.APPLICATION_VERSION);
-							if (!connectionStub.receiveMessage().equals(Consts.APPLICATION_VERSION))
+							if (!connectionStub.receiveMessage().equals(Consts.APPLICATION_VERSION)) {
 								throw new AcceptingClientFailedException("Incompatible versions");
+							}
 							final String gamePassword = serverOptionsManager.getOptions().getPassword();
 							final String receivedGamePassword = connectionStub.receiveMessage();
 							if (gamePassword.equals("") || gamePassword.equals(receivedGamePassword)) {
@@ -219,15 +223,17 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 							// The joining protocol is finished in the
 							// nextIteration() method
 						} catch (final AcceptingClientFailedException ae) {
-							if (connectionStub_ != null)
+							if (connectionStub_ != null) {
 								connectionStub_.close();
+							}
 						} catch (final IOException ie) {}
-					} else
+					} else {
 						try {
 							Thread.sleep(10l);
 						} catch (final InterruptedException ie) {
 							ie.printStackTrace();
 						}
+					}
 				}
 				closed = true;
 			}
@@ -243,8 +249,9 @@ public class PlayerCollector implements OptionsChangeListener<ServerOptions> {
 		closeServerSocket();
 		try {
 			// Not join(), because PlayerCollector is not a thread!
-			while (!closed)
+			while (!closed) {
 				Thread.sleep(10l);
+			}
 		} catch (final InterruptedException ie) {
 			ie.printStackTrace();
 		}

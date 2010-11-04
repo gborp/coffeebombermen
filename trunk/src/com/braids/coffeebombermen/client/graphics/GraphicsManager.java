@@ -135,8 +135,9 @@ public class GraphicsManager {
 
 		// Loading the window icon image
 		graphicsManager.windowIconImage = new ImageIcon(themeDirectoryName + WINDOW_ICON_IMAGE_FILE_NAME).getImage();
-		if (graphicsManager.windowIconImage.getWidth(null) < 0 || graphicsManager.windowIconImage.getHeight(null) < 0)
+		if ((graphicsManager.windowIconImage.getWidth(null) < 0) || (graphicsManager.windowIconImage.getHeight(null) < 0)) {
 			throw new CorruptGraphicalThemeException("Cannot load window icon from file " + themeDirectoryName + WINDOW_ICON_IMAGE_FILE_NAME);
+		}
 
 		// Reading properties from the theme properties file
 		try {
@@ -174,16 +175,18 @@ public class GraphicsManager {
 			width = Integer.parseInt(lineTokenizer.nextToken());
 			height = Integer.parseInt(lineTokenizer.nextToken());
 			final int[] activityPhasesCounts = new int[Activities.values().length];
-			for (int i = 0; i < activityPhasesCounts.length; i++)
+			for (int i = 0; i < activityPhasesCounts.length; i++) {
 				activityPhasesCounts[i] = Integer.parseInt(lineTokenizer.nextToken());
+			}
 
 			graphicsManager.playerGraphics = loadPlayerGraphics(themeDirectoryName + BOMBERMAN_PHASES_FILE_NAME, width, height, activityPhasesCounts);
 
 			lineTokenizer = nextDataLineStringTokenizer(themePropertyFileReader);
 			size = Integer.parseInt(lineTokenizer.nextToken());
 			final int[] bombTypePhasesCounts = new int[BombTypes.values().length];
-			for (int i = 0; i < bombTypePhasesCounts.length; i++)
+			for (int i = 0; i < bombTypePhasesCounts.length; i++) {
 				bombTypePhasesCounts[i] = Integer.parseInt(lineTokenizer.nextToken());
+			}
 			graphicsManager.bombPhaseHandlers = loadPhases(themeDirectoryName + BOMB_PHASES_FILE_NAME, size, size, bombTypePhasesCounts, null);
 
 			lineTokenizer = nextDataLineStringTokenizer(themePropertyFileReader);
@@ -235,8 +238,9 @@ public class GraphicsManager {
 	 */
 	private static StringTokenizer nextDataLineStringTokenizer(final DataTextFileReader themePropertyFileReader) throws CorruptGraphicalThemeException {
 		final String propertyLine = themePropertyFileReader.readNextDataLine();
-		if (propertyLine == null)
+		if (propertyLine == null) {
 			throw new CorruptGraphicalThemeException(constructErrorMessage("Data read error or insufficent data", themePropertyFileReader));
+		}
 		return new StringTokenizer(propertyLine);
 	}
 
@@ -320,20 +324,24 @@ public class GraphicsManager {
 	private static ImageHandler[] loadImages(final String fileName, final int width, final int height, final int[] backgroundRGB)
 	        throws CorruptGraphicalThemeException {
 		final Image image = new ImageIcon(fileName).getImage();
-		if (image == null)
+		if (image == null) {
 			throw new CorruptGraphicalThemeException("Cannot load graphics data from file: " + fileName + "!");
-		if (image.getWidth(null) < width)
+		}
+		if (image.getWidth(null) < width) {
 			throw new CorruptGraphicalThemeException("Graphics file " + fileName
 			        + " does not contain images having width specified by the theme property file!");
-		if (image.getHeight(null) < height)
+		}
+		if (image.getHeight(null) < height) {
 			throw new CorruptGraphicalThemeException("Graphics file " + fileName
 			        + " must contain at least 1 image having height specified by the theme property file!");
+		}
 
 		final BufferedImage bufferedImage = GeneralUtilities.createDisplayCompatibleBufferedImage(image.getWidth(null), image.getHeight(null), true);
 		bufferedImage.createGraphics().drawImage(image, 0, 0, null);
 
-		if (backgroundRGB != null)
+		if (backgroundRGB != null) {
 			backgroundRGB[0] = bufferedImage.getRGB(0, 0);
+		}
 
 		final ArrayList<ImageHandler> imageHandlers = new ArrayList<ImageHandler>();
 		int yPosition = 0;
@@ -403,11 +411,12 @@ public class GraphicsManager {
 	        throws CorruptGraphicalThemeException {
 
 		final Image image = new ImageIcon(fileName).getImage();
-		if (image == null)
+		if (image == null) {
 			throw new CorruptGraphicalThemeException("Cannot load graphics data from file: " + fileName + "!");
+		}
 
-		for (int i = 0; i < phasesCounts.length; i++)
-			if (image.getWidth(null) < width * phasesCounts[i] + phasesCounts[i] - 1) // These
+		for (int i = 0; i < phasesCounts.length; i++) {
+			if (image.getWidth(null) < width * phasesCounts[i] + phasesCounts[i] - 1) {
 				// are
 				// the
 				// plus
@@ -415,12 +424,15 @@ public class GraphicsManager {
 				// lines
 				throw new CorruptGraphicalThemeException("Graphics file " + fileName
 				        + " does not contain enough phases having width specified by the theme property file (phase row: " + (i + 1) + ")!");
+			}
+		}
 
-		if (image.getHeight(null) < height * phasesCounts.length + phasesCounts.length - 1) // ...the
+		if (image.getHeight(null) < height * phasesCounts.length + phasesCounts.length - 1) {
 			// separator
 			// lines
 			throw new CorruptGraphicalThemeException("Graphics file " + fileName
 			        + " does not contain enough phase rows having height specified by the theme property file!");
+		}
 
 		final BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 		bufferedImage.createGraphics().drawImage(image, 0, 0, null);
@@ -430,10 +442,11 @@ public class GraphicsManager {
 			filteredImage = bufferedImage;
 		} else {
 			for (int y = bufferedImage.getHeight() - 1; y >= 0; y--) {
-				for (int x = bufferedImage.getWidth() - 1; x >= 0; x--)
+				for (int x = bufferedImage.getWidth() - 1; x >= 0; x--) {
 					if (bufferedImage.getRGB(x, y) == 0xffffffff) {
 						bufferedImage.setRGB(x, y, 0x00000000);
 					}
+				}
 			}
 
 			filteredImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
@@ -443,8 +456,9 @@ public class GraphicsManager {
 		final ImageHandler[][] phaseHandlers = new ImageHandler[phasesCounts.length][];
 		for (int i = 0; i < phasesCounts.length; i++) {
 			phaseHandlers[i] = new ImageHandler[phasesCounts[i]];
-			for (int j = 0; j < phaseHandlers[i].length; j++)
+			for (int j = 0; j < phaseHandlers[i].length; j++) {
 				phaseHandlers[i][j] = new ImageHandler(filteredImage.getSubimage(j * (width + 1), i * (height + 1), width, height));
+			}
 		}
 
 		return phaseHandlers;

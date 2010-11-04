@@ -14,8 +14,8 @@ import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
 import java.util.HashMap;
 
-import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptConsts.ImageScalingAlgorithms;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.model.ClientOptions;
 
 /**
@@ -53,8 +53,9 @@ public class ImageHandler {
 
 		                                                                                     public void optionsChanged(final ClientOptions oldOptions,
 		                                                                                             final ClientOptions newOptions) {
-			                                                                                     if (newOptions.imageScalingAlgorithm != oldOptions.imageScalingAlgorithm)
+			                                                                                     if (newOptions.imageScalingAlgorithm != oldOptions.imageScalingAlgorithm) {
 				                                                                                     imageScalingAlgorithm = newOptions.imageScalingAlgorithm;
+			                                                                                     }
 		                                                                                     }
 
 	                                                                                     };
@@ -97,7 +98,7 @@ public class ImageHandler {
 	}
 
 	public Image getScaledImage(final float scaleFactor, boolean transparent) {
-		if (this.scaleFactor == scaleFactor && usedimageScalingAlgorithm == imageScalingAlgorithm) {
+		if ((this.scaleFactor == scaleFactor) && (usedimageScalingAlgorithm == imageScalingAlgorithm)) {
 			return scaledImage;
 		}
 		// Invoking Math.max() because with or height cannot be zero (and that

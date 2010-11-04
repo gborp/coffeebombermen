@@ -240,8 +240,9 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 *            handler of the main component to be set
 	 */
 	public void setMainComponentHandler(final MainComponentHandler mainComponentHandler) {
-		if (this.mainComponentHandler != null)
+		if (this.mainComponentHandler != null) {
 			this.mainComponentHandler.releaseMainComponent();
+		}
 		this.mainComponentHandler = mainComponentHandler;
 		this.mainComponentHandler.reinitMainComponent();
 	}
@@ -256,8 +257,9 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 *            the new options are about to become effective
 	 */
 	public void optionsChanged(final ClientOptions oldOptions, final ClientOptions newOptions) {
-		if (newOptions.graphicalTheme == null || !newOptions.graphicalTheme.equals(oldOptions.graphicalTheme))
+		if ((newOptions.graphicalTheme == null) || !newOptions.graphicalTheme.equals(oldOptions.graphicalTheme)) {
 			loadGraphicalTheme(oldOptions.graphicalTheme);
+		}
 	}
 
 	/**
@@ -270,8 +272,9 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 *            the new options are about to become effective
 	 */
 	public void optionsChanged(final ServerOptions oldOptions, final ServerOptions newOptions) {
-		if (!newOptions.getLevelName().equals(oldOptions.getLevelName()))
+		if (!newOptions.getLevelName().equals(oldOptions.getLevelName())) {
 			loadLevel(oldOptions.getLevelName());
+		}
 	}
 
 	/**
@@ -301,9 +304,9 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 */
 	public void loadLevel(final String oldLevelName) {
 		final String levelName = serverOptionsManager.getOptions().getLevelName();
-		if (levelName.equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME))
+		if (levelName.equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME)) {
 			level = null;
-		else {
+		} else {
 			final String levelFileName = Consts.LEVELS_DIRECTORY_NAME + levelName + Consts.LEVEL_FILE_EXTENSION;
 			try {
 				final BufferedReader levelFile = new BufferedReader(new FileReader(levelFileName));
@@ -339,7 +342,8 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 * To handle create menu item and create a game.
 	 */
 	public void createGame() {
-		if (server == null & client == null) { // Checking this condition is not
+		if ((server == null) & (client == null)) { // Checking this condition is
+												   // not
 			// neccessary, action of menu
 			// causing invoking of this
 			// method is possible only when
@@ -350,23 +354,26 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 				mainMenuBar.setOurServerRunning(true);
 				mainFrame.getMainMenuBar().setGameState(GameStates.PLAYER_COLLECTING_NOT_CONNECTED);
 				joinAGame(true);
-			} else
+			} else {
 				// We can't join to our game, we close it.
 				closeGame();
-		} else
+			}
+		} else {
 			JOptionPane.showMessageDialog(mainFrame, "Already created or joined, close game first!", "Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	/**
 	 * To handle join menu item and join to a game.
 	 */
 	public void joinAGame() {
-		if (client == null) // Checking this condition is not neccessary, action
+		if (client == null) {
 			// of menu causing invoking of this method is
 			// possible only when we're not joined
 			joinAGame(false);
-		else
+		} else {
 			JOptionPane.showMessageDialog(mainFrame, "Already joined, close game first!", "Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	/**
@@ -392,20 +399,22 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 * To handle start current game menu item and start current game.
 	 */
 	public void startCurrentGame() {
-		if (server != null) // Checking this condition is not neccessary, action
+		if (server != null) {
 			// of menu causing invoking of this method is
 			// possible only when local server running...
 			server.startCurrentGame();
+		}
 	}
 
 	/**
 	 * To handle end current game menu item and end current game.
 	 */
 	public void endCurrentGame() {
-		if (server != null) // Checking this condition is not neccessary, action
+		if (server != null) {
 			// of menu causing invoking of this method is
 			// possible only when local server running...
 			server.endCurrentGame();
+		}
 	}
 
 	/**
@@ -461,10 +470,11 @@ public class GameManager implements MainMenuHandler, OptionsChangeListener<Clien
 	 * options dialog.
 	 */
 	public void showGlobalServerOptionsDialog() {
-		if (client != null) // Checking this condition is not neccessary, action
+		if (client != null) {
 			// of menu causing invoking of this method is
 			// possible only when we're joined
 			client.requestGlobalServerOptions();
+		}
 	}
 
 	/**

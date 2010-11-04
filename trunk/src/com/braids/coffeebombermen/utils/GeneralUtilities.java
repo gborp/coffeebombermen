@@ -43,13 +43,16 @@ public class GeneralUtilities {
 	public static String[] getSubdirectoryNames(final String directoryName) {
 		final File[] fileList = new File(directoryName).listFiles();
 
-		if (fileList == null)
+		if (fileList == null) {
 			return new String[0];
+		}
 
 		final List<String> subdirectoryNames = new ArrayList<String>();
-		for (final File file : fileList)
-			if (file.isDirectory())
+		for (final File file : fileList) {
+			if (file.isDirectory()) {
 				subdirectoryNames.add(file.getName());
+			}
+		}
 
 		return subdirectoryNames.toArray(new String[subdirectoryNames.size()]);
 	}
@@ -66,14 +69,16 @@ public class GeneralUtilities {
 	public static String[] getFileNamesWithoutExtension(final String directoryName, final String extension) {
 		final File[] fileList = new File(directoryName).listFiles();
 
-		if (fileList == null)
+		if (fileList == null) {
 			return new String[0];
+		}
 
 		final List<String> fileNamesWithoutExtension = new ArrayList<String>();
 		for (final File file : fileList) {
 			final String fileName = file.getName();
-			if (file.isFile() && fileName.endsWith(extension))
+			if (file.isFile() && fileName.endsWith(extension)) {
 				fileNamesWithoutExtension.add(fileName.substring(0, fileName.length() - extension.length()));
+			}
 		}
 
 		return fileNamesWithoutExtension.toArray(new String[fileNamesWithoutExtension.size()]);
@@ -82,14 +87,16 @@ public class GeneralUtilities {
 	public static String[] getFileNames(final String directoryName) {
 		final File[] fileList = new File(directoryName).listFiles();
 
-		if (fileList == null)
+		if (fileList == null) {
 			return new String[0];
+		}
 
 		final List<String> result = new ArrayList<String>();
 		for (final File file : fileList) {
 			final String fileName = file.getName();
-			if (file.isFile())
+			if (file.isFile()) {
 				result.add(fileName);
+			}
 		}
 
 		return result.toArray(new String[result.size()]);
@@ -110,11 +117,12 @@ public class GeneralUtilities {
 	 *         with the default display
 	 */
 	public static BufferedImage createDisplayCompatibleBufferedImage(final int width, final int height, final boolean opaque) {
-		if (opaque)
+		if (opaque) {
 			return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
-		else
+		} else {
 			return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height,
 			        Transparency.TRANSLUCENT);
+		}
 	}
 
 	/**
@@ -141,7 +149,7 @@ public class GeneralUtilities {
 	 * @return true if the specified 2 rectangle intersect; false otherwise
 	 */
 	public static boolean intersect(final int x11, final int y11, final int x12, final int y12, final int x21, final int y21, final int x22, final int y22) {
-		return !(x12 < x21 || x11 > x22 || y12 < y21 || y11 > y22);
+		return !((x12 < x21) || (x11 > x22) || (y12 < y21) || (y11 > y22));
 	}
 
 	/**
@@ -159,15 +167,17 @@ public class GeneralUtilities {
 	public static int pickWeightedRandom(final int[] weights, final Random random) {
 		int sumWeight = 0;
 
-		for (final int weight : weights)
+		for (final int weight : weights) {
 			sumWeight += weight;
+		}
 
 		int randomWeight = random.nextInt(sumWeight);
 
 		for (int i = 0; i < weights.length; i++) {
 			randomWeight -= weights[i];
-			if (randomWeight <= 0)
+			if (randomWeight <= 0) {
 				return i;
+			}
 		}
 
 		return 0;

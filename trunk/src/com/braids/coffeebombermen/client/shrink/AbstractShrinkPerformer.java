@@ -94,7 +94,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		int width = levelModel.getWidth();
 		int height = levelModel.getHeight();
 
-		if (x >= 0 && x < width && y >= 0 && y < height) {
+		if ((x >= 0) && (x < width) && (y >= 0) && (y < height)) {
 			LevelComponent comp = levelModel.getComponent(x, y);
 			comp.setItem(null);
 			gameCoreHandler.setWall(x, y, Walls.DEATH);
@@ -131,7 +131,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		newBombModel.setPhase(BombPhases.ROLLING);
 		gameCoreHandler.addNewBomb(newBomb);
 
-		if (x > 0 && y > 0 && x < levelModel.getWidth() - 2 && y > levelModel.getHeight() - 2) {
+		if ((x > 0) && (y > 0) && (x < levelModel.getWidth() - 2) && (y > levelModel.getHeight() - 2)) {
 
 			// search for a direction open for roll
 			int directionDif = 0;

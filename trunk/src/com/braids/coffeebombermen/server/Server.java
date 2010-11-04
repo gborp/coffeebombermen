@@ -9,10 +9,10 @@ import com.braids.coffeebombermen.GameManager;
 import com.braids.coffeebombermen.MainFrame;
 import com.braids.coffeebombermen.MainMenuBar.GameStates;
 import com.braids.coffeebombermen.client.Client;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptionsManager;
 import com.braids.coffeebombermen.options.ServerComponentOptions;
-import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 import com.braids.coffeebombermen.options.model.ServerOptions;
 import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
@@ -143,14 +143,16 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 */
 	public boolean waitForAndCheckServerSocket() {
 		try {
-			while (playerCollector == null)
+			while (playerCollector == null) {
 				Thread.sleep(1l); // Very small because if server socket is
-			// created, we should join first
+				// created, we should join first
+			}
 		} catch (final InterruptedException ie) {
 			ie.printStackTrace();
 		}
-		if (playerCollector != null)
+		if (playerCollector != null) {
 			return playerCollector.isServerSocketCreated();
+		}
 		return false;
 	}
 
@@ -163,12 +165,14 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		while (true) { // The game loop: every iteration of this loop is one
 			// game.
 
-			if (requestedToCancel)
+			if (requestedToCancel) {
 				break;
+			}
 			collectPlayers();
 
-			if (requestedToCancel)
+			if (requestedToCancel) {
 				break;
+			}
 			gameState = GameStates.PLAYING;
 			handleGame();
 			gameState = GameStates.PLAYER_COLLECTING_CONNECTED;
@@ -208,17 +212,19 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		broadcastCommand("" + new Random().nextLong());
 		final ServerOptions serverOptions = serverOptionsManager.getOptions();
 		broadcastCommand(serverOptions.packToString());
-		if (!serverOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME))
+		if (!serverOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME)) {
 			broadcastCommand(gameManager.getLevel().packToString());
+		}
 
 		iterationTimer.setFrequency(serverOptions.getGameCycleFrequency());
 		nextIterationMayBegin = false;
 		iterationTimer.setReadyForNextIteration();
 
-		for (final ClientContact clientContact : clientContacts)
+		for (final ClientContact clientContact : clientContacts) {
 			clientContact.newClientActions = ""; // Simulating that all the
-		// clients are ready for next
-		// iteration
+			// clients are ready for next
+			// iteration
+		}
 
 		startNextRound();
 		broadcastStartingNextIterationCommand();
@@ -298,9 +304,11 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 *         otherwise
 	 */
 	private boolean areAllClientsReadyForNextIteration() {
-		for (final ClientContact clientContact : clientContacts)
-			if (clientContact.newClientActions == null)
+		for (final ClientContact clientContact : clientContacts) {
+			if (clientContact.newClientActions == null) {
 				return false;
+			}
+		}
 
 		return true;
 	}
@@ -313,7 +321,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		for (int i = 0; i < clientContacts.size(); i++) {
 			// Can't use enhanced for because elements can be removed (QUIT)
 			final ClientContact clientContact = clientContacts.get(i);
-			messageLoop: while (clientContact.connectionStub.hasNewMessage())
+			messageLoop: while (clientContact.connectionStub.hasNewMessage()) {
 				try {
 					final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(clientContact.connectionStub.receiveMessage());
 					switch (Commands.values()[commandTokenizer.nextIntToken()]) {
@@ -352,6 +360,7 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 				} catch (final Exception e) {
 					e.printStackTrace();
 				}
+			}
 		}
 	}
 
@@ -373,12 +382,13 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	 *            command to be broadcasted
 	 */
 	protected void broadcastCommand(final String command) {
-		for (final ClientContact clientContact : clientContacts)
+		for (final ClientContact clientContact : clientContacts) {
 			try {
 				clientContact.connectionStub.sendMessage(command);
 			} catch (final IOException ie) {
 				ie.printStackTrace();
 			}
+		}
 	}
 
 	/**
@@ -388,8 +398,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		iterationCounter = 0;
 		requestedToStartGame = true;
 		try {
-			while (gameState != GameStates.PLAYING)
+			while (gameState != GameStates.PLAYING) {
 				Thread.sleep(1l);
+			}
 		} catch (final InterruptedException ie) {
 			ie.printStackTrace();
 		}
@@ -401,8 +412,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 	public void endCurrentGame() {
 		requestedToEndGame = true;
 		try {
-			while (gameState == GameStates.PLAYING)
+			while (gameState == GameStates.PLAYING) {
 				Thread.sleep(1l);
+			}
 		} catch (final InterruptedException ie) {}
 	}
 
@@ -451,8 +463,9 @@ public class Server extends TimedIterableControlledThread implements OptionsChan
 		serverOptionsManager.unregisterOptionsChangeListener(this);
 		broadcastMessage(SERVER_CHAT_NAME + "Server is going for a shutdown...");
 		broadcastCommand(Client.Commands.SHUTDOWN + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
-		for (final ClientContact clientContact : clientContacts)
+		for (final ClientContact clientContact : clientContacts) {
 			clientContact.connectionStub.close();
+		}
 	}
 
 }

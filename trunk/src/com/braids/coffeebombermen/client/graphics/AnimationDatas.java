@@ -34,5 +34,4 @@ public class AnimationDatas {
 		this.framesPerSec = framesPerSec;
 		this.backgroundColor = backgroundColor;
 	}
-
 }

@@ -44,8 +44,9 @@ public class ControlledTimer extends ControlledThread {
 		try {
 			while (!requestedToCancel) {
 				final long timeToWaitBeforeNextCheck = periodTime / 25l + 1l;
-				while (!requestedToCancel && !readyForNextIteration)
+				while (!requestedToCancel && !readyForNextIteration) {
 					sleep(timeToWaitBeforeNextCheck);
+				}
 				sleep(periodTime);
 				if (!requestedToCancel) {
 					readyForNextIteration = false;

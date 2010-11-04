@@ -269,7 +269,7 @@ public class PlayerModel extends PositionedIterableObject {
 	}
 
 	public void addDisease(Diseases disease, Long expire) {
-		if (!mapOwnedDiseases.containsKey(disease) || mapOwnedDiseases.get(disease) < expire) {
+		if (!mapOwnedDiseases.containsKey(disease) || (mapOwnedDiseases.get(disease) < expire)) {
 			mapOwnedDiseases.put(disease, expire);
 		}
 	}

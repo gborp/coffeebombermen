@@ -133,20 +133,24 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 	 *            mode
 	 */
 	public void setFullScreenMode(final boolean fullScreen) {
-		if (isVisible() && getExtendedState() == NORMAL)
+		if (isVisible() && (getExtendedState() == NORMAL)) {
 			getBounds(windowModeBounds);
+		}
 
 		final boolean wasVisible = isVisible();
-		if (isDisplayable())
+		if (isDisplayable()) {
 			dispose();
+		}
 
 		setUndecorated(fullScreen == true);
 		setExtendedState(fullScreen ? MAXIMIZED_BOTH : NORMAL);
-		if (!fullScreen)
+		if (!fullScreen) {
 			setBounds(windowModeBounds);
+		}
 
-		if (wasVisible)
+		if (wasVisible) {
 			setVisible(true);
+		}
 	}
 
 	/**
@@ -157,8 +161,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 	 */
 	public void actionPerformed(final ActionEvent ae) {
 		if (newMessageTextField.getText().length() > 0) {
-			if (messageHandler != null)
+			if (messageHandler != null) {
 				messageHandler.handleMessage(newMessageTextField.getText());
+			}
 			newMessageTextField.setText("");
 		}
 	}
@@ -191,13 +196,18 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 	 */
 	public void keyTyped(final KeyEvent ke) {
 		final Object source = ke.getSource();
-		if (ke.getKeyChar() == KeyEvent.VK_ENTER)
-			if (source == mainComponent)
+		if (ke.getKeyChar() == KeyEvent.VK_ENTER) {
+			if (source == mainComponent) {
 				newMessageTextField.requestFocusInWindow();
-		if (ke.getKeyChar() == KeyEvent.VK_ESCAPE)
-			if (source == newMessageTextField)
-				if (mainComponent != null)
+			}
+		}
+		if (ke.getKeyChar() == KeyEvent.VK_ESCAPE) {
+			if (source == newMessageTextField) {
+				if (mainComponent != null) {
 					mainComponent.requestFocusInWindow();
+				}
+			}
+		}
 	}
 
 	/**
@@ -208,8 +218,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 	 *            details of the mouse event
 	 */
 	public void mouseClicked(final MouseEvent mouseEvent) {
-		if (mainComponent != null)
+		if (mainComponent != null) {
 			mainComponent.requestFocusInWindow();
+		}
 	}
 
 	/**
@@ -281,8 +292,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener, Mo
 	 *         positions of the splitters
 	 */
 	public String packWindowAndSplitterPositions() {
-		if (isVisible() && getExtendedState() == NORMAL)
+		if (isVisible() && (getExtendedState() == NORMAL)) {
 			getBounds(windowModeBounds);
+		}
 
 		StringBuilder buffer = new StringBuilder();
 

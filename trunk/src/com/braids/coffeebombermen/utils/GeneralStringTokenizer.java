@@ -54,8 +54,9 @@ public class GeneralStringTokenizer {
 	 */
 	public String nextStringToken() {
 		lastTokenFirstIndex = lastTokenLastIndex + 1;
-		while (stringChars[++lastTokenLastIndex] != GENERAL_SEPARATOR_CHAR)
+		while (stringChars[++lastTokenLastIndex] != GENERAL_SEPARATOR_CHAR) {
 			;
+		}
 		return new String(stringChars, lastTokenFirstIndex, lastTokenLastIndex - lastTokenFirstIndex);
 	}
 

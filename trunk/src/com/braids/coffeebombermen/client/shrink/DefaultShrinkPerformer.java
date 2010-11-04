@@ -1,8 +1,8 @@
 package com.braids.coffeebombermen.client.shrink;
 
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
-import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.model.ServerOptions;
 import com.braids.coffeebombermen.utils.MathHelper;
 
@@ -70,7 +70,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 
 			if (isTimeToFirstShrink() || isTimeToNextShrink((gso.getGameCycleFrequency() / (speedupSteps > 0 ? SPEEDUP_RATIO : 1)))) {
 
-				if (!isTimeToFirstShrink() && speedupSteps <= 0 && preSpeedupWarn <= 0 && lastNewWallX != -1
+				if (!isTimeToFirstShrink() && (speedupSteps <= 0) && (preSpeedupWarn <= 0) && (lastNewWallX != -1)
 				        && MathHelper.checkRandomEvent(SPEEDUP_POSSIBILITY)) {
 					preSpeedupWarn = PRE_SPEEDUP_TICKS;
 				}
@@ -115,7 +115,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 					}
 
 				} else {
-					if (shrinkMaxX <= shrinkMinX && shrinkMaxY <= shrinkMinY) {
+					if ((shrinkMaxX <= shrinkMinX) && (shrinkMaxY <= shrinkMinY)) {
 						newWallX = -1;
 					} else {
 						if (shrinkType == ShrinkType.CLOCKWISE_SPIRAL) {
@@ -184,7 +184,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 					}
 				}
 
-				if (newWallX >= 0 && newWallX < getWidth() && newWallY >= 0 && newWallY < getHeight()) {
+				if ((newWallX >= 0) && (newWallX < getWidth()) && (newWallY >= 0) && (newWallY < getHeight())) {
 					addDeathWall(newWallX, newWallY);
 				}
 				setLastShrinkOperationAt();

@@ -58,8 +58,9 @@ public abstract class ControlledThread extends Thread {
 	 * thread.
 	 */
 	public void finalize() {
-		if (!requestedToCancel)
+		if (!requestedToCancel) {
 			requestToCancel();
+		}
 	}
 
 }

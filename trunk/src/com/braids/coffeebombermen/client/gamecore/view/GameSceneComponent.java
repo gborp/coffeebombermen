@@ -27,10 +27,10 @@ import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.graphics.GraphicsManager;
 import com.braids.coffeebombermen.client.graphics.ImageHandler;
 import com.braids.coffeebombermen.options.Diseases;
-import com.braids.coffeebombermen.options.OptionsChangeListener;
-import com.braids.coffeebombermen.options.OptionsManager;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.OptionsChangeListener;
+import com.braids.coffeebombermen.options.OptionsManager;
 import com.braids.coffeebombermen.options.model.ClientOptions;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 
@@ -151,13 +151,16 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 *            graphics context in which to paint
 	 */
 	public void paintComponent(Graphics g) {
-		if (GraphicsManager.getCurrentManager() == null) // No graphics theme
+		if (GraphicsManager.getCurrentManager() == null) {
 			// loaded
 			return;
-		if (gameCoreHandler == null) // No game started yet
+		}
+		if (gameCoreHandler == null) {
 			return;
-		if (gameCoreHandler.getLevelModel() == null) // No level created yet
+		}
+		if (gameCoreHandler.getLevelModel() == null) {
 			return;
+		}
 
 		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, getWidth(), getHeight());
@@ -193,7 +196,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				nextFlashStart = now;
 			}
 
-			if (now >= nextFlashStart && now < (nextFlashStart + flashDuration)) {
+			if ((now >= nextFlashStart) && (now < (nextFlashStart + flashDuration))) {
 				blackOut = false;
 			} else {
 				if (now >= (nextFlashStart + flashDuration)) {
@@ -266,23 +269,23 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		}
 
 		int dy = -2;
-		while (py + dy >= 0 && levelModel.getComponent(px, py + dy + 1).getWall() == Walls.EMPTY) {
+		while ((py + dy >= 0) && (levelModel.getComponent(px, py + dy + 1).getWall() == Walls.EMPTY)) {
 			mVisibility[py + dy][px] = MAX_VISIBILITY_IN_FOG;
 			dy--;
 		}
 		dy = 2;
-		while (py + dy < levelModel.getHeight() && levelModel.getComponent(px, py + dy - 1).getWall() == Walls.EMPTY) {
+		while ((py + dy < levelModel.getHeight()) && (levelModel.getComponent(px, py + dy - 1).getWall() == Walls.EMPTY)) {
 			mVisibility[py + dy][px] = MAX_VISIBILITY_IN_FOG;
 			dy++;
 		}
 
 		int dx = -2;
-		while (px + dx >= 0 && levelModel.getComponent(px + dx + 1, py).getWall() == Walls.EMPTY) {
+		while ((px + dx >= 0) && (levelModel.getComponent(px + dx + 1, py).getWall() == Walls.EMPTY)) {
 			mVisibility[py][px + dx] = MAX_VISIBILITY_IN_FOG;
 			dx--;
 		}
 		dx = 2;
-		while (px + dx < levelModel.getWidth() && levelModel.getComponent(px + dx - 1, py).getWall() == Walls.EMPTY) {
+		while ((px + dx < levelModel.getWidth()) && (levelModel.getComponent(px + dx - 1, py).getWall() == Walls.EMPTY)) {
 			mVisibility[py][px + dx] = MAX_VISIBILITY_IN_FOG;
 			dx++;
 		}
@@ -315,7 +318,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				if (visibility != MAX_VISIBILITY_IN_FOG) {
 					g2.fillRect(x, y, levelComponentSize, levelComponentSize);
 				}
-				if (visibility > 0 && (gameCoreHandler.getTick() & 7) == 0) {
+				if ((visibility > 0) && ((gameCoreHandler.getTick() & 7) == 0)) {
 					mVisibility[i][j] = visibility - 1;
 				}
 			}
@@ -409,9 +412,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		g2.setComposite(blackoutComposite);
 
 		if (!hasActualDetonation()) {
-			g2
-			        .fillRect(0, 0, gameCoreHandler.getLevelModel().getWidth() * levelComponentSize, gameCoreHandler.getLevelModel().getHeight()
-			                * levelComponentSize);
+			g2.fillRect(0, 0, gameCoreHandler.getLevelModel().getWidth() * levelComponentSize, gameCoreHandler.getLevelModel().getHeight() * levelComponentSize);
 			g2.setComposite(normalComposit);
 			return;
 		}
@@ -435,18 +436,18 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				int fwWidth = levelComponentSize;
 				int fwHeight = levelComponentSize;
 
-				if (i < levelModel.getHeight() - 1 && levelModel.getComponent(j, i + 1).hasFire()) {
+				if ((i < levelModel.getHeight() - 1) && levelModel.getComponent(j, i + 1).hasFire()) {
 					fwHeight -= levelComponentSize / 4;
 				}
-				if (i > 0 && levelModel.getComponent(j, i - 1).hasFire()) {
+				if ((i > 0) && levelModel.getComponent(j, i - 1).hasFire()) {
 					fwTop = true;
 					fwHeight -= levelComponentSize / 4;
 				}
-				if (j < levelModel.getWidth() - 1 && levelModel.getComponent(j + 1, i).hasFire()) {
+				if ((j < levelModel.getWidth() - 1) && levelModel.getComponent(j + 1, i).hasFire()) {
 					fwWidth -= levelComponentSize / 4;
 				}
 
-				if (j > 1 && levelModel.getComponent(j - 1, i).hasFire()) {
+				if ((j > 1) && levelModel.getComponent(j - 1, i).hasFire()) {
 					fwLeft = true;
 					fwWidth -= levelComponentSize / 4;
 				}
@@ -522,7 +523,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				Walls wall = levelComponent.getWall();
 				Items item = levelComponent.getItem();
 				if (!levelComponent.hasFire()) {
-					if (wall == Walls.EMPTY && item != null) {
+					if ((wall == Walls.EMPTY) && (item != null)) {
 						// item
 						g.drawImage(itemImageHandlers[item.ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 					} else {
@@ -536,21 +537,21 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 							int fwLeftHeight = levelComponentSize;
 							int fwRightHeight = levelComponentSize;
 
-							if (i < levelModel.getHeight() - 1 && levelModel.getComponent(j, i + 1).hasFire()) {
+							if ((i < levelModel.getHeight() - 1) && levelModel.getComponent(j, i + 1).hasFire()) {
 								fwTop = true;
 								fwLeftHeight -= levelComponentSize / 4;
 								fwRightHeight -= levelComponentSize / 4;
 							}
-							if (i > 0 && levelModel.getComponent(j, i - 1).hasFire()) {
+							if ((i > 0) && levelModel.getComponent(j, i - 1).hasFire()) {
 								fwBottom = true;
 								fwLeftHeight -= levelComponentSize / 4;
 								fwRightHeight -= levelComponentSize / 4;
 							}
-							if (j < levelModel.getWidth() - 1 && levelModel.getComponent(j + 1, i).hasFire()) {
+							if ((j < levelModel.getWidth() - 1) && levelModel.getComponent(j + 1, i).hasFire()) {
 								fwRight = true;
 							}
 
-							if (j > 1 && levelModel.getComponent(j - 1, i).hasFire()) {
+							if ((j > 1) && levelModel.getComponent(j - 1, i).hasFire()) {
 								fwLeft = true;
 							}
 
@@ -577,7 +578,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 				} else {
 					final FireModel fireModel = levelComponent.getLastFire();
 
-					if (wall == Walls.EMPTY && item == null) {
+					if ((wall == Walls.EMPTY) && (item == null)) {
 						g.drawImage(wallImageHandlers[wall.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 						paintFire(g, fireModel, x, y, fireScaleFactor);
 					} else {
@@ -593,7 +594,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 						} else {
 							// Now the item or the empty wall what will remain
 							// after the burning is visible through the burning.
-							if (wall != Walls.EMPTY && item != null) {
+							if ((wall != Walls.EMPTY) && (item != null)) {
 								// An item will remain
 								g.drawImage(itemImageHandlers[item.ordinal()].getScaledImage(itemScaleFactor, false), x, y, null);
 							} else {
@@ -644,10 +645,10 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 			int posYCorrection = 0;
 			if (bombModel.getPhase() == BombPhases.FLYING) {
-				if (bombModel.getIterationsDuringPhase() * CoreConsts.BOMB_FLYING_SPEED < CoreConsts.BOMB_FLYING_DISTANCE)
+				if (bombModel.getIterationsDuringPhase() * CoreConsts.BOMB_FLYING_SPEED < CoreConsts.BOMB_FLYING_DISTANCE) {
 					posYCorrection = -(int) (CoreConsts.BOMB_FLYING_ASCENDENCE_PRIMARY * Math.sin(Math.PI * bombModel.getIterationsDuringPhase()
 					        * CoreConsts.BOMB_FLYING_SPEED / CoreConsts.BOMB_FLYING_DISTANCE));
-				else {
+				} else {
 					final int posXInComponent = bombModel.getPosX() % CoreConsts.LEVEL_COMPONENT_GRANULARITY;
 					posYCorrection = -(int) (CoreConsts.BOMB_FLYING_ASCENDENCE_SECONDARY * Math.sin(Math.PI
 					        * (posXInComponent + (posXInComponent < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2 ? CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2
@@ -698,7 +699,7 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		for (int j = 0; j < playerModels.length; j++) {
 
 			final PlayerModel playerModel = playerModels[j];
-			if (playerModel.getActivity() == Activities.DYING && playerModel.getIterationCounter() + 1 >= playerModel.getActivity().activityIterations) {
+			if ((playerModel.getActivity() == Activities.DYING) && (playerModel.getIterationCounter() + 1 >= playerModel.getActivity().activityIterations)) {
 				// This is a dead player, must not be painted.
 				continue;
 			}
@@ -784,8 +785,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 	 */
 	private void refreshGraphicDatas() {
 		final GraphicsManager graphicsManager = GraphicsManager.getCurrentManager();
-		if (graphicsManager == null)
+		if (graphicsManager == null) {
 			return;
+		}
 
 		wallImageHandlers = graphicsManager.getWallImageHandlers();
 		itemImageHandlers = graphicsManager.getItemImageHandlers();
@@ -845,14 +847,17 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 
 		final int gamePlayersFromHost = playersControlKeyStates.length;
 		// Might not equal to the one at cilentOptions...
-		for (int i = 0; i < gamePlayersFromHost; i++)
-			for (int j = 0; j < playersControlKeys[i].length; j++)
-				if (keyCode == playersControlKeys[i][j] && playersControlKeyStates[i][j] == false) {
+		for (int i = 0; i < gamePlayersFromHost; i++) {
+			for (int j = 0; j < playersControlKeys[i].length; j++) {
+				if ((keyCode == playersControlKeys[i][j]) && (playersControlKeyStates[i][j] == false)) {
 					playersControlKeyStates[i][j] = true;
-					if (actions.length() > 0)
+					if (actions.length() > 0) {
 						actions += SPACE_STRING;
+					}
 					actions += i + SPACE_STRING + j + SPACE_STRING + 'p';
 				}
+			}
+		}
 	}
 
 	/**
@@ -872,14 +877,17 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		// one
 		// at
 		// cilentOptions...
-		for (int i = 0; i < gamePlayersFromHost; i++)
-			for (int j = 0; j < playersControlKeys[i].length; j++)
-				if (keyCode == playersControlKeys[i][j] && playersControlKeyStates[i][j] == true) {
+		for (int i = 0; i < gamePlayersFromHost; i++) {
+			for (int j = 0; j < playersControlKeys[i].length; j++) {
+				if ((keyCode == playersControlKeys[i][j]) && (playersControlKeyStates[i][j] == true)) {
 					playersControlKeyStates[i][j] = false;
-					if (actions.length() > 0)
+					if (actions.length() > 0) {
 						actions += SPACE_STRING;
+					}
 					actions += i + SPACE_STRING + j + SPACE_STRING + 'r';
 				}
+			}
+		}
 	}
 
 	/**
@@ -895,12 +903,14 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		final int gamePlayersFromHost = playersControlKeyStates.length;
 		// Might not equals to the one at cilentOptions...
 
-		cycle1: for (int i = 0; i < gamePlayersFromHost; i++)
-			for (int j = 0; j < newOptions.playersControlKeys[i].length; j++)
+		cycle1: for (int i = 0; i < gamePlayersFromHost; i++) {
+			for (int j = 0; j < newOptions.playersControlKeys[i].length; j++) {
 				if (newOptions.playersControlKeys[i][j] != oldOptions.playersControlKeys[i][j]) {
 					playersControlKeys = newOptions.playersControlKeys;
 					break cycle1;
 				}
+			}
+		}
 	}
 
 	/**
