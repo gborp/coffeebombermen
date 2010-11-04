@@ -6,8 +6,8 @@ import java.util.List;
 import com.braids.coffeebombermen.client.gamecore.Directions;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
-import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.utils.MathHelper;
 
 public class BombShrinkPerformer extends AbstractShrinkPerformer {

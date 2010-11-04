@@ -60,8 +60,9 @@ public class DataTextFileReader {
 		String line;
 		do {
 			line = readNextLine();
-			if (line == null)
+			if (line == null) {
 				break;
+			}
 		} while (line.startsWith(COMMENT_LINE_HEAD));
 		return line;
 	}
@@ -80,8 +81,9 @@ public class DataTextFileReader {
 			ie.printStackTrace();
 		}
 
-		if (line != null)
+		if (line != null) {
 			linesRead++;
+		}
 		return line;
 	}
 

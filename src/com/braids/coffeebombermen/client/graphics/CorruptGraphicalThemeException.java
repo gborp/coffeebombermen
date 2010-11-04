@@ -15,5 +15,4 @@ public class CorruptGraphicalThemeException extends Exception {
 	public CorruptGraphicalThemeException(final String message) {
 		super(message);
 	}
-
 }

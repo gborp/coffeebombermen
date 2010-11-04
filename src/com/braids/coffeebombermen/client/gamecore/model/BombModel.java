@@ -127,9 +127,10 @@ public class BombModel extends PositionedIterableObject {
 		this.phase = phase;
 		iterationsDuringPhase = 0;
 
-		if (this.phase == BombPhases.FLYING)
+		if (this.phase == BombPhases.FLYING) {
 			setIterationCounter(0); // Flying bombs has the first picture of the
-		// phase pictures.
+			// phase pictures.
+		}
 	}
 
 	/**

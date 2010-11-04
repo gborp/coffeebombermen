@@ -12,18 +12,18 @@ import com.braids.coffeebombermen.Consts;
 import com.braids.coffeebombermen.GameManager;
 import com.braids.coffeebombermen.MainFrame;
 import com.braids.coffeebombermen.MainMenuBar;
-import com.braids.coffeebombermen.MessageHandler;
 import com.braids.coffeebombermen.MainMenuBar.GameStates;
+import com.braids.coffeebombermen.MessageHandler;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.gamecore.view.GameSceneMainComponentHandler;
 import com.braids.coffeebombermen.client.graphics.AnimationDatas;
 import com.braids.coffeebombermen.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
+import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptionsManager;
 import com.braids.coffeebombermen.options.ServerComponentOptions;
-import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
-import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
 import com.braids.coffeebombermen.options.model.ClientOptions;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 import com.braids.coffeebombermen.options.model.ServerOptions;
@@ -175,8 +175,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		sendPublicClientOptions(clientOptions.publicClientOptions, clientOptions.playersFromHost);
 		try {
 			final int publicClientOptionsCount = Integer.parseInt(serverStub.receiveMessage());
-			for (int i = 0; i < publicClientOptionsCount; i++)
+			for (int i = 0; i < publicClientOptionsCount; i++) {
 				clientsPublicClientOptions.add(PublicClientOptions.parseFromString(serverStub.receiveMessage()));
+			}
 		} catch (final IOException ie) {
 			ie.printStackTrace();
 		}
@@ -223,15 +224,18 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			try {
 				serverStub = new ConnectionStub(socket);
 				serverStub.sendMessage(CLIENT_IDENTIFICATION_STRING);
-				if (!serverStub.receiveMessage().equals(PlayerCollector.SERVER_IDENTIFICATION_STRING))
+				if (!serverStub.receiveMessage().equals(PlayerCollector.SERVER_IDENTIFICATION_STRING)) {
 					throw new ConnectingToServerFailedException("Destination server is not a " + Consts.APPLICATION_NAME + " server!");
+				}
 				serverStub.sendMessage(Consts.APPLICATION_VERSION);
 				final String serverVersion = serverStub.receiveMessage();
-				if (!serverVersion.equals(Consts.APPLICATION_VERSION))
+				if (!serverVersion.equals(Consts.APPLICATION_VERSION)) {
 					throw new ConnectingToServerFailedException("Incompatible " + Consts.APPLICATION_NAME + " server (ver. " + serverVersion + ")!");
+				}
 				serverStub.sendMessage(serverOptions == null ? clientOptions.password : serverOptions.getPassword());
-				if (!serverStub.receiveMessage().equals(PlayerCollector.PASSWORD_ACCEPTED))
+				if (!serverStub.receiveMessage().equals(PlayerCollector.PASSWORD_ACCEPTED)) {
 					throw new ConnectingToServerFailedException("Incorrect game password!");
+				}
 
 			} catch (final IOException ie) {
 				throw new ConnectingToServerFailedException("Network error!");
@@ -244,8 +248,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			// stub (this is
 			// the right
 			// thing to do)!
-			if (serverStub != null)
+			if (serverStub != null) {
 				serverStub.close();
+			}
 			throw ce;
 		}
 	}
@@ -263,8 +268,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 				// now
 				if ((iterationCounter & ITERATION_NETWORK_LATENCY_MASK) == 0) {
 					// Next iteration is timed by the server now
-					if (newClientsActions != null)
+					if (newClientsActions != null) {
 						startNextIteration();
+					}
 				} else {
 					// Next iteration is timed by us
 					if (nextIterationMayBegin) {
@@ -285,13 +291,12 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * Checks whether the server sent new messages, and process them if it did.
 	 */
 	private void checkForNewCommands() {
-		while (serverStub.hasNewMessage())
+		while (serverStub.hasNewMessage()) {
 			try {
 				final GeneralStringTokenizer commandTokenizer = new GeneralStringTokenizer(serverStub.receiveMessage());
 
 				Commands command = Commands.values()[commandTokenizer.nextIntToken()];
 
-				String message;
 				switch (command) {
 					// The message loop checks Commands.STARTING_NEXT_ITERATION
 					// and Commands.MESSAGE first,
@@ -334,10 +339,12 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 					case A_CLIENT_HAS_LEFT_THE_GAME:
 						final int clientIndex = commandTokenizer.nextIntToken();
 						clientsPublicClientOptions.remove(clientIndex);
-						if (ourIndex > clientIndex)
+						if (ourIndex > clientIndex) {
 							ourIndex--;
-						if (gameCoreHandler != null)
+						}
+						if (gameCoreHandler != null) {
 							gameCoreHandler.aClientHasLeftTheGame(clientIndex);
+						}
 						break;
 					case SENDING_PUBLIC_CLIENT_OPTIONS:
 						final int clientIndex_ = commandTokenizer.nextIntToken();
@@ -352,6 +359,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
+		}
 	}
 
 	/**
@@ -361,8 +369,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	private void sendReadyForNextIterationCommand() {
 		try {
 			String newClientActions = gameSceneMainComponentHandler.getGameSceneComponent().getAndClearNewActions();
-			if (newClientActions.length() > 0)
+			if (newClientActions.length() > 0) {
 				newClientActions += GeneralStringTokenizer.GENERAL_SEPARATOR_STRING;
+			}
 
 			serverStub.sendMessage(Server.Commands.READY_FOR_NEXT_ITERATION.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING + newClientActions);
 		} catch (final IOException ie) {
@@ -407,14 +416,15 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 * for the server options.
 	 */
 	public void requestGlobalServerOptions() {
-		if (mainFrame.getMainMenuBar().getGameState() == GameStates.PLAYING)
+		if (mainFrame.getMainMenuBar().getGameState() == GameStates.PLAYING) {
 			globalServerOptionsManager.showOptionsDialog();
-		else
+		} else {
 			try {
 				serverStub.sendMessage(Server.Commands.REQUESTING_SERVER_OPTIONS.ordinal() + GeneralStringTokenizer.GENERAL_SEPARATOR_STRING);
 			} catch (final IOException ie) {
 				ie.printStackTrace();
 			}
+		}
 	}
 
 	/**
@@ -428,8 +438,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			final ServerOptions globalServerOptions = ServerOptions.parseFromString(serverStub.receiveMessage());
 			globalServerOptionsManager.setOptions(globalServerOptions);
 			LevelModel levelModel = null;
-			if (!globalServerOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME))
+			if (!globalServerOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME)) {
 				levelModel = LevelModel.parseFromString(serverStub.receiveMessage());
+			}
 
 			// We received all required informations... we can create game core
 			// handler now, and register that game is now in GameStates.PLAYING
@@ -497,13 +508,15 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 				sendReadyForNextIterationCommand(); // Timed by server: we send
 				// READY_FOR_NEXT_ITERATION
 				// command back
-			} else
+			} else {
 				gameCoreHandler.nextIteration(null); // Timed by us: no clients
-			// actions have to be
-			// passed
+				// actions have to be
+				// passed
+			}
 
-			if ((iterationCounter & iterationSceneRefreshMask) == 0)
+			if ((iterationCounter & iterationSceneRefreshMask) == 0) {
 				gameSceneMainComponentHandler.getGameSceneComponent().repaint();
+			}
 
 			iterationCounter++;
 		}
@@ -531,9 +544,10 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 	 *            the new client options are about to become effective
 	 */
 	public void optionsChanged(final ClientOptions oldOptions, final ClientOptions newOptions) {
-		if (newOptions.playersFromHost != oldOptions.playersFromHost
-		        || !newOptions.publicClientOptions.equals(oldOptions.publicClientOptions, oldOptions.playersFromHost))
+		if ((newOptions.playersFromHost != oldOptions.playersFromHost)
+		        || !newOptions.publicClientOptions.equals(oldOptions.publicClientOptions, oldOptions.playersFromHost)) {
 			sendPublicClientOptions(newOptions.publicClientOptions, newOptions.playersFromHost);
+		}
 
 		if (newOptions.sceneRefreshMode != oldOptions.sceneRefreshMode) {
 			// If scene refresh mode is NORMAL, we refresh scene in every
@@ -543,7 +557,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			        : (newOptions.sceneRefreshMode == SceneRefreshModes.SLOW ? 1 : 3);
 		}
 
-		if (newOptions.graphicalTheme == null || !newOptions.graphicalTheme.equals(oldOptions.graphicalTheme)) {
+		if ((newOptions.graphicalTheme == null) || !newOptions.graphicalTheme.equals(oldOptions.graphicalTheme)) {
 			waitingAnimationMainComponentHandler.graphicalThemeChanged();
 			gameSceneMainComponentHandler.graphicalThemeChanged();
 		}

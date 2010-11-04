@@ -46,8 +46,9 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 		playerColors = new PlayerColors[playersCount];
 		movementCorrectionSensitivities = new int[playersCount];
 
-		for (int i = 0; i < playerNames.length; i++)
+		for (int i = 0; i < playerNames.length; i++) {
 			playerNames[i] = new String();
+		}
 	}
 
 	/**
@@ -74,14 +75,17 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 		buffer.append(playersCount).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
 		buffer.append(clientName).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
-		for (int i = 0; i < playersCount; i++)
+		for (int i = 0; i < playersCount; i++) {
 			buffer.append(playerNames[i]).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		}
 
-		for (int i = 0; i < playersCount; i++)
+		for (int i = 0; i < playersCount; i++) {
 			buffer.append(playerColors[i].ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		}
 
-		for (int i = 0; i < playersCount; i++)
+		for (int i = 0; i < playersCount; i++) {
 			buffer.append(movementCorrectionSensitivities[i]).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		}
 
 		return buffer.toString();
 	}
@@ -100,14 +104,17 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 
 		publicClientOptions.clientName = optionsTokenizer.nextStringToken();
 
-		for (int i = 0; i < publicClientOptions.playerNames.length; i++)
+		for (int i = 0; i < publicClientOptions.playerNames.length; i++) {
 			publicClientOptions.playerNames[i] = optionsTokenizer.nextStringToken();
+		}
 
-		for (int i = 0; i < publicClientOptions.playerColors.length; i++)
+		for (int i = 0; i < publicClientOptions.playerColors.length; i++) {
 			publicClientOptions.playerColors[i] = PlayerColors.values()[optionsTokenizer.nextIntToken()];
+		}
 
-		for (int i = 0; i < publicClientOptions.movementCorrectionSensitivities.length; i++)
+		for (int i = 0; i < publicClientOptions.movementCorrectionSensitivities.length; i++) {
 			publicClientOptions.movementCorrectionSensitivities[i] = optionsTokenizer.nextIntToken();
+		}
 
 		return publicClientOptions;
 	}
@@ -137,17 +144,24 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 	 *         equals up to playersCount to the options of the given one
 	 */
 	public boolean equals(final PublicClientOptions publicClientOptions, final int playersCount) {
-		if (!clientName.equals(publicClientOptions.clientName))
+		if (!clientName.equals(publicClientOptions.clientName)) {
 			return false;
-		for (int i = 0; i < playersCount; i++)
-			if (!playerNames[i].equals(publicClientOptions.playerNames[i]))
+		}
+		for (int i = 0; i < playersCount; i++) {
+			if (!playerNames[i].equals(publicClientOptions.playerNames[i])) {
 				return false;
-		for (int i = 0; i < playersCount; i++)
-			if (!playerColors[i].equals(publicClientOptions.playerColors[i]))
+			}
+		}
+		for (int i = 0; i < playersCount; i++) {
+			if (!playerColors[i].equals(publicClientOptions.playerColors[i])) {
 				return false;
-		for (int i = 0; i < playersCount; i++)
-			if (movementCorrectionSensitivities[i] != publicClientOptions.movementCorrectionSensitivities[i])
+			}
+		}
+		for (int i = 0; i < playersCount; i++) {
+			if (movementCorrectionSensitivities[i] != publicClientOptions.movementCorrectionSensitivities[i]) {
 				return false;
+			}
+		}
 
 		return true;
 	}

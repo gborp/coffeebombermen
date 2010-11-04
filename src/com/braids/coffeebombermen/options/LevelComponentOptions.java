@@ -61,8 +61,9 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 	 */
 	static {
 
-		for (int i = 0; i < DEFAULT_ITEM_WEIGHTS.length; i++)
+		for (int i = 0; i < DEFAULT_ITEM_WEIGHTS.length; i++) {
 			DEFAULT_ITEM_WEIGHTS[i] = DEFAULT_WEIGHT;
+		}
 
 		DEFAULT_ITEM_WEIGHTS[Items.BOXING_GLOVES.ordinal()] = WEIGHT_UNIT * 5;
 		DEFAULT_ITEM_WEIGHTS[Items.BLUE_GLOVES.ordinal()] = WEIGHT_UNIT * 5;
@@ -144,12 +145,15 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 			hasNonAccumulateableItemsMap_cs.put(item, checkBox);
 		}
 
-		for (int i = 0; i < itemWeights_cs.length; i++)
+		for (int i = 0; i < itemWeights_cs.length; i++) {
 			itemWeights_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_ITEM_WEIGHTS[i], MINIMUM_WEIGHT, MAXIMUM_WEIGHT, 1));
-		for (int i = 0; i < diseaseWeights_cs.length; i++)
+		}
+		for (int i = 0; i < diseaseWeights_cs.length; i++) {
 			diseaseWeights_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_WEIGHT, MINIMUM_WEIGHT, MAXIMUM_WEIGHT, 1));
-		for (int i = 0; i < shrinkerWeights_cs.length; i++)
+		}
+		for (int i = 0; i < shrinkerWeights_cs.length; i++) {
 			shrinkerWeights_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_WEIGHT, MINIMUM_WEIGHT, MAXIMUM_WEIGHT, 1));
+		}
 
 		buildOptionsTabbedPane(viewOnly);
 	}
@@ -260,12 +264,15 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 			hasNonAccumulateableItemsMap_cs.get(item).setSelected(false);
 		}
 
-		for (int i = 0; i < itemWeights_cs.length; i++)
+		for (int i = 0; i < itemWeights_cs.length; i++) {
 			itemWeights_cs[i].setValue(DEFAULT_ITEM_WEIGHTS[i]);
-		for (final JSpinner spinner : diseaseWeights_cs)
+		}
+		for (final JSpinner spinner : diseaseWeights_cs) {
 			spinner.setValue(DEFAULT_WEIGHT);
-		for (final JSpinner spinner : shrinkerWeights_cs)
+		}
+		for (final JSpinner spinner : shrinkerWeights_cs) {
 			spinner.setValue(DEFAULT_WEIGHT);
+		}
 	}
 
 	/**
@@ -281,17 +288,22 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 		levelOptions.setLevelWidth((Integer) levelWidth_c.getValue());
 		levelOptions.setLevelHeight((Integer) levelHeight_c.getValue());
 
-		for (final Items item : levelOptions.getAccumulateableItemQuantitiesMap().keySet())
+		for (final Items item : levelOptions.getAccumulateableItemQuantitiesMap().keySet()) {
 			levelOptions.getAccumulateableItemQuantitiesMap().put(item, (Integer) accumulateableItemQuantitiesMap_cs.get(item).getValue());
-		for (final Items item : levelOptions.getHasNonAccumulateableItemsMap().keySet())
+		}
+		for (final Items item : levelOptions.getHasNonAccumulateableItemsMap().keySet()) {
 			levelOptions.getHasNonAccumulateableItemsMap().put(item, hasNonAccumulateableItemsMap_cs.get(item).isSelected());
+		}
 
-		for (int i = 0; i < levelOptions.getItemWeights().length; i++)
+		for (int i = 0; i < levelOptions.getItemWeights().length; i++) {
 			levelOptions.getItemWeights()[i] = (Integer) itemWeights_cs[i].getValue();
-		for (int i = 0; i < levelOptions.getDiseaseWeights().length; i++)
+		}
+		for (int i = 0; i < levelOptions.getDiseaseWeights().length; i++) {
 			levelOptions.getDiseaseWeights()[i] = (Integer) diseaseWeights_cs[i].getValue();
-		for (int i = 0; i < levelOptions.getShrinkerWeights().length; i++)
+		}
+		for (int i = 0; i < levelOptions.getShrinkerWeights().length; i++) {
 			levelOptions.getShrinkerWeights()[i] = (Integer) shrinkerWeights_cs[i].getValue();
+		}
 
 		return levelOptions;
 	}
@@ -304,17 +316,22 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 		levelWidth_c.setValue(options.getLevelWidth());
 		levelHeight_c.setValue(options.getLevelHeight());
 
-		for (final Items item : accumulateableItemQuantitiesMap_cs.keySet())
+		for (final Items item : accumulateableItemQuantitiesMap_cs.keySet()) {
 			accumulateableItemQuantitiesMap_cs.get(item).setValue(options.getAccumulateableItemQuantitiesMap().get(item));
-		for (final Items item : hasNonAccumulateableItemsMap_cs.keySet())
+		}
+		for (final Items item : hasNonAccumulateableItemsMap_cs.keySet()) {
 			hasNonAccumulateableItemsMap_cs.get(item).setSelected(options.getHasNonAccumulateableItemsMap().get(item));
+		}
 
-		for (int i = 0; i < itemWeights_cs.length; i++)
+		for (int i = 0; i < itemWeights_cs.length; i++) {
 			itemWeights_cs[i].setValue(options.getItemWeights()[i]);
-		for (int i = 0; i < diseaseWeights_cs.length; i++)
+		}
+		for (int i = 0; i < diseaseWeights_cs.length; i++) {
 			diseaseWeights_cs[i].setValue(options.getDiseaseWeights()[i]);
-		for (int i = 0; i < shrinkerWeights_cs.length; i++)
+		}
+		for (int i = 0; i < shrinkerWeights_cs.length; i++) {
 			shrinkerWeights_cs[i].setValue(options.getShrinkerWeights()[i]);
+		}
 	}
 
 	/**
@@ -327,14 +344,18 @@ public class LevelComponentOptions extends ComponentOptions<LevelOptions> implem
 	 */
 	public void itemStateChanged(final ItemEvent ie) {
 		final JCheckBox checkBox = (JCheckBox) ie.getSource();
-		if (checkBox.isSelected())
-			for (final Items item : hasNonAccumulateableItemsMap_cs.keySet())
+		if (checkBox.isSelected()) {
+			for (final Items item : hasNonAccumulateableItemsMap_cs.keySet()) {
 				if (hasNonAccumulateableItemsMap_cs.get(item) == checkBox) {
-					if (OptConsts.NEUTRALIZER_ITEMS_MAP.containsKey(item))
-						for (final Items neutralizedItem : OptConsts.NEUTRALIZER_ITEMS_MAP.get(item))
+					if (OptConsts.NEUTRALIZER_ITEMS_MAP.containsKey(item)) {
+						for (final Items neutralizedItem : OptConsts.NEUTRALIZER_ITEMS_MAP.get(item)) {
 							hasNonAccumulateableItemsMap_cs.get(neutralizedItem).setSelected(false);
+						}
+					}
 					break;
 				}
+			}
+		}
 	}
 
 }

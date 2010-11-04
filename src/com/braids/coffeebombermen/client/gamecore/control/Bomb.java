@@ -70,15 +70,17 @@ public class Bomb {
 		if (model.getPhase() != BombPhases.FLYING) { // Flying bombs aren't
 			// ticking, and their
 			// picture aren't changing.
-			if (model.getIterationCounter() + 1 < CoreConsts.BOMB_ITERATIONS)
+			if (model.getIterationCounter() + 1 < CoreConsts.BOMB_ITERATIONS) {
 				model.nextIteration();
-			else
+			} else {
 				model.setIterationCounter(0); // Bomb phases are repeatables.
+			}
 
-			if (model.getType() != BombTypes.TRIGGERED && !model.isDeadBomb()) {
+			if ((model.getType() != BombTypes.TRIGGERED) && !model.isDeadBomb()) {
 				model.setTickingIterations(model.getTickingIterations() + 1);
-				if (model.getTickingIterations() >= CoreConsts.BOMB_DETONATION_ITERATIONS)
+				if (model.getTickingIterations() >= CoreConsts.BOMB_DETONATION_ITERATIONS) {
 					model.setAboutToDetonate(true);
+				}
 			}
 		}
 
@@ -101,21 +103,23 @@ public class Bomb {
 				// TODO: check game rules!!
 
 				if (gameCoreHandler.getGlobalServerOptions().isPunchedBombsComeBackAtTheOppositeEnd()) {
-					if (newPosX < 0)
+					if (newPosX < 0) {
 						model.setPosX(levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1);
-					else if (newPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1)
+					} else if (newPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1) {
 						model.setPosX(0);
-					else
+					} else {
 						model.setPosX(newPosX);
-					if (newPosY < 0)
+					}
+					if (newPosY < 0) {
 						model.setPosY(levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1);
-					else if (newPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1)
+					} else if (newPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1) {
 						model.setPosY(0);
-					else
+					} else {
 						model.setPosY(newPosY);
+					}
 				} else {
-					if (newPosX < 0 || newPosY < 0 || newPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1
-					        || newPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1) {
+					if ((newPosX < 0) || (newPosY < 0) || (newPosX > levelModel.getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1)
+					        || (newPosY > levelModel.getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - 1)) {
 						model.setDead(true);
 						break;
 					} else {
@@ -127,31 +131,37 @@ public class Bomb {
 				boolean reachedPotentialTargetPosition = false;
 				// If target is at the opposite end, we're not there though
 				// relation between pos and target might be correct.
-				if (model.getDirectionXMultiplier() != 0 && Math.abs(model.getPosX() - model.getFlyingTargetPosX()) > CoreConsts.LEVEL_COMPONENT_GRANULARITY)
+				if ((model.getDirectionXMultiplier() != 0)
+				        && (Math.abs(model.getPosX() - model.getFlyingTargetPosX()) > CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 					;
-				else if (model.getDirectionYMultiplier() != 0
-				        && Math.abs(model.getPosY() - model.getFlyingTargetPosY()) > CoreConsts.LEVEL_COMPONENT_GRANULARITY)
+				} else if ((model.getDirectionYMultiplier() != 0)
+				        && (Math.abs(model.getPosY() - model.getFlyingTargetPosY()) > CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 					;
-				else {
-					if (model.getDirection() == Directions.LEFT && model.getPosX() <= model.getFlyingTargetPosX())
+				} else {
+					if ((model.getDirection() == Directions.LEFT) && (model.getPosX() <= model.getFlyingTargetPosX())) {
 						reachedPotentialTargetPosition = true;
-					if (model.getDirection() == Directions.RIGHT && model.getPosX() >= model.getFlyingTargetPosX())
+					}
+					if ((model.getDirection() == Directions.RIGHT) && (model.getPosX() >= model.getFlyingTargetPosX())) {
 						reachedPotentialTargetPosition = true;
-					if (model.getDirection() == Directions.UP && model.getPosY() <= model.getFlyingTargetPosY())
+					}
+					if ((model.getDirection() == Directions.UP) && (model.getPosY() <= model.getFlyingTargetPosY())) {
 						reachedPotentialTargetPosition = true;
-					if (model.getDirection() == Directions.DOWN && model.getPosY() >= model.getFlyingTargetPosY())
+					}
+					if ((model.getDirection() == Directions.DOWN) && (model.getPosY() >= model.getFlyingTargetPosY())) {
 						reachedPotentialTargetPosition = true;
+					}
 				}
 
 				if (reachedPotentialTargetPosition) {
 					boolean permanentTargetPosition = true;
 					final LevelComponent levelComponent = levelModel.getComponent(model.getComponentPosX(), model.getComponentPosY());
-					if (levelComponent.getWall() != Walls.EMPTY || levelComponent.getWall() == Walls.EMPTY && levelComponent.getItem() != null)
+					if ((levelComponent.getWall() != Walls.EMPTY) || ((levelComponent.getWall() == Walls.EMPTY) && (levelComponent.getItem() != null))) {
 						permanentTargetPosition = false;
-					else if (gameCoreHandler.isBombAtComponentPosition(model.getComponentPosX(), model.getComponentPosY()))
+					} else if (gameCoreHandler.isBombAtComponentPosition(model.getComponentPosX(), model.getComponentPosY())) {
 						permanentTargetPosition = false;
-					else if (gameCoreHandler.isPlayerAtComponentPositionExcludePlayer(model.getComponentPosX(), model.getComponentPosY(), null))
+					} else if (gameCoreHandler.isPlayerAtComponentPositionExcludePlayer(model.getComponentPosX(), model.getComponentPosY(), null)) {
 						permanentTargetPosition = false;
+					}
 
 					if (permanentTargetPosition) {
 						model.setPhase(BombPhases.STANDING);
@@ -206,8 +216,9 @@ public class Bomb {
 					model.setPosY(model.getPosY() + CoreConsts.BOMB_ROLLING_SPEED * model.getDirectionYMultiplier());
 
 					final LevelComponent levelComponent = levelModel.getComponent(model.getComponentPosX(), model.getComponentPosY());
-					if (levelComponent.getItem() != null)
+					if (levelComponent.getItem() != null) {
 						levelComponent.setItem(null);
+					}
 				} else {
 					if (model.isDetonatingOnHit()) {
 						model.setAboutToDetonate(true);
@@ -215,10 +226,11 @@ public class Bomb {
 						model.alignPosXToComponentCenter();
 						model.alignPosYToComponentCenter();
 
-						if (model.getType() == BombTypes.JELLY)
+						if (model.getType() == BombTypes.JELLY) {
 							model.setDirection(model.getDirection().getOpposite());
-						else
+						} else {
 							model.setPhase(BombPhases.STANDING);
+						}
 					}
 				}
 				break;

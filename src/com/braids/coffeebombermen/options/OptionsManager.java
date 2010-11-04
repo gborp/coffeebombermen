@@ -144,8 +144,9 @@ public class OptionsManager<OptionsType extends Options<OptionsType>> implements
 			componentOptions.setOptions(componentOptions.getOptionsFromComponents());
 			final OptionsType newOptions = getOptions();
 
-			for (final OptionsChangeListener<OptionsType> optionsChangeListener : optionsChangeListeners)
+			for (final OptionsChangeListener<OptionsType> optionsChangeListener : optionsChangeListeners) {
 				optionsChangeListener.optionsChanged(oldOptions, newOptions);
+			}
 
 			optionsDialog.dispose();
 		}

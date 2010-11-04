@@ -58,10 +58,11 @@ public class ClientOptions extends Options<ClientOptions> {
 		buffer.append(playersFromHost).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(password).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 
-		for (final int[] playerControlKeys : playersControlKeys)
+		for (final int[] playerControlKeys : playersControlKeys) {
 			for (final int playerControlKey : playerControlKeys) {
 				buffer.append(playerControlKey).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 			}
+		}
 
 		buffer.append(graphicalTheme).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(soundTheme).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
@@ -94,9 +95,11 @@ public class ClientOptions extends Options<ClientOptions> {
 		clientOptions.playersFromHost = optionsTokenizer.nextIntToken();
 		clientOptions.password = optionsTokenizer.nextStringToken();
 
-		for (int i = 0; i < clientOptions.playersControlKeys.length; i++)
-			for (int j = 0; j < clientOptions.playersControlKeys[i].length; j++)
+		for (int i = 0; i < clientOptions.playersControlKeys.length; i++) {
+			for (int j = 0; j < clientOptions.playersControlKeys[i].length; j++) {
 				clientOptions.playersControlKeys[i][j] = optionsTokenizer.nextIntToken();
+			}
+		}
 
 		clientOptions.graphicalTheme = optionsTokenizer.nextStringToken();
 		clientOptions.soundTheme = optionsTokenizer.nextStringToken();

@@ -63,10 +63,12 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	 * DEFAULT_PLAYER_COLORS fields.
 	 */
 	static {
-		for (int i = 0; i < DEFAULT_PLAYER_NAMES.length; i++)
+		for (int i = 0; i < DEFAULT_PLAYER_NAMES.length; i++) {
 			DEFAULT_PLAYER_NAMES[i] = "Player#" + (i + 1);
-		for (int i = 0; i < DEFAULT_PLAYER_COLORS.length; i++)
+		}
+		for (int i = 0; i < DEFAULT_PLAYER_COLORS.length; i++) {
 			DEFAULT_PLAYER_COLORS[i] = PlayerColors.values()[i * 10 % PlayerColors.values().length];
+		}
 	}
 
 	/** Default value of server URL option. */
@@ -157,8 +159,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	public ClientComponentOptions(final ClientOptions clientOptions) {
 		super(clientOptions);
 
-		for (int i = 0; i < playerNames_cs.length; i++)
+		for (int i = 0; i < playerNames_cs.length; i++) {
 			playerNames_cs[i] = new JTextField(10);
+		}
 
 		final ListCellRenderer listCellRenderer = new DefaultListCellRenderer() { // We
 
@@ -174,8 +177,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 			public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected,
 			        final boolean cellHasFocus) {
 				final Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				if (component instanceof JLabel)
+				if (component instanceof JLabel) {
 					((JLabel) component).setIcon(new ColorIcon(((PlayerColors) value).value));
+				}
 				return component;
 			}
 		};
@@ -184,15 +188,17 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 			playerColors_cs[i].setRenderer(listCellRenderer);
 		}
 
-		for (int i = 0; i < movementCorrectionSensitivities_cs.length; i++)
+		for (int i = 0; i < movementCorrectionSensitivities_cs.length; i++) {
 			movementCorrectionSensitivities_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_MOVEMENT_CORRECTION_SENSITIVITY,
 			        MINIMUM_MOVEMENT_CORRECTION_SENSITIVITY, MAXIMUM_MOVEMENT_CORRECTION_SENSITIVITY, 1));
+		}
 
-		for (int i = 0; i < playersControlKeys_cs.length; i++)
+		for (int i = 0; i < playersControlKeys_cs.length; i++) {
 			for (int j = 0; j < playersControlKeys_cs[i].length; j++) {
 				playersControlKeys_cs[i][j] = new JButton();
 				playersControlKeys_cs[i][j].addActionListener(this);
 			}
+		}
 
 		buildOptionsTabbedPane();
 	}
@@ -307,22 +313,26 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	 */
 	public void restoreDefaultValuesToComponents() {
 		clientName_c.setText(GeneralStringTokenizer.checkString(DEFAULT_CLIENT_NAME));
-		for (int i = 0; i < playerNames_cs.length; i++)
+		for (int i = 0; i < playerNames_cs.length; i++) {
 			playerNames_cs[i].setText(GeneralStringTokenizer.checkString(DEFAULT_PLAYER_NAMES[i]));
-		for (int i = 0; i < playerColors_cs.length; i++)
+		}
+		for (int i = 0; i < playerColors_cs.length; i++) {
 			playerColors_cs[i].setSelectedItem(DEFAULT_PLAYER_COLORS[i]);
-		for (int i = 0; i < movementCorrectionSensitivities_cs.length; i++)
-			movementCorrectionSensitivities_cs[i].setValue(DEFAULT_MOVEMENT_CORRECTION_SENSITIVITY);
+		}
+		for (JSpinner movementCorrectionSensitivities_c : movementCorrectionSensitivities_cs) {
+			movementCorrectionSensitivities_c.setValue(DEFAULT_MOVEMENT_CORRECTION_SENSITIVITY);
+		}
 
 		serverURL_c.setText(GeneralStringTokenizer.checkString(DEFAULT_SERVER_URL));
 		playersFromHost_c.setValue(DEFAULT_PLAYERS_FROM_HOST);
 		password_c.setText(GeneralStringTokenizer.checkString(DEFAULT_PASSWORD));
 
-		for (int i = 0; i < playersControlKeys_cs.length; i++)
+		for (int i = 0; i < playersControlKeys_cs.length; i++) {
 			for (int j = 0; j < playersControlKeys_cs[i].length; j++) {
 				playersControlKeys_cs[i][j].setText(KeyEvent.getKeyText(DEFAULT_PLAYERS_CONTROL_KEYS[i][j]));
 				playersControlKeys_cvalues[i][j] = DEFAULT_PLAYERS_CONTROL_KEYS[i][j];
 			}
+		}
 
 		graphicalTheme_c.setSelectedItem(DEFAULT_GRAPHICAL_THEME);
 		soundTheme_c.setSelectedItem(DEFAULT_SOUND_THEME);
@@ -348,22 +358,28 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 
 		clientOptions.publicClientOptions.clientName = GeneralStringTokenizer.checkString(clientName_c.getText());
 		// Client name cannot equal to the chat name of the server...
-		if (clientOptions.publicClientOptions.clientName.equalsIgnoreCase(Server.BASE_SERVER_CHAT_NAME))
+		if (clientOptions.publicClientOptions.clientName.equalsIgnoreCase(Server.BASE_SERVER_CHAT_NAME)) {
 			clientOptions.publicClientOptions.clientName = GeneralStringTokenizer.checkString('_' + clientOptions.publicClientOptions.clientName);
-		for (int i = 0; i < clientOptions.publicClientOptions.playerNames.length; i++)
+		}
+		for (int i = 0; i < clientOptions.publicClientOptions.playerNames.length; i++) {
 			clientOptions.publicClientOptions.playerNames[i] = GeneralStringTokenizer.checkString(playerNames_cs[i].getText());
-		for (int i = 0; i < clientOptions.publicClientOptions.playerColors.length; i++)
+		}
+		for (int i = 0; i < clientOptions.publicClientOptions.playerColors.length; i++) {
 			clientOptions.publicClientOptions.playerColors[i] = PlayerColors.values()[playerColors_cs[i].getSelectedIndex()];
-		for (int i = 0; i < clientOptions.publicClientOptions.movementCorrectionSensitivities.length; i++)
+		}
+		for (int i = 0; i < clientOptions.publicClientOptions.movementCorrectionSensitivities.length; i++) {
 			clientOptions.publicClientOptions.movementCorrectionSensitivities[i] = (Integer) movementCorrectionSensitivities_cs[i].getValue();
+		}
 
 		clientOptions.serverURL = GeneralStringTokenizer.checkString(serverURL_c.getText());
 		clientOptions.playersFromHost = (Integer) playersFromHost_c.getValue();
 		clientOptions.password = GeneralStringTokenizer.checkString(password_c.getText());
 
-		for (int i = 0; i < clientOptions.playersControlKeys.length; i++)
-			for (int j = 0; j < clientOptions.playersControlKeys[i].length; j++)
+		for (int i = 0; i < clientOptions.playersControlKeys.length; i++) {
+			for (int j = 0; j < clientOptions.playersControlKeys[i].length; j++) {
 				clientOptions.playersControlKeys[i][j] = playersControlKeys_cvalues[i][j];
+			}
+		}
 
 		clientOptions.graphicalTheme = (String) graphicalTheme_c.getSelectedItem();
 		clientOptions.soundTheme = (String) soundTheme_c.getSelectedItem();
@@ -385,22 +401,26 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	 */
 	public void synchronizeComponentsToOptions() {
 		clientName_c.setText(options.publicClientOptions.clientName);
-		for (int i = 0; i < playerNames_cs.length; i++)
+		for (int i = 0; i < playerNames_cs.length; i++) {
 			playerNames_cs[i].setText(options.publicClientOptions.playerNames[i]);
-		for (int i = 0; i < playerColors_cs.length; i++)
+		}
+		for (int i = 0; i < playerColors_cs.length; i++) {
 			playerColors_cs[i].setSelectedIndex(options.publicClientOptions.playerColors[i].ordinal());
-		for (int i = 0; i < movementCorrectionSensitivities_cs.length; i++)
+		}
+		for (int i = 0; i < movementCorrectionSensitivities_cs.length; i++) {
 			movementCorrectionSensitivities_cs[i].setValue(options.publicClientOptions.movementCorrectionSensitivities[i]);
+		}
 
 		serverURL_c.setText(options.serverURL);
 		playersFromHost_c.setValue(options.playersFromHost);
 		password_c.setText(options.password);
 
-		for (int i = 0; i < playersControlKeys_cs.length; i++)
+		for (int i = 0; i < playersControlKeys_cs.length; i++) {
 			for (int j = 0; j < playersControlKeys_cs[i].length; j++) {
 				playersControlKeys_cs[i][j].setText(KeyEvent.getKeyText(options.playersControlKeys[i][j]));
 				playersControlKeys_cvalues[i][j] = options.playersControlKeys[i][j];
 			}
+		}
 
 		graphicalTheme_c.setSelectedItem(options.graphicalTheme);
 		soundTheme_c.setSelectedItem(options.soundTheme);
@@ -426,10 +446,13 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		final Object source = ae.getSource();
 		int i = 0, j = 0;
 
-		outerCycle: for (i = 0; i < playersControlKeys_cs.length; i++)
-			for (j = 0; j < playersControlKeys_cs[i].length; j++)
-				if (playersControlKeys_cs[i][j] == source)
+		outerCycle: for (i = 0; i < playersControlKeys_cs.length; i++) {
+			for (j = 0; j < playersControlKeys_cs[i].length; j++) {
+				if (playersControlKeys_cs[i][j] == source) {
 					break outerCycle;
+				}
+			}
+		}
 
 		final Container parent = ((JComponent) source).getTopLevelAncestor();
 		final JDialog newKeyDialog = parent instanceof Frame ? new JDialog((Frame) parent, "Define new key", true) : new JDialog((Dialog) parent,
@@ -450,8 +473,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		newKeyDialog.pack();
 
 		Container parentContainer = optionsTabbedPane.getParent();
-		while (!(parentContainer instanceof Window))
+		while (!(parentContainer instanceof Window)) {
 			parentContainer = parentContainer.getParent();
+		}
 
 		GeneralUtilities.centerWindowToWindow(newKeyDialog, (Window) parentContainer);
 		newKeyDialog.setVisible(true);

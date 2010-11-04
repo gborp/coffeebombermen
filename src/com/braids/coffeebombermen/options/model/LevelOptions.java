@@ -4,8 +4,8 @@ import java.util.EnumMap;
 
 import com.braids.coffeebombermen.options.Diseases;
 import com.braids.coffeebombermen.options.OptConsts;
-import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
 import com.braids.coffeebombermen.utils.MathHelper;
 
@@ -37,12 +37,15 @@ public class LevelOptions extends Options<LevelOptions> {
 	 * accumulateableItemQuantitiesMap and hasNonAccumulateableItemsMap.
 	 */
 	public LevelOptions() {
-		for (final Items accumulateableItem : OptConsts.ACCUMULATEABLE_ITEMS)
+		for (final Items accumulateableItem : OptConsts.ACCUMULATEABLE_ITEMS) {
 			getAccumulateableItemQuantitiesMap().put(accumulateableItem, new Integer(0));
+		}
 
-		for (final Items item : Items.values())
-			if (!OptConsts.ACCUMULATEABLE_ITEMS.contains(item))
+		for (final Items item : Items.values()) {
+			if (!OptConsts.ACCUMULATEABLE_ITEMS.contains(item)) {
 				getHasNonAccumulateableItemsMap().put(item, new Boolean(false));
+			}
+		}
 	}
 
 	public Diseases getRandomDisease() {
@@ -97,15 +100,19 @@ public class LevelOptions extends Options<LevelOptions> {
 		levelOptions.setLevelWidth(optionsTokenizer.nextIntToken());
 		levelOptions.setLevelHeight(optionsTokenizer.nextIntToken());
 
-		for (final Items accumulateableItem : OptConsts.ACCUMULATEABLE_ITEMS)
+		for (final Items accumulateableItem : OptConsts.ACCUMULATEABLE_ITEMS) {
 			levelOptions.getAccumulateableItemQuantitiesMap().put(accumulateableItem, optionsTokenizer.nextIntToken());
+		}
 
-		for (final Items item : Items.values())
-			if (!OptConsts.ACCUMULATEABLE_ITEMS.contains(item))
+		for (final Items item : Items.values()) {
+			if (!OptConsts.ACCUMULATEABLE_ITEMS.contains(item)) {
 				levelOptions.getHasNonAccumulateableItemsMap().put(item, optionsTokenizer.nextBooleanToken());
+			}
+		}
 
-		for (int i = 0; i < levelOptions.getItemWeights().length; i++)
+		for (int i = 0; i < levelOptions.getItemWeights().length; i++) {
 			levelOptions.getItemWeights()[i] = optionsTokenizer.nextIntToken();
+		}
 
 		for (int i = 0; i < levelOptions.getDiseaseWeights().length; i++) {
 			if (optionsTokenizer.hasRemainingString()) {

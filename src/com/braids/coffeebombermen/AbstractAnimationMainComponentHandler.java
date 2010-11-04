@@ -31,8 +31,9 @@ public abstract class AbstractAnimationMainComponentHandler implements MainCompo
 	public void reinitMainComponent() {
 		if (animationComponent == null) {
 			createNewAnimationComponent();
-			if (animationComponent == null)
+			if (animationComponent == null) {
 				return;
+			}
 		} else {
 			mainFrame.setMainComponent(animationComponent);
 			animationComponent.rewindAnimation();
@@ -58,8 +59,9 @@ public abstract class AbstractAnimationMainComponentHandler implements MainCompo
 	 */
 	public void graphicalThemeChanged() {
 		createNewAnimationComponent();
-		if (animationComponent == null)
+		if (animationComponent == null) {
 			return;
+		}
 		animationComponent.playAnimation();
 	}
 
@@ -68,8 +70,9 @@ public abstract class AbstractAnimationMainComponentHandler implements MainCompo
 	 * ands sets it to the main frame.
 	 */
 	private void createNewAnimationComponent() {
-		if (GraphicsManager.getCurrentManager() == null)
+		if (GraphicsManager.getCurrentManager() == null) {
 			return;
+		}
 		animationComponent = new AnimationComponent(getNewAnimationDatas());
 		mainFrame.setMainComponent(animationComponent);
 	}
@@ -79,8 +82,9 @@ public abstract class AbstractAnimationMainComponentHandler implements MainCompo
 	 * component needed to be released.
 	 */
 	public void releaseMainComponent() {
-		if (animationComponent == null)
+		if (animationComponent == null) {
 			return;
+		}
 		animationComponent.pauseAnimation();
 	}
 

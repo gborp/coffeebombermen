@@ -77,7 +77,7 @@ public enum SoundEffect {
 		}
 		lastPlayTime = System.nanoTime();
 		// no sound loaded
-		if (lstClip == null || lstClip.isEmpty()) {
+		if ((lstClip == null) || lstClip.isEmpty()) {
 			return;
 		}
 		int size = lstClip.size();
