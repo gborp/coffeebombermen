@@ -291,7 +291,8 @@ public class GameCoreHandler {
 				// coordinates of the clearable components
 				for (int[] element : DELTA_COORDS) {
 					final LevelComponent levelComponent = levelModel.getComponent(componentPosX + element[1], componentPosY + element[0]);
-					if ((levelComponent.getWall() != Walls.CONCRETE) && (levelComponent.getWall() != Walls.GATEWAY)) {
+					if ((levelComponent.getWall() != Walls.CONCRETE) && (levelComponent.getWall() != Walls.GATEWAY_ENTRANCE)
+					        && (levelComponent.getWall() != Walls.GATEWAY_EXIT)) {
 						levelComponent.setWall(Walls.EMPTY);
 						levelComponent.setItem(null);
 					}
@@ -673,7 +674,8 @@ public class GameCoreHandler {
 						LevelComponent levelComponent = levelModel.getComponent(componentPosX, componentPosY);
 
 						if ((levelComponent.getWall() == Walls.CONCRETE) || (levelComponent.getWall() == Walls.DEATH)
-						        || (levelComponent.getWall() == Walls.DEATH_WARN) || (levelComponent.getWall() == Walls.GATEWAY)) {
+						        || (levelComponent.getWall() == Walls.DEATH_WARN) || (levelComponent.getWall() == Walls.GATEWAY_ENTRANCE)
+						        || (levelComponent.getWall() == Walls.GATEWAY_EXIT)) {
 							break;
 						}
 

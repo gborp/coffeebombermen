@@ -13,6 +13,13 @@ public class RandomLevelBuilder {
 		CONCRETE, UNKNOWN, ACCESSIBLE
 	}
 
+	private static int maxGatewayEntranceNumber;
+	private static int maxGatewayExitNumber;
+	private static int chanceForGatewayEntrance;
+	private static int chanceForGatewayExit;
+	private static int nofGatewayEntrance;
+	private static int nofGatewayExit;
+
 	/**
 	 * Generates and returns a random level specified by the global server
 	 * options.
@@ -27,27 +34,17 @@ public class RandomLevelBuilder {
 		final int levelWidth = levelModel.getWidth();
 		final int levelHeight = levelModel.getHeight();
 
-		int maxGatewayNumber = gameCoreHandler.getGlobalServerOptions().getMaxGatewayNumber();
-		int chanceForGateway = ((levelWidth + levelHeight) * 2 - 4) / maxGatewayNumber;
-		int nofGateway = 0;
+		maxGatewayEntranceNumber = gameCoreHandler.getGlobalServerOptions().getMaxGatewayEntranceNumber();
+		maxGatewayExitNumber = gameCoreHandler.getGlobalServerOptions().getMaxGatewayExitNumber();
+		chanceForGatewayEntrance = (levelWidth + levelHeight - 4) / maxGatewayEntranceNumber;
+		chanceForGatewayExit = (levelWidth + levelHeight - 4) / maxGatewayExitNumber;
+		nofGatewayEntrance = 0;
+		nofGatewayExit = 0;
 
-		for (int y = 0; y < levelHeight; y++) {
-			for (int x = 0; x < levelWidth; x++) {
-				Walls wall;
-
-				if ((y == 0) || (y == levelHeight - 1) || (x == 0) || (x == levelWidth - 1)) {
-					if (((x == 0) && (y == 0)) || ((x == 0) && (y == levelHeight - 1)) || ((x == levelWidth - 1) && (y == 0))
-					        || ((x == levelWidth - 1) && (y == levelHeight - 1))) {
-						wall = Walls.CONCRETE; // Border in corner
-					} else {
-						if ((nofGateway < maxGatewayNumber) && (random.nextInt(chanceForGateway) == 0)) {
-							wall = Walls.GATEWAY; // Gateway
-							nofGateway++;
-						} else {
-							wall = Walls.CONCRETE; // Border
-						}
-					}
-				} else if (random.nextInt(100) > 95) {
+		Walls wall;
+		for (int y = 1; y < levelHeight - 1; y++) {
+			for (int x = 1; x < levelWidth - 1; x++) {
+				if (random.nextInt(100) > 95) {
 					wall = random.nextInt(100) > 30 ? Walls.BRICK : Walls.CONCRETE;
 				} else if (((x & 0x01) == 0) && ((y & 0x01) == 0)) {
 					wall = Walls.CONCRETE; // Inner concrete matrix
@@ -57,6 +54,29 @@ public class RandomLevelBuilder {
 
 				levelModel.getComponent(x, y).setWall(wall);
 			}
+		}
+
+		levelModel.getComponent(0, 0).setWall(Walls.CONCRETE);
+		levelModel.getComponent(0, levelHeight - 1).setWall(Walls.CONCRETE);
+		levelModel.getComponent(levelWidth - 1, 0).setWall(Walls.CONCRETE);
+		levelModel.getComponent(levelWidth - 1, levelHeight - 1).setWall(Walls.CONCRETE);
+
+		for (int y = 1; y < levelHeight - 1; y++) {
+			createBorder(levelModel, random, 0, y);
+			createBorder(levelModel, random, levelWidth - 1, y);
+		}
+
+		for (int x = 1; x < levelWidth - 1; x++) {
+			createBorder(levelModel, random, x, 0);
+			createBorder(levelModel, random, x, levelHeight - 1);
+		}
+
+		if ((nofGatewayEntrance == 0) && (nofGatewayExit != 0)) {
+			createRandomBorder(levelModel, random, Walls.GATEWAY_ENTRANCE);
+		}
+
+		if ((nofGatewayEntrance != 0) && (nofGatewayExit == 0)) {
+			createRandomBorder(levelModel, random, Walls.GATEWAY_EXIT);
 		}
 
 		levelModel.getComponent(1, 1).setWall(Walls.EMPTY);
@@ -144,4 +164,61 @@ public class RandomLevelBuilder {
 			}
 		}
 	}
+
+	private static void createBorder(LevelModel levelModel, Random random, int x, int y) {
+		if (isBadPositionForGateway(levelModel, x, y)) {
+			levelModel.getComponent(x, y).setWall(Walls.CONCRETE);
+		} else if ((nofGatewayEntrance < maxGatewayEntranceNumber) && (random.nextInt(chanceForGatewayEntrance) == 0)) {
+			levelModel.getComponent(x, y).setWall(Walls.GATEWAY_ENTRANCE);
+			nofGatewayEntrance++;
+		} else if ((nofGatewayExit < maxGatewayExitNumber) && (random.nextInt(chanceForGatewayExit) == 0)) {
+			levelModel.getComponent(x, y).setWall(Walls.GATEWAY_EXIT);
+			levelModel.addGatewayExitPosition(x, y);
+			nofGatewayExit++;
+		} else {
+			levelModel.getComponent(x, y).setWall(Walls.CONCRETE);
+		}
+	}
+
+	private static void createRandomBorder(LevelModel levelModel, Random random, Walls wall) {
+		int posX;
+		int posY;
+		do {
+			if (random.nextInt(1) == 0) {
+				posX = 0;
+				posY = 1 + random.nextInt(levelModel.getHeight() - 3);
+			} else {
+				posX = 1 + random.nextInt(levelModel.getWidth() - 3);
+				posY = 0;
+			}
+			wall = levelModel.getComponent(posX, posY).getWall();
+		} while ((wall != Walls.CONCRETE) && (isBadPositionForGateway(levelModel, posX, posY)));
+		levelModel.getComponent(posX, posY).setWall(wall);
+	}
+
+	private static boolean isBadPositionForGateway(LevelModel levelModel, int posX, int posY) {
+		if (posX == 0) {
+			if (levelModel.getComponent(1, posY).getWall() == Walls.CONCRETE) {
+				return true;
+			}
+
+		} else if (posX == levelModel.getWidth() - 1) {
+			if (levelModel.getComponent(posX - 1, posY).getWall() == Walls.CONCRETE) {
+				return true;
+			}
+
+		} else if (posY == 0) {
+			if (levelModel.getComponent(posX, 1).getWall() == Walls.CONCRETE) {
+				return true;
+			}
+
+		} else if (posY == levelModel.getHeight() - 1) {
+			if (levelModel.getComponent(posX, posY - 1).getWall() == Walls.CONCRETE) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }

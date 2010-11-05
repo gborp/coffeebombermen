@@ -265,8 +265,10 @@ public class OptConsts {
 		DEATH,
 		/** the shrinking game area's wall */
 		DEATH_WARN,
-		/** gateway wall */
-		GATEWAY
+		/** gateway entrance wall */
+		GATEWAY_ENTRANCE,
+		/** gateway exit wall */
+		GATEWAY_EXIT
 	}
 
 	/** Items from which we can pick up more than one, we can accumulate them. */

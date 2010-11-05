@@ -111,12 +111,19 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	/** Maximum value of getting item probability option. */
 	private static final int              MAXIMUM_GETTING_ITEM_PROBABILITY                    = 100;
 
-	/** Minimum value of max gateway number option. */
-	private static final int              MINIMUM_MAX_GATEWAY_NUMBER                          = 0;
-	/** Default value of max gateway number option. */
-	private static final int              DEFAULT_MAX_GATEWAY_NUMBER                          = 1;
-	/** Maximum value of max gateway number option. */
-	private static final int              MAXIMUM_MAX_GATEWAY_NUMBER                          = 10;
+	/** Minimum value of max gateway entrance number option. */
+	private static final int              MINIMUM_MAX_GATEWAY_ENTRANCE_NUMBER                 = 0;
+	/** Default value of max gateway entrance number option. */
+	private static final int              DEFAULT_MAX_GATEWAY_ENTRANCE_NUMBER                 = 1;
+	/** Maximum value of max gateway entrance number option. */
+	private static final int              MAXIMUM_MAX_GATEWAY_ENTRANCE_NUMBER                 = 10;
+
+	/** Minimum value of max gateway exit number option. */
+	private static final int              MINIMUM_MAX_GATEWAY_EXIT_NUMBER                     = 0;
+	/** Default value of max gateway exit number option. */
+	private static final int              DEFAULT_MAX_GATEWAY_EXIT_NUMBER                     = 2;
+	/** Maximum value of max gateway exit number option. */
+	private static final int              MAXIMUM_MAX_GATEWAY_EXIT_NUMBER                     = 15;
 
 	/** Minimum value of game cycle frequency option in 1/s (Hz). */
 	private static final int              MINIMUM_GAME_CYCLE_FREQUENCY                        = 1;
@@ -184,11 +191,17 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	                                                                                                  MINIMUM_GETTING_ITEM_PROBABILITY,
 	                                                                                                  MAXIMUM_GETTING_ITEM_PROBABILITY, 1));
 
-	/** Component for maximum gateway number option. */
-	private final JSpinner                maxGatewayNumber_c                                  = new JSpinner(
-	                                                                                                  new SpinnerNumberModel(DEFAULT_MAX_GATEWAY_NUMBER,
-	                                                                                                          MINIMUM_MAX_GATEWAY_NUMBER,
-	                                                                                                          MAXIMUM_MAX_GATEWAY_NUMBER, 1));
+	/** Component for maximum gateway entrance number option. */
+	private final JSpinner                maxGatewayEntranceNumber_c                          = new JSpinner(new SpinnerNumberModel(
+	                                                                                                  DEFAULT_MAX_GATEWAY_ENTRANCE_NUMBER,
+	                                                                                                  MINIMUM_MAX_GATEWAY_ENTRANCE_NUMBER,
+	                                                                                                  MAXIMUM_MAX_GATEWAY_ENTRANCE_NUMBER, 1));
+
+	/** Component for maximum gateway exit number option. */
+	private final JSpinner                maxGatewayExitNumber_c                              = new JSpinner(new SpinnerNumberModel(
+	                                                                                                  DEFAULT_MAX_GATEWAY_EXIT_NUMBER,
+	                                                                                                  MINIMUM_MAX_GATEWAY_EXIT_NUMBER,
+	                                                                                                  MAXIMUM_MAX_GATEWAY_EXIT_NUMBER, 1));
 
 	/** Component for game cycle frequency option. */
 	private final JSpinner                gameCycleFrequency_c                                = new JSpinner(new SpinnerNumberModel(
@@ -372,9 +385,14 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		panel.add(createLabel("%.", componentsEnabled));
 		box.add(panel);
 		panel = new JPanel();
-		panel.add(createLabel("Max gateway number:", componentsEnabled));
-		maxGatewayNumber_c.setEnabled(componentsEnabled);
-		panel.add(maxGatewayNumber_c);
+		panel.add(createLabel("Max gateway entrance number:", componentsEnabled));
+		maxGatewayEntranceNumber_c.setEnabled(componentsEnabled);
+		panel.add(maxGatewayEntranceNumber_c);
+		box.add(panel);
+		panel = new JPanel();
+		panel.add(createLabel("Max gateway exit number:", componentsEnabled));
+		maxGatewayExitNumber_c.setEnabled(componentsEnabled);
+		panel.add(maxGatewayExitNumber_c);
 		box.add(panel);
 		panel = new JPanel();
 		panel.add(box);
@@ -439,7 +457,8 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 
 		amountOfBrickWalls_c.setValue(DEFAULT_AMOUNT_OF_BRICK_WALLS);
 		gettingItemProbability_c.setValue(DEFAULT_GETTING_ITEM_PROBABILITY);
-		maxGatewayNumber_c.setValue(DEFAULT_MAX_GATEWAY_NUMBER);
+		maxGatewayEntranceNumber_c.setValue(DEFAULT_MAX_GATEWAY_ENTRANCE_NUMBER);
+		maxGatewayExitNumber_c.setValue(DEFAULT_MAX_GATEWAY_EXIT_NUMBER);
 
 		gameCycleFrequency_c.setValue(DEFAULT_GAME_CYCLE_FREQUENCY);
 		gamePort_c.setValue(OptConsts.DEFAULT_GAME_PORT);
@@ -479,7 +498,8 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 
 		serverOptions.setAmountOfBrickWalls((Integer) amountOfBrickWalls_c.getValue());
 		serverOptions.setGettingItemProbability((Integer) gettingItemProbability_c.getValue());
-		serverOptions.setMaxGatewayNumber((Integer) maxGatewayNumber_c.getValue());
+		serverOptions.setMaxGatewayEntranceNumber((Integer) maxGatewayEntranceNumber_c.getValue());
+		serverOptions.setMaxGatewayExitNumber((Integer) maxGatewayExitNumber_c.getValue());
 
 		serverOptions.setGameCycleFrequency((Integer) gameCycleFrequency_c.getValue());
 		serverOptions.setGamePort((Integer) gamePort_c.getValue());
@@ -522,7 +542,8 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 
 		amountOfBrickWalls_c.setValue(options.getAmountOfBrickWalls());
 		gettingItemProbability_c.setValue(options.getGettingItemProbability());
-		maxGatewayNumber_c.setValue(options.getMaxGatewayNumber());
+		maxGatewayEntranceNumber_c.setValue(options.getMaxGatewayEntranceNumber());
+		maxGatewayExitNumber_c.setValue(options.getMaxGatewayExitNumber());
 
 		gameCycleFrequency_c.setValue(options.getGameCycleFrequency());
 		gamePort_c.setValue(options.getGamePort());

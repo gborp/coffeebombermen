@@ -9,7 +9,7 @@ public class Consts {
 	/** Name of the application. */
 	public static final String APPLICATION_NAME        = "Coffee Bombermen";
 	/** Version of the application. */
-	public static final String APPLICATION_VERSION     = "1.5";
+	public static final String APPLICATION_VERSION     = "1.7.3";
 
 	/** Name of the directory containing the levels. */
 	public static final String LEVELS_DIRECTORY_NAME   = "levels/";

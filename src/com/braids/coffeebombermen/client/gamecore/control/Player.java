@@ -609,6 +609,7 @@ public class Player {
 				}
 			}
 
+			LevelModel levelModel = gameCoreHandler.getLevelModel();
 			if (speed > 0) { // If we can, we step...
 				// And finally we make the step
 				model.setPosX(model.getPosX() + model.getDirectionXMultiplier() * speed);
@@ -616,29 +617,40 @@ public class Player {
 				checkAndHandleItemPickingUp();
 			} else
 			// ...else if there is a gateway ahead...
-			if (Walls.GATEWAY == gameCoreHandler.getLevelModel().getComponent(posXAhead / CoreConsts.LEVEL_COMPONENT_GRANULARITY,
+			if (Walls.GATEWAY_ENTRANCE == levelModel.getComponent(posXAhead / CoreConsts.LEVEL_COMPONENT_GRANULARITY,
 			        posYAhead / CoreConsts.LEVEL_COMPONENT_GRANULARITY).getWall()) {
 
-				// check the other side for walls
-				int nextPosX = model.getPosX() / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
-				int nextPosY = model.getPosY() / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
-				switch (model.getDirection()) {
-					case UP:
-					case DOWN:
-						nextPosY = (gameCoreHandler.getLevelModel().getHeight() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - model.getPosY())
-						        / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
-						break;
-					case LEFT:
-					case RIGHT:
-						nextPosX = (gameCoreHandler.getLevelModel().getWidth() * CoreConsts.LEVEL_COMPONENT_GRANULARITY - model.getPosX())
-						        / CoreConsts.LEVEL_COMPONENT_GRANULARITY;
-						break;
+				int pos = MathHelper.randomInt(levelModel.getNofGatewayExit() - 1);
+				Integer posX = levelModel.getGatewayExitPositionX(pos);
+				Integer posY = levelModel.getGatewayExitPositionY(pos);
+
+				int nextPosX;
+				int nextPosY;
+				Directions direction;
+				if (posX == 0) {
+					nextPosX = 1;
+					nextPosY = posY;
+					direction = Directions.RIGHT;
+				} else if (posX == levelModel.getWidth() - 1) {
+					nextPosX = levelModel.getWidth() - 2;
+					nextPosY = posY;
+					direction = Directions.LEFT;
+				} else if (posY == 0) {
+					nextPosX = posX;
+					nextPosY = 0;
+					direction = Directions.DOWN;
+				} else {
+					nextPosX = posX;
+					nextPosY = levelModel.getHeight() - 2;
+					direction = Directions.UP;
 				}
-				Walls wall = gameCoreHandler.getLevelModel().getComponent(nextPosX, nextPosY).getWall();
+
+				Walls wall = levelModel.getComponent(nextPosX, nextPosY).getWall();
 				if ((wall == Walls.EMPTY) || ((wall == Walls.BRICK) && model.hasNonAccumItem(Items.WALL_CLIMBING))) {
 					// move player to the other side
 					model.setPosY(nextPosY * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
 					model.setPosX(nextPosX * CoreConsts.LEVEL_COMPONENT_GRANULARITY + CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2);
+					model.setDirection(direction);
 					checkAndHandleItemPickingUp();
 				}
 			} else {// ...else we check for kick
@@ -936,7 +948,7 @@ public class Player {
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
 				   // obstrucion and we're closer than
-				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				   // CoreConsts.LEVEL_COMPONENT_GRANULARITY/2
 				if (posY % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX + CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY - CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);
@@ -1006,7 +1018,8 @@ public class Player {
 		}
 
 		if (model.hasNonAccumItem(Items.WALL_CLIMBING)) {
-			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH) || (wall == Walls.DEATH_WARN) || (wall == Walls.GATEWAY)) {
+			if ((wall == Walls.CONCRETE) || (wall == Walls.DEATH) || (wall == Walls.DEATH_WARN) || (wall == Walls.GATEWAY_ENTRANCE)
+			        || (wall == Walls.GATEWAY_EXIT)) {
 				return false;
 			}
 		} else {
