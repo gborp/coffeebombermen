@@ -1,5 +1,8 @@
 package com.braids.coffeebombermen.client.gamecore.model.level;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.braids.coffeebombermen.options.model.LevelOptions;
 
 /**
@@ -11,6 +14,10 @@ public class LevelModel {
 	private final LevelOptions       levelOptions;
 	/** The components of the level. */
 	private final LevelComponent[][] components;
+	/** X position for the gateway. */
+	private final List<Integer>      gatewayExitPositionX;
+	/** Y position for the gateway. */
+	private final List<Integer>      gatewayExitPositionY;
 
 	/**
 	 * Creates a new Level.
@@ -26,6 +33,8 @@ public class LevelModel {
 				componentRow[i] = new LevelComponent();
 			}
 		}
+		gatewayExitPositionX = new ArrayList<Integer>();
+		gatewayExitPositionY = new ArrayList<Integer>();
 	}
 
 	/**
@@ -80,5 +89,22 @@ public class LevelModel {
 	 */
 	public LevelModel cloneLevel() {
 		return parseFromString(packToString());
+	}
+
+	public void addGatewayExitPosition(int posX, int posY) {
+		gatewayExitPositionX.add(posX);
+		gatewayExitPositionY.add(posY);
+	}
+
+	public Integer getNofGatewayExit() {
+		return gatewayExitPositionX.size();
+	}
+
+	public Integer getGatewayExitPositionX(int posX) {
+		return gatewayExitPositionX.get(posX);
+	}
+
+	public Integer getGatewayExitPositionY(int posY) {
+		return gatewayExitPositionY.get(posY);
 	}
 }
