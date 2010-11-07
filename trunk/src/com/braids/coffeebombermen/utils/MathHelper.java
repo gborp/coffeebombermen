@@ -54,7 +54,7 @@ public class MathHelper {
 		int i = 0;
 		for (int w : arWeights) {
 			whichDisease -= w;
-			if (whichDisease <= 0) {
+			if (whichDisease <= 0 && w > 0) {
 				return i;
 			}
 			i++;
