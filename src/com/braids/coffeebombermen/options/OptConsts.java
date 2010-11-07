@@ -254,21 +254,57 @@ public class OptConsts {
 	/**
 	 * The walls of the level.
 	 */
+	// attila: toString is only for debug.
 	public enum Walls {
 		/** Empty wall. */
-		EMPTY,
+		EMPTY{
+
+			public String toString() {
+				return "Empty wall";
+			}
+		},
 		/** Concrete wall. */
-		CONCRETE,
+		CONCRETE{
+
+			public String toString() {
+				return "Concrete wall";
+			}
+		},
 		/** Brick wall. */
-		BRICK,
+		BRICK{
+
+			public String toString() {
+				return "Brick wall";
+			}
+		},
 		/** the shrinking game area's wall */
-		DEATH,
+		DEATH{
+
+			public String toString() {
+				return "Death wall";
+			}
+		},
 		/** the shrinking game area's wall */
-		DEATH_WARN,
+		DEATH_WARN{
+
+			public String toString() {
+				return "DeathWarn wall";
+			}
+		},
 		/** gateway entrance wall */
-		GATEWAY_ENTRANCE,
+		GATEWAY_ENTRANCE{
+
+			public String toString() {
+				return "GatewayEntrance wall";
+			}
+		},
 		/** gateway exit wall */
-		GATEWAY_EXIT
+		GATEWAY_EXIT{
+
+			public String toString() {
+				return "GatewayExit wall";
+			}
+		}
 	}
 
 	/** Items from which we can pick up more than one, we can accumulate them. */

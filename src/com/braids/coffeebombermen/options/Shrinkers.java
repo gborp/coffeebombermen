@@ -44,5 +44,17 @@ public enum Shrinkers {
 			return "Binary walking";
 		}
 	},
+	DrawWall {
+
+		public String toString() {
+			return "Draw wall";
+		}
+	},
+	BouncingWall {
+
+		public String toString() {
+			return "Bouncing wall";
+		}
+	},
 	;
 }

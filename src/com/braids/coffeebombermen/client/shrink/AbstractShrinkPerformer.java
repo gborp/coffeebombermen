@@ -90,6 +90,10 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 	protected abstract void initNextRoundImpl();
 
 	protected void addDeathWall(int x, int y) {
+		addWall(x, y, Walls.DEATH);
+	}
+
+	protected void addWall(int x, int y, Walls wall) {
 		LevelModel levelModel = getLevel().getModel();
 		int width = levelModel.getWidth();
 		int height = levelModel.getHeight();
@@ -97,8 +101,7 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		if ((x >= 0) && (x < width) && (y >= 0) && (y < height)) {
 			LevelComponent comp = levelModel.getComponent(x, y);
 			comp.setItem(null);
-			gameCoreHandler.setWall(x, y, Walls.DEATH);
-			SoundEffect.DEATH_WALL.play();
+			gameCoreHandler.setWall(x, y, wall);
 		}
 	}
 

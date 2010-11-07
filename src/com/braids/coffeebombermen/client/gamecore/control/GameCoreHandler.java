@@ -25,8 +25,10 @@ import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BinaryWalkingShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.BouncingWallShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DiseaseShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.DrawWallShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.MassKillShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.ShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.SpiderBombShrinkPerformer;
@@ -142,7 +144,7 @@ public class GameCoreHandler {
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
 		        new BinaryWalkingShrinkPerformer(this), new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this),
-		        new DiseaseShrinkPerformer(this) };
+		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this)};
 
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
@@ -1096,5 +1098,9 @@ public class GameCoreHandler {
 			bomb.setAboutToDetonate(true);
 		}
 		getLevel().getModel().getComponent(x, y).setWall(wall);
+	}
+
+	public Walls getWall(int x, int y) {
+		return getLevel().getModel().getComponent(x, y).getWall();
 	}
 }

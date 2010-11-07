@@ -9,4 +9,5 @@
 <mapAttribute key="org.eclipse.debug.core.preferred_launchers"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.braids.coffeebombermen.Bombermen"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Coffee Bombermen"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms512m -Xmx1024m"/>
 </launchConfiguration>
