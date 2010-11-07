@@ -22,6 +22,7 @@ import com.braids.coffeebombermen.client.gamecore.model.FireModel;
 import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.client.shrink.ArmageddonShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BinaryWalkingShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
@@ -144,8 +145,7 @@ public class GameCoreHandler {
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
 		        new BinaryWalkingShrinkPerformer(this), new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this),
-		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this)};
-
+		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this), new ArmageddonShrinkPerformer(this)};
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
