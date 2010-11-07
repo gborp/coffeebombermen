@@ -56,5 +56,11 @@ public enum Shrinkers {
 			return "Bouncing wall";
 		}
 	},
+	Armageddon {
+
+		public String toString() {
+			return "Armageddon";
+		}
+	},
 	;
 }
