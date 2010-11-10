@@ -184,7 +184,7 @@ public class RandomLevelBuilder {
 		int posX;
 		int posY;
 		do {
-			if (random.nextInt(1) == 0) {
+			if (random.nextInt(2) == 0) {
 				posX = 0;
 				posY = 1 + random.nextInt(levelModel.getHeight() - 3);
 			} else {
