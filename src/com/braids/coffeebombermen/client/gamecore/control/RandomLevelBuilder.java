@@ -192,7 +192,7 @@ public class RandomLevelBuilder {
 				posY = 0;
 			}
 			wall = levelModel.getComponent(posX, posY).getWall();
-		} while ((wall != Walls.CONCRETE) && (isBadPositionForGateway(levelModel, posX, posY)));
+		} while ((wall == Walls.CONCRETE) && (!isBadPositionForGateway(levelModel, posX, posY)));
 		levelModel.getComponent(posX, posY).setWall(wall);
 	}
 
