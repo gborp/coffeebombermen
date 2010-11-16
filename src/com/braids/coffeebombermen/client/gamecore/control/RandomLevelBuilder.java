@@ -73,10 +73,12 @@ public class RandomLevelBuilder {
 
 		if ((nofGatewayEntrance == 0) && (nofGatewayExit != 0)) {
 			createRandomBorder(levelModel, random, Walls.GATEWAY_ENTRANCE);
+			nofGatewayEntrance++;
 		}
 
 		if ((nofGatewayEntrance != 0) && (nofGatewayExit == 0)) {
 			createRandomBorder(levelModel, random, Walls.GATEWAY_EXIT);
+			nofGatewayExit++;
 		}
 
 		levelModel.getComponent(1, 1).setWall(Walls.EMPTY);
@@ -165,18 +167,18 @@ public class RandomLevelBuilder {
 		}
 	}
 
-	private static void createBorder(LevelModel levelModel, Random random, int x, int y) {
-		if (isBadPositionForGateway(levelModel, x, y)) {
-			levelModel.getComponent(x, y).setWall(Walls.CONCRETE);
+	private static void createBorder(LevelModel levelModel, Random random, int posX, int posY) {
+		if (isBadPositionForGateway(levelModel, posX, posY)) {
+			levelModel.getComponent(posX, posY).setWall(Walls.CONCRETE);
 		} else if ((nofGatewayEntrance < maxGatewayEntranceNumber) && (random.nextInt(chanceForGatewayEntrance) == 0)) {
-			levelModel.getComponent(x, y).setWall(Walls.GATEWAY_ENTRANCE);
+			levelModel.getComponent(posX, posY).setWall(Walls.GATEWAY_ENTRANCE);
 			nofGatewayEntrance++;
 		} else if ((nofGatewayExit < maxGatewayExitNumber) && (random.nextInt(chanceForGatewayExit) == 0)) {
-			levelModel.getComponent(x, y).setWall(Walls.GATEWAY_EXIT);
-			levelModel.addGatewayExitPosition(x, y);
+			levelModel.getComponent(posX, posY).setWall(Walls.GATEWAY_EXIT);
+			levelModel.addGatewayExitPosition(posX, posY);
 			nofGatewayExit++;
 		} else {
-			levelModel.getComponent(x, y).setWall(Walls.CONCRETE);
+			levelModel.getComponent(posX, posY).setWall(Walls.CONCRETE);
 		}
 	}
 
@@ -191,9 +193,11 @@ public class RandomLevelBuilder {
 				posX = 1 + random.nextInt(levelModel.getWidth() - 3);
 				posY = 0;
 			}
-			wall = levelModel.getComponent(posX, posY).getWall();
-		} while ((wall == Walls.CONCRETE) && (!isBadPositionForGateway(levelModel, posX, posY)));
+		} while ((levelModel.getComponent(posX, posY).getWall() != Walls.CONCRETE) || (isBadPositionForGateway(levelModel, posX, posY)));
 		levelModel.getComponent(posX, posY).setWall(wall);
+		if (Walls.GATEWAY_EXIT.equals(wall)) {
+			levelModel.addGatewayExitPosition(posX, posY);
+		}
 	}
 
 	private static boolean isBadPositionForGateway(LevelModel levelModel, int posX, int posY) {
@@ -201,7 +205,6 @@ public class RandomLevelBuilder {
 			if (levelModel.getComponent(1, posY).getWall() == Walls.CONCRETE) {
 				return true;
 			}
-
 		} else if (posX == levelModel.getWidth() - 1) {
 			if (levelModel.getComponent(posX - 1, posY).getWall() == Walls.CONCRETE) {
 				return true;
@@ -217,8 +220,6 @@ public class RandomLevelBuilder {
 				return true;
 			}
 		}
-
 		return false;
 	}
-
 }
