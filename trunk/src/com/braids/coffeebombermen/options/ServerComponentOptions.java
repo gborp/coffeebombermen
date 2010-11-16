@@ -81,10 +81,6 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private static final boolean          DEFAULT_FIRE_DOESNT_HURT_TEAMMATES                  = false;
 	/** Default value of new random positions after each round option. */
 	private static final boolean          DEFAULT_NEW_RANDOM_POSITIONS_AFTER_ROUNDS           = true;
-	/** Default value of bombs explode after one remained option. */
-	private static final boolean          DEFAULT_BOMBS_EXPLODE_AFTER_ONE_REMAINED            = false;
-	/** Default value of building up walls stops after one remained option. */
-	private static final boolean          DEFAULT_BUILDING_UP_WALLS_STOPS_AFTER_ONE_REMAINED  = true;
 	/** Default value of items stop rolling bombs option. */
 	private static final boolean          DEFAULT_ITEMS_STOP_ROLLING_BOMBS                    = false;
 	/** Default value of punched bombs come back at the opposite end option. */
@@ -137,8 +133,8 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	// Port constants are imported from classes.options.Consts!
 
 	/** Component for graphical theme option. */
-	private final JComboBox               levelName_c                                         = new JComboBox(GeneralUtilities
-	                                                                                                  .getFileNamesWithoutExtension(
+	private final JComboBox               levelName_c                                         = new JComboBox(
+	                                                                                                  GeneralUtilities.getFileNamesWithoutExtension(
 	                                                                                                          Consts.LEVELS_DIRECTORY_NAME,
 	                                                                                                          Consts.LEVEL_FILE_EXTENSION));
 	/** Component for game type option. */
@@ -163,10 +159,6 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 	private final JCheckBox               fireDoesntHurtTeammates_c                           = new JCheckBox("Fire doesn't hurt teammates");
 	/** Component for new random positions after each round option. */
 	private final JCheckBox               newRandomPositionsAfterRounds_c                     = new JCheckBox("New random positions after each round");
-	/** Component for bombs explode after one remained option. */
-	private final JCheckBox               bombsExplodeAfterOneRemained_c                      = new JCheckBox("Bombs explode after one remained");
-	/** Component for building up walls stops after one remained option. */
-	private final JCheckBox               buildingUpWallsStopsAfterOneRemained_c              = new JCheckBox("Building up walls stops after one remained");
 	/** Component for items stop rolling bombs option. */
 	private final JCheckBox               itemsStopRollingBombs_c                             = new JCheckBox("Items stop rolling bombs");
 	/** Component for punched bombs come back at the opposite end option. */
@@ -327,14 +319,6 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		panel.add(newRandomPositionsAfterRounds_c);
 		box.add(panel);
 		panel = new JPanel();
-		bombsExplodeAfterOneRemained_c.setEnabled(componentsEnabled);
-		panel.add(bombsExplodeAfterOneRemained_c);
-		box.add(panel);
-		panel = new JPanel();
-		buildingUpWallsStopsAfterOneRemained_c.setEnabled(componentsEnabled);
-		panel.add(buildingUpWallsStopsAfterOneRemained_c);
-		box.add(panel);
-		panel = new JPanel();
 		itemsStopRollingBombs_c.setToolTipText("If unchecked, items will disappear.");
 		itemsStopRollingBombs_c.setEnabled(componentsEnabled);
 		panel.add(itemsStopRollingBombs_c);
@@ -440,8 +424,6 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		explosionAnnihilatesDiseases_c.setSelected(DEFAULT_EXPLOSION_ANNIHILATES_DISEASES);
 		fireDoesntHurtTeammates_c.setSelected(DEFAULT_FIRE_DOESNT_HURT_TEAMMATES);
 		newRandomPositionsAfterRounds_c.setSelected(DEFAULT_NEW_RANDOM_POSITIONS_AFTER_ROUNDS);
-		bombsExplodeAfterOneRemained_c.setSelected(DEFAULT_BOMBS_EXPLODE_AFTER_ONE_REMAINED);
-		buildingUpWallsStopsAfterOneRemained_c.setSelected(DEFAULT_BUILDING_UP_WALLS_STOPS_AFTER_ONE_REMAINED);
 		itemsStopRollingBombs_c.setSelected(DEFAULT_ITEMS_STOP_ROLLING_BOMBS);
 		punchedBombsComeBackAtTheOppositeEnd_c.setSelected(DEFAULT_PUNCHED_BOMBS_COME_BACK_AT_THE_OPPOSITE_END);
 		multipleFire_c.setSelected(DEFAULT_MULTIPLE_FIRE);
@@ -487,8 +469,6 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		serverOptions.setExplosionAnnihilatesDiseases(explosionAnnihilatesDiseases_c.isSelected());
 		serverOptions.setFireDoesntHurtTeammates(fireDoesntHurtTeammates_c.isSelected());
 		serverOptions.setNewRandomPositionsAfterRounds(newRandomPositionsAfterRounds_c.isSelected());
-		serverOptions.setBombsExplodeAfterOneRemained(bombsExplodeAfterOneRemained_c.isSelected());
-		serverOptions.setBuildingUpWallsStopsAfterOneRemained(buildingUpWallsStopsAfterOneRemained_c.isSelected());
 		serverOptions.setItemsStopRollingBombs(itemsStopRollingBombs_c.isSelected());
 		serverOptions.setPunchedBombsComeBackAtTheOppositeEnd(punchedBombsComeBackAtTheOppositeEnd_c.isSelected());
 		serverOptions.setMultipleFire(multipleFire_c.isSelected());
@@ -525,8 +505,6 @@ public class ServerComponentOptions extends ComponentOptions<ServerOptions> {
 		explosionAnnihilatesDiseases_c.setSelected(options.isExplosionAnnihilatesDiseases());
 		fireDoesntHurtTeammates_c.setSelected(options.isFireDoesntHurtTeammates());
 		newRandomPositionsAfterRounds_c.setSelected(options.isNewRandomPositionsAfterRounds());
-		bombsExplodeAfterOneRemained_c.setSelected(options.isBombsExplodeAfterOneRemained());
-		buildingUpWallsStopsAfterOneRemained_c.setSelected(options.isBuildingUpWallsStopsAfterOneRemained());
 		itemsStopRollingBombs_c.setSelected(options.isItemsStopRollingBombs());
 		punchedBombsComeBackAtTheOppositeEnd_c.setSelected(options.isPunchedBombsComeBackAtTheOppositeEnd());
 		multipleFire_c.setSelected(options.isMultipleFire());
