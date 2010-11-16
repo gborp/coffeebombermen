@@ -43,13 +43,6 @@ public class ServerOptions extends Options<ServerOptions> {
 	 * Tells whether we have to determine new random positions after each round.
 	 */
 	private boolean          newRandomPositionsAfterRounds;
-	/** Tells whether bombs should explode after one remained (team or player). */
-	private boolean          bombsExplodeAfterOneRemained;
-	/**
-	 * Tells whether building up walls should stop after one remained (team or
-	 * player).
-	 */
-	private boolean          buildingUpWallsStopsAfterOneRemained;
 	/**
 	 * Tells whether items stop rolling bombs (if false, items disappear when
 	 * bombs roll over them).
@@ -109,8 +102,6 @@ public class ServerOptions extends Options<ServerOptions> {
 		buffer.append(isExplosionAnnihilatesDiseases()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isFireDoesntHurtTeammates()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isNewRandomPositionsAfterRounds()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
-		buffer.append(isBombsExplodeAfterOneRemained()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
-		buffer.append(isBuildingUpWallsStopsAfterOneRemained()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isItemsStopRollingBombs()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isPunchedBombsComeBackAtTheOppositeEnd()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		buffer.append(isMultipleFire()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
@@ -154,8 +145,6 @@ public class ServerOptions extends Options<ServerOptions> {
 		serverOptions.setExplosionAnnihilatesDiseases(optionsTokenizer.nextBooleanToken());
 		serverOptions.setFireDoesntHurtTeammates(optionsTokenizer.nextBooleanToken());
 		serverOptions.setNewRandomPositionsAfterRounds(optionsTokenizer.nextBooleanToken());
-		serverOptions.setBombsExplodeAfterOneRemained(optionsTokenizer.nextBooleanToken());
-		serverOptions.setBuildingUpWallsStopsAfterOneRemained(optionsTokenizer.nextBooleanToken());
 		serverOptions.setItemsStopRollingBombs(optionsTokenizer.nextBooleanToken());
 		serverOptions.setPunchedBombsComeBackAtTheOppositeEnd(optionsTokenizer.nextBooleanToken());
 		serverOptions.setMultipleFire(optionsTokenizer.nextBooleanToken());
@@ -307,22 +296,6 @@ public class ServerOptions extends Options<ServerOptions> {
 
 	public boolean isNewRandomPositionsAfterRounds() {
 		return newRandomPositionsAfterRounds;
-	}
-
-	public void setBombsExplodeAfterOneRemained(boolean bombsExplodeAfterOneRemained) {
-		this.bombsExplodeAfterOneRemained = bombsExplodeAfterOneRemained;
-	}
-
-	public boolean isBombsExplodeAfterOneRemained() {
-		return bombsExplodeAfterOneRemained;
-	}
-
-	public void setBuildingUpWallsStopsAfterOneRemained(boolean buildingUpWallsStopsAfterOneRemained) {
-		this.buildingUpWallsStopsAfterOneRemained = buildingUpWallsStopsAfterOneRemained;
-	}
-
-	public boolean isBuildingUpWallsStopsAfterOneRemained() {
-		return buildingUpWallsStopsAfterOneRemained;
 	}
 
 	public void setItemsStopRollingBombs(boolean itemsStopRollingBombs) {
