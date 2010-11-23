@@ -637,7 +637,7 @@ public class Player {
 					direction = Directions.LEFT;
 				} else if (posY == 0) {
 					nextPosX = posX;
-					nextPosY = 0;
+					nextPosY = 1;
 					direction = Directions.DOWN;
 				} else {
 					nextPosX = posX;
