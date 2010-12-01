@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerNumberModel;
 
+import com.braids.coffeebombermen.client.gamecore.robot.RobotTypes;
 import com.braids.coffeebombermen.client.graphics.GraphicsManager;
 import com.braids.coffeebombermen.client.sound.SoundManager;
 import com.braids.coffeebombermen.options.OptConsts.ImageScalingAlgorithms;
@@ -113,6 +114,8 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 	private final JTextField[]                  playerNames_cs                          = new JTextField[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 	/** Components for the colors of the players options. */
 	private final JComboBox[]                   playerColors_cs                         = new JComboBox[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
+	/** Components for the colors of the players options. */
+	private final JComboBox[]                   playerRobots_cs                         = new JComboBox[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 	/** Components for the movement correction sensitivities of the players. */
 	private final JSpinner[]                    movementCorrectionSensitivities_cs      = new JSpinner[OptConsts.MAX_PLAYERS_FROM_A_COMPUTER];
 
@@ -187,6 +190,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 			playerColors_cs[i] = new JComboBox(PlayerColors.values());
 			playerColors_cs[i].setRenderer(listCellRenderer);
 		}
+		for (int i = 0; i < playerRobots_cs.length; i++) {
+			playerRobots_cs[i] = new JComboBox(RobotTypes.values());
+		}
 
 		for (int i = 0; i < movementCorrectionSensitivities_cs.length; i++) {
 			movementCorrectionSensitivities_cs[i] = new JSpinner(new SpinnerNumberModel(DEFAULT_MOVEMENT_CORRECTION_SENSITIVITY,
@@ -241,6 +247,10 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 			panel = new JPanel();
 			panel.add(new JLabel("Player color:"));
 			panel.add(playerColors_cs[i]);
+			box.add(panel);
+			panel = new JPanel();
+			panel.add(new JLabel("Robot type:"));
+			panel.add(playerRobots_cs[i]);
 			box.add(panel);
 			panel = new JPanel();
 			panel.add(new JLabel("Movement correction sensitivity:"));
@@ -319,6 +329,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		for (int i = 0; i < playerColors_cs.length; i++) {
 			playerColors_cs[i].setSelectedItem(DEFAULT_PLAYER_COLORS[i]);
 		}
+		for (int i = 0; i < playerRobots_cs.length; i++) {
+			playerRobots_cs[i].setSelectedItem(RobotTypes.EMPTY);
+		}
 		for (JSpinner movementCorrectionSensitivities_c : movementCorrectionSensitivities_cs) {
 			movementCorrectionSensitivities_c.setValue(DEFAULT_MOVEMENT_CORRECTION_SENSITIVITY);
 		}
@@ -367,6 +380,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		for (int i = 0; i < clientOptions.publicClientOptions.playerColors.length; i++) {
 			clientOptions.publicClientOptions.playerColors[i] = PlayerColors.values()[playerColors_cs[i].getSelectedIndex()];
 		}
+		for (int i = 0; i < clientOptions.publicClientOptions.playerRobots.length; i++) {
+			clientOptions.publicClientOptions.playerRobots[i] = RobotTypes.values()[playerRobots_cs[i].getSelectedIndex()];
+		}
 		for (int i = 0; i < clientOptions.publicClientOptions.movementCorrectionSensitivities.length; i++) {
 			clientOptions.publicClientOptions.movementCorrectionSensitivities[i] = (Integer) movementCorrectionSensitivities_cs[i].getValue();
 		}
@@ -406,6 +422,9 @@ public class ClientComponentOptions extends ComponentOptions<ClientOptions> impl
 		}
 		for (int i = 0; i < playerColors_cs.length; i++) {
 			playerColors_cs[i].setSelectedIndex(options.publicClientOptions.playerColors[i].ordinal());
+		}
+		for (int i = 0; i < playerRobots_cs.length; i++) {
+			playerRobots_cs[i].setSelectedIndex(options.publicClientOptions.playerRobots[i].ordinal());
 		}
 		for (int i = 0; i < movementCorrectionSensitivities_cs.length; i++) {
 			movementCorrectionSensitivities_cs[i].setValue(options.publicClientOptions.movementCorrectionSensitivities[i]);

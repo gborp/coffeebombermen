@@ -12,6 +12,9 @@ import com.braids.coffeebombermen.client.gamecore.model.BombModel;
 import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.client.gamecore.robot.IRobot;
+import com.braids.coffeebombermen.client.gamecore.robot.RobotTypes;
+import com.braids.coffeebombermen.client.gamecore.robot.SimpleRobot;
 import com.braids.coffeebombermen.client.sound.SoundEffect;
 import com.braids.coffeebombermen.options.Diseases;
 import com.braids.coffeebombermen.options.OptConsts;
@@ -34,6 +37,8 @@ public class Player {
 	private final int             playerIndex;
 	/** The model of the player. */
 	private final PlayerModel     model               = new PlayerModel();
+	/** The robot of the player. */
+	private IRobot                robot               = null;
 	/** Reference to a model provider. */
 	private final GameCoreHandler gameCoreHandler;
 
@@ -80,6 +85,25 @@ public class Player {
 	}
 
 	/**
+	 * Returns the robot of the player.
+	 * 
+	 * @return the robot of the player
+	 */
+	public IRobot getRobot() {
+		return robot;
+	}
+
+	public void setRobot(int index, PlayerModel playerModel, RobotTypes type) {
+		switch (type) {
+			case SIMPLE:
+				robot = new SimpleRobot(gameCoreHandler, index, playerModel);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
 	 * Makes basic initializations for starting a new round.
 	 * 
 	 * @param posX
@@ -109,6 +133,11 @@ public class Player {
 			model.setControlKeyState(playerControlKey, false);
 			model.setControlKeyState(playerControlKey, false);
 		}
+
+		if (getRobot() != null) {
+			getRobot().initForNextRound();
+		}
+
 	}
 
 	/**
@@ -765,11 +794,12 @@ public class Player {
 					} else {
 						lstPlayers = gameCoreHandler.getAllPlayerModels();
 					}
+					if (lstPlayers.size() <= 1) {
+						break;
+					}
 					int swapWith = playerIndex;
-					if (lstPlayers.size() != 1) {
-						while (swapWith == playerIndex) {
-							swapWith = MathHelper.randomInt(lstPlayers.size() - 1);
-						}
+					while (swapWith == playerIndex) {
+						swapWith = MathHelper.randomInt(lstPlayers.size() - 1);
 					}
 					PlayerModel swapModel = lstPlayers.get(swapWith);
 
@@ -829,8 +859,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				   // obstrucion and we're closer than
-				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				// obstrucion and we're closer than
+				// CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
 				if (posX % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX - CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY + CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.RIGHT);
@@ -869,8 +899,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				   // obstrucion and we're closer than
-				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				// obstrucion and we're closer than
+				// CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
 				if (posX % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX - CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY - CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.RIGHT);
@@ -910,8 +940,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				   // obstrucion and we're closer than
-				   // CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
+				// obstrucion and we're closer than
+				// CoreConsts. LEVEL_COMPONENT_GRANULARITY/2
 				if (posY % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX - CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY - CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);
@@ -947,8 +977,8 @@ public class Player {
 			}
 			// The second kind of movement correction
 			else { // We could move the specified direction, but we have a side
-				   // obstrucion and we're closer than
-				   // CoreConsts.LEVEL_COMPONENT_GRANULARITY/2
+				// obstrucion and we're closer than
+				// CoreConsts.LEVEL_COMPONENT_GRANULARITY/2
 				if (posY % CoreConsts.LEVEL_COMPONENT_GRANULARITY < CoreConsts.LEVEL_COMPONENT_GRANULARITY / 2) {
 					if (!canPlayerStepToPosition(posX + CoreConsts.LEVEL_COMPONENT_GRANULARITY, posY - CoreConsts.LEVEL_COMPONENT_GRANULARITY)) {
 						model.setDirection(Directions.DOWN);

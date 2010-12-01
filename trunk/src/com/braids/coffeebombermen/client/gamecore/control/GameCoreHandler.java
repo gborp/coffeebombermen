@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import com.braids.coffeebombermen.GameManager;
 import com.braids.coffeebombermen.MainFrame;
@@ -35,11 +35,11 @@ import com.braids.coffeebombermen.client.shrink.ShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.SpiderBombShrinkPerformer;
 import com.braids.coffeebombermen.client.sound.SoundEffect;
 import com.braids.coffeebombermen.options.Diseases;
+import com.braids.coffeebombermen.options.ServerComponentOptions;
+import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.PlayerControlKeys;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
-import com.braids.coffeebombermen.options.ServerComponentOptions;
-import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 import com.braids.coffeebombermen.options.model.ServerOptions;
 import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
@@ -145,7 +145,7 @@ public class GameCoreHandler {
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
 		        new BinaryWalkingShrinkPerformer(this), new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this),
-		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this), new ArmageddonShrinkPerformer(this)};
+		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this), new ArmageddonShrinkPerformer(this) };
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
@@ -158,6 +158,7 @@ public class GameCoreHandler {
 				players[j] = new Player(ourClientIndex == i, i, j, this, publicClientOptions.playerNames[j]);
 				playerModels[j] = players[j].getModel();
 				playerModels[j].setColor(publicClientOptions.playerColors[j]);
+				players[j].setRobot(j, playerModels[j], publicClientOptions.playerRobots[j]);
 			}
 
 			clientsPlayers.add(players);
@@ -1102,5 +1103,9 @@ public class GameCoreHandler {
 
 	public Walls getWall(int x, int y) {
 		return getLevel().getModel().getComponent(x, y).getWall();
+	}
+
+	public List<Player[]> getPlayers() {
+		return clientsPlayers;
 	}
 }
