@@ -1,5 +1,6 @@
 package com.braids.coffeebombermen.options.model;
 
+import com.braids.coffeebombermen.client.gamecore.robot.RobotTypes;
 import com.braids.coffeebombermen.options.OptConsts;
 import com.braids.coffeebombermen.options.OptConsts.PlayerColors;
 import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
@@ -22,6 +23,8 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 	public String[]       playerNames;
 	/** The colors of the players. */
 	public PlayerColors[] playerColors;
+	/** The robot type of the players. */
+	public RobotTypes[]   playerRobots;
 	/** Sensitivities of the movement corrections of the players. */
 	public int[]          movementCorrectionSensitivities;
 
@@ -45,6 +48,10 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 		playerNames = new String[playersCount];
 		playerColors = new PlayerColors[playersCount];
 		movementCorrectionSensitivities = new int[playersCount];
+		playerRobots = new RobotTypes[playersCount];
+		for (int i = 0; i < playerRobots.length; i++) {
+			playerRobots[i] = RobotTypes.EMPTY;
+		}
 
 		for (int i = 0; i < playerNames.length; i++) {
 			playerNames[i] = new String();
@@ -87,6 +94,10 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 			buffer.append(movementCorrectionSensitivities[i]).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
 		}
 
+		for (int i = 0; i < playersCount; i++) {
+			buffer.append(playerRobots[i].ordinal()).append(GeneralStringTokenizer.GENERAL_SEPARATOR_CHAR);
+		}
+
 		return buffer.toString();
 	}
 
@@ -114,6 +125,10 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 
 		for (int i = 0; i < publicClientOptions.movementCorrectionSensitivities.length; i++) {
 			publicClientOptions.movementCorrectionSensitivities[i] = optionsTokenizer.nextIntToken();
+		}
+
+		for (int i = 0; i < publicClientOptions.playerRobots.length && optionsTokenizer.hasRemainingString(); i++) {
+			publicClientOptions.playerRobots[i] = RobotTypes.values()[optionsTokenizer.nextIntToken()];
 		}
 
 		return publicClientOptions;
@@ -154,6 +169,11 @@ public class PublicClientOptions extends Options<PublicClientOptions> {
 		}
 		for (int i = 0; i < playersCount; i++) {
 			if (!playerColors[i].equals(publicClientOptions.playerColors[i])) {
+				return false;
+			}
+		}
+		for (int i = 0; i < playersCount; i++) {
+			if (!playerRobots[i].equals(publicClientOptions.playerRobots[i])) {
 				return false;
 			}
 		}
