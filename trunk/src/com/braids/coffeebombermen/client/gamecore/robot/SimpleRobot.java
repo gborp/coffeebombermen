@@ -10,6 +10,7 @@ import java.util.Stack;
 
 import com.braids.coffeebombermen.client.gamecore.Activities;
 import com.braids.coffeebombermen.client.gamecore.BombPhases;
+import com.braids.coffeebombermen.client.gamecore.BombTypes;
 import com.braids.coffeebombermen.client.gamecore.CoreConsts;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.model.BombModel;
@@ -33,7 +34,9 @@ public class SimpleRobot implements IRobot {
 	private AStarPath       lastPath;
 	private String          lastKey;
 	private boolean         lastBomb;
+	private boolean         lastBombIsTriggered;
 	private boolean         hasOwnBomb;
+	private boolean         hasOwnBombIsTriggered;
 	private boolean         startNextRound;
 
 	public SimpleRobot(GameCoreHandler gameCoreHandler, int index, PlayerModel playerModel) {
@@ -128,8 +131,8 @@ public class SimpleRobot implements IRobot {
 			AStarPath path2 = null;
 
 			// search target where I'm in safe
-			List<AStarPath> lstSafePath1 = new ArrayList<AStarPath>();
-			List<AStarPath> lstSafePath2 = new ArrayList<AStarPath>();
+			PriorityQueue<AStarPath> lstSafePath1 = new PriorityQueue<AStarPath>(20, new AStarPathComparator());
+			PriorityQueue<AStarPath> lstSafePath2 = new PriorityQueue<AStarPath>(20, new AStarPathComparator());
 
 			pqTarget2.remove(source);
 			target = pqTarget2.poll();
@@ -155,7 +158,7 @@ public class SimpleRobot implements IRobot {
 								path = path2;
 								break;
 							} else if (!path2.goAcrossFire) {
-								lstSafePath2.add(0, path2);
+								lstSafePath2.add(path2);
 							}
 						} else if (!path2.goAcrossFire) {
 							lstSafePath2.add(path2);
@@ -173,11 +176,11 @@ public class SimpleRobot implements IRobot {
 
 			if (path == null) {
 				if (lstSafePath1.size() > 0) {
-					path = lstSafePath1.get(0);
+					path = lstSafePath1.poll();
 				} else if (lstSafePath2.size() > 0) {
 					if (hasOwnBomb) {
 						if (!source.isInSafe()) {
-							path = lstSafePath2.get(0);
+							path = lstSafePath2.poll();
 							// } else {
 							// // previous target
 							// if (lastPath != null) {
@@ -189,8 +192,13 @@ public class SimpleRobot implements IRobot {
 							// }
 							// }
 						}
-					} else if ((!source.isInSafe()) || lstSafePath2.get(0).isSafe()) {
-						path = lstSafePath2.get(0);
+					} else if (!source.isInSafe()) {
+						path = lstSafePath2.poll();
+					} else {
+						path = lstSafePath2.poll();
+						if (!path.isSafe()) {
+							path = null;
+						}
 					}
 				}
 			}
@@ -202,20 +210,31 @@ public class SimpleRobot implements IRobot {
 		}
 
 		ArrayList<String> commands = new ArrayList<String>(5);
+
 		if (lastBomb) {
 			// release bomb
 			lastBomb = false;
-			commands.add(" " + index + " 4 r");
+			commands.add(index + " 4 r");
 		}
 
-		if (path != null) {
+		if (hasOwnBomb && hasOwnBombIsTriggered) {
+			if (source.isInSafe() && !lastBombIsTriggered) {
+				lastBombIsTriggered = true;
+				commands.add(index + " 5 p");
+			} else if (lastBombIsTriggered) {
+				lastBombIsTriggered = false;
+				commands.add(index + " 5 r");
+			}
+		}
+
+		if (commands.size() == 0 && path != null) {
 			if (path.size() > 1) {
 				target = path.getTarget();
 				if (!lastBomb) {
 					if ((path.isSafe()) && (!hasOwnBomb) && (target.x != source.x) && (target.y != source.y)) {
 						// press bomb
 						lastBomb = true;
-						commands.add(" " + index + " 4 p");
+						commands.add(index + " 4 p");
 						lastPath = null;
 					} else {
 
@@ -223,31 +242,31 @@ public class SimpleRobot implements IRobot {
 						String key = getKey(path.get(0), path.get(1));
 						if (key == null) {
 							if (lastKey != null) {
-								commands.add(" " + index + " " + lastKey + " r");
+								commands.add(index + " " + lastKey + " r");
 							}
 						} else {
 							if (lastKey != null && (!lastKey.equals(key))) {
-								commands.add(" " + index + " " + lastKey + " r");
-								commands.add(" " + index + " " + key + " p");
+								commands.add(index + " " + lastKey + " r");
+								commands.add(index + " " + key + " p");
 							} else {
-								commands.add(" " + index + " " + key + " p");
+								commands.add(index + " " + key + " p");
 							}
 						}
 						lastKey = key;
 					}
 				}
 			} else if (lastKey != null) {
-				commands.add(" " + index + " " + lastKey + " r");
+				commands.add(index + " " + lastKey + " r");
 				lastKey = null;
 			}
 		} else if (lastKey != null) {
-			commands.add(" " + index + " " + lastKey + " r");
+			commands.add(index + " " + lastKey + " r");
 			lastKey = null;
 		}
 
 		String result = "";
 		for (String cmd : commands) {
-			result += cmd;
+			result += " " + cmd;
 		}
 
 		if (result != "") {
@@ -366,6 +385,7 @@ public class SimpleRobot implements IRobot {
 				final BombModel bombModel = bombModels.get(b);
 				if (playerModel.equals(bombModel.getOwnerPlayer())) {
 					hasOwnBomb = true;
+					hasOwnBombIsTriggered = BombTypes.TRIGGERED.equals(bombModel.getType());
 				}
 
 				if (bombModel.getPhase() == BombPhases.ROLLING || (bombModel.getPhase() == BombPhases.STANDING)) {
@@ -458,6 +478,10 @@ public class SimpleRobot implements IRobot {
 		public boolean isSafe() {
 			return !(goAcrossFire || goAcrossFireLine);
 		}
+
+		public int getCost() {
+			return cost;
+		}
 	}
 
 	public class AStarNode {
@@ -521,6 +545,19 @@ public class SimpleRobot implements IRobot {
 			if (first.getF() < second.getF()) {
 				return -1;
 			} else if (first.getF() > second.getF()) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	}
+
+	public static class AStarPathComparator implements Comparator<AStarPath> {
+
+		public int compare(AStarPath first, AStarPath second) {
+			if (first.getCost() < second.getCost()) {
+				return -1;
+			} else if (first.getCost() > second.getCost()) {
 				return 1;
 			} else {
 				return 0;
