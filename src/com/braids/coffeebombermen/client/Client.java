@@ -12,19 +12,19 @@ import com.braids.coffeebombermen.Consts;
 import com.braids.coffeebombermen.GameManager;
 import com.braids.coffeebombermen.MainFrame;
 import com.braids.coffeebombermen.MainMenuBar;
-import com.braids.coffeebombermen.MessageHandler;
 import com.braids.coffeebombermen.MainMenuBar.GameStates;
+import com.braids.coffeebombermen.MessageHandler;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.control.Player;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.gamecore.view.GameSceneMainComponentHandler;
 import com.braids.coffeebombermen.client.graphics.AnimationDatas;
 import com.braids.coffeebombermen.client.graphics.GraphicsManager;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
+import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptionsManager;
 import com.braids.coffeebombermen.options.ServerComponentOptions;
-import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
-import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
 import com.braids.coffeebombermen.options.model.ClientOptions;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 import com.braids.coffeebombermen.options.model.ServerOptions;
@@ -371,11 +371,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		try {
 			String newClientActions = gameSceneMainComponentHandler.getGameSceneComponent().getAndClearNewActions();
 
-			for (Player[] players : gameCoreHandler.getPlayers()) {
-				for (Player player : players) {
-					if (player.getRobot() != null) {
-						newClientActions += player.getRobot().getNextAction();
-					}
+			for (Player player : gameCoreHandler.getPlayers().get(gameCoreHandler.getOurClientIndex())) {
+				if (player.getRobot() != null) {
+					newClientActions += player.getRobot().getNextAction();
 				}
 			}
 
