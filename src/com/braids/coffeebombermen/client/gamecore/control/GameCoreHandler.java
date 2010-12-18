@@ -293,9 +293,11 @@ public class GameCoreHandler {
 				final int[][] DELTA_COORDS = new int[][] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }; // Delta
 				// coordinates of the clearable components
 				for (int[] element : DELTA_COORDS) {
-					final LevelComponent levelComponent = levelModel.getComponent(componentPosX + element[1], componentPosY + element[0]);
-					if ((levelComponent.getWall() != Walls.CONCRETE) && (levelComponent.getWall() != Walls.GATEWAY_ENTRANCE)
-					        && (levelComponent.getWall() != Walls.GATEWAY_EXIT)) {
+					int posX = componentPosX + element[1];
+					int posY = componentPosY + element[0];
+
+					if (posX > 0 && posX <= maxComponentPosX && posY > 0 && posY <= maxComponentPosY) {
+						final LevelComponent levelComponent = levelModel.getComponent(posX, posY);
 						levelComponent.setWall(Walls.EMPTY);
 						levelComponent.setItem(null);
 					}
