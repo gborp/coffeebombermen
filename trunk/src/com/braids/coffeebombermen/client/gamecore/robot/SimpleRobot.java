@@ -1,5 +1,7 @@
 package com.braids.coffeebombermen.client.gamecore.robot;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -18,35 +20,45 @@ import com.braids.coffeebombermen.client.gamecore.model.FireModel;
 import com.braids.coffeebombermen.client.gamecore.model.PlayerModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
+import com.braids.coffeebombermen.options.Diseases;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
 
 public class SimpleRobot implements IRobot {
 
-	private static int      COST_FIRE      = 50;
-	private static int      COST_FIRE_LINE = 5;
+	private static final int     COST_FIRE      = 50;
+	private static final int     COST_FIRE_LINE = 5;
 
-	private GameCoreHandler gameCoreHandler;
-	private int             index;
-	private PlayerModel     playerModel;
+	private GameCoreHandler      gameCoreHandler;
+	private int                  index;
+	private PlayerModel          playerModel;
 
-	private AStarNode[][]   lastNodes;
-	private AStarPath       lastPath;
-	private String          lastKey;
-	private boolean         lastBomb;
-	private boolean         lastBombIsTriggered;
-	private boolean         hasOwnBomb;
-	private boolean         hasOwnBombIsTriggered;
-	private boolean         startNextRound;
+	private AStarNode[][]        lastNodes;
+	private AStarPath            lastPath;
+	private String               lastKey;
+	private boolean              lastBomb;
+	private boolean              lastBombIsTriggered;
+	private boolean              hasOwnBomb;
+	private boolean              hasOwnBombIsTriggered;
+	private boolean              startNextRound;
+
+	private FileWriter           logger;
+	private static final boolean logging        = false;
 
 	public SimpleRobot(GameCoreHandler gameCoreHandler, int index, PlayerModel playerModel) {
 		this.gameCoreHandler = gameCoreHandler;
 		this.index = index;
 		this.playerModel = playerModel;
-	}
 
-	public AStarNode[][] getLastNodes() {
-		return lastNodes;
+		if (!logging) {
+			return;
+		}
+		try {
+			logger = new FileWriter("SimpleRobot.txt");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public int getComponentCenterPos(int pos) {
@@ -78,6 +90,10 @@ public class SimpleRobot implements IRobot {
 		hasOwnBomb = false;
 		lastNodes = getAStarNode(pqTarget1, pqTarget2);
 
+		log(lastNodes);
+		log(pqTarget1);
+		log(pqTarget2);
+
 		int x = getComponentCenterPos(playerModel.getPosX());
 		int y = getComponentCenterPos(playerModel.getPosY());
 		AStarNode source = lastNodes[x][y];
@@ -94,6 +110,10 @@ public class SimpleRobot implements IRobot {
 			target = pqTarget1.poll();
 		}
 
+		if (path != null && !path.isSafe()) {
+			path = null;
+		}
+
 		// I am in safe and I can blow up a wall
 		if (path == null || !path.isSafe()) {
 			if (source.isInSafe() && hasOwnBomb) {
@@ -106,6 +126,7 @@ public class SimpleRobot implements IRobot {
 					}
 				}
 				if (canBlowUpAWall) {
+					log("T01");
 					path = new AStarPath();
 					path.addNode(source);
 				}
@@ -118,6 +139,7 @@ public class SimpleRobot implements IRobot {
 			if (lastPath != null && (!lastPath.getTarget().equals(source))) {
 				AStarPath pathPrevious = searchPath(lastNodes, source, lastPath.getTarget());
 				if (pathPrevious != null && pathPrevious.isSafe()) {
+					log("T02");
 					path = pathPrevious;
 					fromLastPath = true;
 				}
@@ -180,6 +202,7 @@ public class SimpleRobot implements IRobot {
 				} else if (lstSafePath2.size() > 0) {
 					if (hasOwnBomb) {
 						if (!source.isInSafe()) {
+							log("T1");
 							path = lstSafePath2.poll();
 							// } else {
 							// // previous target
@@ -194,8 +217,10 @@ public class SimpleRobot implements IRobot {
 						}
 					} else if (!source.isInSafe()) {
 						path = lstSafePath2.poll();
+						log("T2");
 					} else {
 						path = lstSafePath2.poll();
+						log("T3");
 						if (!path.isSafe()) {
 							path = null;
 						}
@@ -204,6 +229,8 @@ public class SimpleRobot implements IRobot {
 			}
 
 		}
+
+		logTarget(path, fromLastPath);
 
 		if (!fromLastPath) {
 			lastPath = path;
@@ -269,10 +296,83 @@ public class SimpleRobot implements IRobot {
 			result += " " + cmd;
 		}
 
-		if (result != "") {
-			System.out.println("source: " + source.toString() + " / target: " + (target == null ? "" : target.toString()) + " / result: " + result);
-		}
+		log("result: " + result);
 		return result;
+	}
+
+	private void log(AStarNode[][] nodes) {
+		if (!logging) {
+			return;
+		}
+		try {
+			String result = "";
+
+			if (nodes.length > 0) {
+				int sizeY = nodes[0].length;
+				for (int y = 0; y < sizeY; y++) {
+					for (int x = 0; x < nodes.length; x++) {
+						result += '\t' + nodes[x][y].getMark();
+					}
+					result += '\n';
+				}
+			}
+
+			logger.write(result);
+			logger.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void log(PriorityQueue<AStarNode> pq) {
+		if (!logging) {
+			return;
+		}
+		try {
+			logger.write(pq.toString());
+			logger.write('\n');
+			logger.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void log(String str) {
+		if (!logging) {
+			return;
+		}
+		try {
+			logger.write(str);
+			logger.write('\n');
+			logger.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void logTarget(AStarPath path, boolean fromLastPath) {
+		if (!logging) {
+			return;
+		}
+		try {
+			if (path == null) {
+				logger.write("Source: null");
+				logger.write('\n');
+				logger.write("Target: null");
+				logger.write('\n');
+				logger.write("Path  : null");
+			} else {
+				logger.write("Source: " + path.getSource() + (path.getSource().isInSafe() ? " safe" : " warning"));
+				logger.write('\n');
+				logger.write("Target: " + path.getTarget() + (path.getTarget().isInSafe() ? " safe" : " warning") + (fromLastPath ? " (previous target)" : ""));
+				logger.write('\n');
+				logger.write("Path  : " + (path.isSafe() ? " safe" : " warning"));
+			}
+			logger.write('\n');
+			logger.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -283,9 +383,9 @@ public class SimpleRobot implements IRobot {
 			if (source.y == target.y) {
 				return null;
 			} else if (source.y < target.y) {
-				return "1";
+				return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "0" : "1";
 			} else {
-				return "0";
+				return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "1" : "0";
 			}
 		} else if (source.x < target.x) {
 			return "2";
@@ -471,6 +571,13 @@ public class SimpleRobot implements IRobot {
 			}
 		}
 
+		public AStarNode getSource() {
+			if (lstNode.size() == 0) {
+				return null;
+			}
+			return lstNode.get(0);
+		}
+
 		public AStarNode getTarget() {
 			return target;
 		}
@@ -527,6 +634,22 @@ public class SimpleRobot implements IRobot {
 
 		public String toString() {
 			return x + "," + y;
+		}
+
+		public String getMark() {
+			if (isItem) {
+				return "?";
+			} else if (isBrick) {
+				return "/";
+			} else if (isWall) {
+				return "#";
+			} else if (isInFire) {
+				return "X";
+			} else if (isInFireLine) {
+				return "x";
+			}
+
+			return ".";
 		}
 
 		public boolean equals(Object obj) {
