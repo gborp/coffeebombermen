@@ -1,7 +1,5 @@
 package com.braids.coffeebombermen.utils;
 
-import java.awt.Point;
-
 public class Position {
 
 	private int x;

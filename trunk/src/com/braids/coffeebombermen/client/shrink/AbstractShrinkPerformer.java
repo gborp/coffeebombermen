@@ -12,7 +12,6 @@ import com.braids.coffeebombermen.client.gamecore.control.Level;
 import com.braids.coffeebombermen.client.gamecore.model.BombModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
-import com.braids.coffeebombermen.client.sound.SoundEffect;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.model.ServerOptions;
@@ -140,9 +139,8 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 			int directionDif = 0;
 			while (directionDif < 4) {
 				Directions d = Directions.get((direction.ordinal() + directionDif) % 4);
-				if (gameCoreHandler.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel
-				        .getComponentPosY()
-				        + d.getYMultiplier())) {
+				if (gameCoreHandler.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(),
+				        newBombModel.getComponentPosY() + d.getYMultiplier())) {
 					newBombModel.setDirection(d);
 					return;
 				}
@@ -185,8 +183,8 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		int directionDif = 0;
 		while (directionDif < 4) {
 			Directions d = Directions.get((direction + directionDif) % 4);
-			if (mc.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY()
-			        + d.getYMultiplier())) {
+			if (mc.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(),
+			        newBombModel.getComponentPosY() + d.getYMultiplier())) {
 				newBombModel.setDirection(d);
 				return;
 			}
