@@ -67,6 +67,7 @@ public class BombModel extends PositionedIterableObject {
 	private PlayerModel                triggererPlayer;
 	private boolean                    detonatingOnHit;
 	private float                      crazyPercent;
+	private float                      explodingTimeMultiplier;
 
 	/**
 	 * Creates a new Bomb.
@@ -78,6 +79,7 @@ public class BombModel extends PositionedIterableObject {
 		this.ownerPlayer = ownerPlayer;
 		setPhase(BombPhases.STANDING);
 		setCrazyPercent(0);
+		setExplodingTimeMultiplier(1);
 	}
 
 	/**
@@ -334,5 +336,13 @@ public class BombModel extends PositionedIterableObject {
 	 */
 	public boolean isDeadBomb() {
 		return deadBomb;
+	}
+
+	public void setExplodingTimeMultiplier(float explodingTimeMultiplier) {
+		this.explodingTimeMultiplier = explodingTimeMultiplier;
+	}
+
+	public float getExplodingTimeMultiplier() {
+		return explodingTimeMultiplier;
 	}
 }

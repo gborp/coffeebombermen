@@ -44,6 +44,9 @@ public class Player {
 
 	private final boolean         ourClient;
 	private long                  lastSpiderBomb;
+	private boolean               detonatingOnHit;
+	private boolean               useDeadBomb;
+	private float                 explodingTimeMultiplier;
 
 	/**
 	 * Creates a new Player.
@@ -62,6 +65,7 @@ public class Player {
 		this.clientIndex = clientIndex;
 		this.playerIndex = playerIndex;
 		this.gameCoreHandler = gameCoreHandler;
+		explodingTimeMultiplier = 1;
 		model.setName(name);
 	}
 
@@ -187,6 +191,30 @@ public class Player {
 		}
 	}
 
+	public void setDetonatingOnHit(boolean detonatingOnHit) {
+		this.detonatingOnHit = detonatingOnHit;
+	}
+
+	public boolean isDetonatingOnHit() {
+		return detonatingOnHit;
+	}
+
+	public void setUseDeadBomb(boolean useDeadBomb) {
+		this.useDeadBomb = useDeadBomb;
+	}
+
+	public boolean isUseDeadBomb() {
+		return useDeadBomb;
+	}
+
+	public void setExplodingTimeMultiplier(float explodingTimeMultiplier) {
+		this.explodingTimeMultiplier = explodingTimeMultiplier;
+	}
+
+	public float getExplodingTimeMultiplier() {
+		return explodingTimeMultiplier;
+	}
+
 	private void handleSpiderBomb(boolean useDeadBombs) {
 		long now = gameCoreHandler.getTick();
 		if (!model.isSpiderBombEnabled() || (lastSpiderBomb + SPIDER_BOMB_LATENCY > now)) {
@@ -211,7 +239,6 @@ public class Player {
 
 	private void throwSpiderBomb(Directions direction, boolean useDeadBombs) {
 		if (direction.equals(Directions.UP)) {
-
 			if (model.getSpiderBombRounds() % 4 != 0) {
 				return;
 			}
@@ -405,6 +432,9 @@ public class Player {
 			model.accumulateableItemQuantitiesMap.put(Items.BOMB, --bombsCount);
 			final Bomb newBomb = new Bomb(model, gameCoreHandler);
 			final BombModel newBombModel = newBomb.getModel();
+			newBombModel.setDetonatingOnHit(detonatingOnHit);
+			newBombModel.setDeadBomb(useDeadBomb);
+			newBombModel.setExplodingTimeMultiplier(explodingTimeMultiplier);
 
 			int bombRange = model.hasNonAccumItem(Items.SUPER_FIRE) ? CoreConsts.SUPER_FIRE_RANGE : model.accumulateableItemQuantitiesMap.get(Items.FIRE) + 1;
 
@@ -426,7 +456,7 @@ public class Player {
 			}
 
 			if (model.getOwnedDiseases().containsKey(Diseases.FAST_DETONATION)) {
-				newBombModel.setTickingIterations(CoreConsts.BOMB_DETONATION_ITERATIONS * 3 / 4);
+				newBombModel.setExplodingTimeMultiplier(0.25f);
 			}
 
 			gameCoreHandler.addNewBomb(newBomb);

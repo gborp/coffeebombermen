@@ -27,10 +27,10 @@ import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.graphics.GraphicsManager;
 import com.braids.coffeebombermen.client.graphics.ImageHandler;
 import com.braids.coffeebombermen.options.Diseases;
-import com.braids.coffeebombermen.options.OptConsts.Items;
-import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptionsManager;
+import com.braids.coffeebombermen.options.OptConsts.Items;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.model.ClientOptions;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 
@@ -412,7 +412,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		g2.setComposite(blackoutComposite);
 
 		if (!hasActualDetonation()) {
-			g2.fillRect(0, 0, gameCoreHandler.getLevelModel().getWidth() * levelComponentSize, gameCoreHandler.getLevelModel().getHeight() * levelComponentSize);
+			g2
+			        .fillRect(0, 0, gameCoreHandler.getLevelModel().getWidth() * levelComponentSize, gameCoreHandler.getLevelModel().getHeight()
+			                * levelComponentSize);
 			g2.setComposite(normalComposit);
 			return;
 		}
@@ -602,8 +604,8 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 								g.drawImage(wallImageHandlers[Walls.EMPTY.ordinal()].getScaledImage(wallScaleFactor, false), x, y, null);
 							}
 						}
-						g.drawImage(burningPhaseHandlers[burningPhaseHandlers.length * (Math.abs(fireModel.getIterationCounter()) % CoreConsts.FIRE_ITERATIONS) / CoreConsts.FIRE_ITERATIONS]
-						        .getScaledImage(burningScaleFactor), x, y, null);
+						g.drawImage(burningPhaseHandlers[burningPhaseHandlers.length * (Math.abs(fireModel.getIterationCounter()) % CoreConsts.FIRE_ITERATIONS)
+						        / CoreConsts.FIRE_ITERATIONS].getScaledImage(burningScaleFactor), x, y, null);
 					}
 				}
 			}
@@ -934,8 +936,9 @@ public class GameSceneComponent extends JComponent implements KeyListener, Optio
 		} else {
 			color = Color.BLACK;
 		}
-		g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount * (Math.abs(fireModel.getIterationCounter()) % CoreConsts.FIRE_ITERATIONS) / CoreConsts.FIRE_ITERATIONS]
-		        .getScaledImage(fireScaleFactor, true, COLORIZATION_COLOR, color), x, y, null);
+		g.drawImage(firePhaseHandlers[fireModel.getShape().ordinal()][firePhasesCount
+		        * (Math.abs(fireModel.getIterationCounter()) % CoreConsts.FIRE_ITERATIONS) / CoreConsts.FIRE_ITERATIONS].getScaledImage(fireScaleFactor, true,
+		        COLORIZATION_COLOR, color), x, y, null);
 	}
 
 }

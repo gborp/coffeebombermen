@@ -27,6 +27,7 @@ import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BinaryWalkingShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BouncingWallShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.ExplodeOnHitShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DiseaseShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DrawWallShrinkPerformer;
@@ -145,7 +146,8 @@ public class GameCoreHandler {
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
 		        new BinaryWalkingShrinkPerformer(this), new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this),
-		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this), new ArmageddonShrinkPerformer(this) };
+		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this),
+		        new ArmageddonShrinkPerformer(this), new ExplodeOnHitShrinkPerformer(this) };
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {
@@ -296,7 +298,7 @@ public class GameCoreHandler {
 					int posX = componentPosX + element[1];
 					int posY = componentPosY + element[0];
 
-					if (posX > 0 && posX <= maxComponentPosX && posY > 0 && posY <= maxComponentPosY) {
+					if ((posX > 0) && (posX <= maxComponentPosX) && (posY > 0) && (posY <= maxComponentPosY)) {
 						final LevelComponent levelComponent = levelModel.getComponent(posX, posY);
 						levelComponent.setWall(Walls.EMPTY);
 						levelComponent.setItem(null);
