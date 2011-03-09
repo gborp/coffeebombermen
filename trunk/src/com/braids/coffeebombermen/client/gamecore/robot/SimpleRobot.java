@@ -104,18 +104,18 @@ public class SimpleRobot implements IRobot {
 
 		// search a target where I find an item
 		AStarPath path = null;
-		while ((path == null || !path.isSafe()) && target != null) {
+		while (((path == null) || !path.isSafe()) && (target != null)) {
 			path = searchPath(lastNodes, source, target);
 			pqTarget1.remove(target);
 			target = pqTarget1.poll();
 		}
 
-		if (path != null && !path.isSafe()) {
+		if ((path != null) && !path.isSafe()) {
 			path = null;
 		}
 
 		// I am in safe and I can blow up a wall
-		if (path == null || !path.isSafe()) {
+		if ((path == null) || !path.isSafe()) {
 			if (source.isInSafe() && hasOwnBomb) {
 				boolean canBlowUpAWall = false;
 				List<AStarNode> neighbors = getNeighbors(lastNodes, source);
@@ -135,10 +135,10 @@ public class SimpleRobot implements IRobot {
 		}
 
 		// previous target
-		if (path == null || !path.isSafe()) {
-			if (lastPath != null && (!lastPath.getTarget().equals(source))) {
+		if ((path == null) || !path.isSafe()) {
+			if ((lastPath != null) && (!lastPath.getTarget().equals(source))) {
 				AStarPath pathPrevious = searchPath(lastNodes, source, lastPath.getTarget());
-				if (pathPrevious != null && pathPrevious.isSafe()) {
+				if ((pathPrevious != null) && pathPrevious.isSafe()) {
 					log("T02");
 					path = pathPrevious;
 					fromLastPath = true;
@@ -147,7 +147,7 @@ public class SimpleRobot implements IRobot {
 		}
 
 		// get target where I am in safe
-		if (path == null || !path.isSafe()) {
+		if ((path == null) || !path.isSafe()) {
 
 			// search target where I can blow up a wall
 			AStarPath path2 = null;
@@ -254,7 +254,7 @@ public class SimpleRobot implements IRobot {
 			}
 		}
 
-		if (commands.size() == 0 && path != null) {
+		if ((commands.size() == 0) && (path != null)) {
 			if (path.size() > 1) {
 				target = path.getTarget();
 				if (!lastBomb) {
@@ -272,7 +272,7 @@ public class SimpleRobot implements IRobot {
 								commands.add(index + " " + lastKey + " r");
 							}
 						} else {
-							if (lastKey != null && (!lastKey.equals(key))) {
+							if ((lastKey != null) && (!lastKey.equals(key))) {
 								commands.add(index + " " + lastKey + " r");
 								commands.add(index + " " + key + " p");
 							} else {
@@ -310,8 +310,8 @@ public class SimpleRobot implements IRobot {
 			if (nodes.length > 0) {
 				int sizeY = nodes[0].length;
 				for (int y = 0; y < sizeY; y++) {
-					for (int x = 0; x < nodes.length; x++) {
-						result += '\t' + nodes[x][y].getMark();
+					for (AStarNode[] node : nodes) {
+						result += '\t' + node[y].getMark();
 					}
 					result += '\n';
 				}
@@ -388,9 +388,9 @@ public class SimpleRobot implements IRobot {
 				return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "1" : "0";
 			}
 		} else if (source.x < target.x) {
-			return "2";
+			return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "3" : "2";
 		} else {
-			return "3";
+			return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "2" : "3";
 		}
 
 	}
@@ -421,7 +421,7 @@ public class SimpleRobot implements IRobot {
 				Walls wall = levelComponent.getWall();
 				Items item = levelComponent.getItem();
 				if (!levelComponent.hasFire()) {
-					if (wall == Walls.EMPTY && item != null) {
+					if ((wall == Walls.EMPTY) && (item != null)) {
 						// item
 						node.isItem = true;
 						switch (item) {
@@ -462,7 +462,7 @@ public class SimpleRobot implements IRobot {
 					if (playerModel.equals(fireModel.getOwnerPlayer())) {
 						hasOwnBomb = true;
 					}
-					if (wall == Walls.EMPTY && item == null) {
+					if ((wall == Walls.EMPTY) && (item == null)) {
 						// fire
 						node.isInFire = true;
 						node.cost = COST_FIRE;
@@ -488,7 +488,7 @@ public class SimpleRobot implements IRobot {
 					hasOwnBombIsTriggered = BombTypes.TRIGGERED.equals(bombModel.getType());
 				}
 
-				if (bombModel.getPhase() == BombPhases.ROLLING || (bombModel.getPhase() == BombPhases.STANDING)) {
+				if ((bombModel.getPhase() == BombPhases.ROLLING) || (bombModel.getPhase() == BombPhases.STANDING)) {
 
 					// AStarNode node =
 					// result[bombModel.getComponentCenterPosX()][bombModel.getComponentCenterPosY()];
@@ -711,7 +711,7 @@ public class SimpleRobot implements IRobot {
 				List<AStarNode> neighbors = getNeighbors(nodes, x);
 				for (AStarNode neighbor : neighbors) {
 					AStarNode visited = closeSet.get(neighbor.getId());
-					if (visited == null && !neighbor.isWall) {
+					if ((visited == null) && !neighbor.isWall) {
 						double g = x.g + calcManhattanDistance(x, neighbor);
 						AStarNode n = openSet.get(neighbor.getId());
 
