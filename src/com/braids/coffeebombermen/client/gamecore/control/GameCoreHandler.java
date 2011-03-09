@@ -27,10 +27,10 @@ import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BinaryWalkingShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BouncingWallShrinkPerformer;
-import com.braids.coffeebombermen.client.shrink.ExplodeOnHitShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DiseaseShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DrawWallShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.ExplodeOnHitShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.MassKillShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.ShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.SpiderBombShrinkPerformer;
@@ -53,7 +53,7 @@ import com.braids.coffeebombermen.utils.MathHelper;
 public class GameCoreHandler {
 
 	/** in tick */
-	private static final int                LAST_PLAYER_COUNT_DOWN_BEFORE_WIN       = 30;
+	public static final int                 LAST_PLAYER_COUNT_DOWN_BEFORE_WIN       = 30;
 
 	private static final int                MATCH_WON_SPIDER_BOMB_ROUNDS            = 16;
 
