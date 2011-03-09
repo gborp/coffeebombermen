@@ -78,7 +78,7 @@ public class Bomb {
 
 			if ((model.getType() != BombTypes.TRIGGERED) && !model.isDeadBomb()) {
 				model.setTickingIterations(model.getTickingIterations() + 1);
-				if (model.getTickingIterations() >= CoreConsts.BOMB_DETONATION_ITERATIONS) {
+				if (model.getTickingIterations() >= CoreConsts.BOMB_DETONATION_ITERATIONS * model.getExplodingTimeMultiplier()) {
 					model.setAboutToDetonate(true);
 				}
 			}

@@ -62,5 +62,11 @@ public enum Shrinkers {
 			return "Armageddon";
 		}
 	},
+	ExplodeOnHit {
+
+		public String toString() {
+			return "Explode on hit";
+		}
+	},
 	;
 }
