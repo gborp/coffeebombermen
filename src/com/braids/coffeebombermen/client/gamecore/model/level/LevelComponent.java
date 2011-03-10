@@ -80,4 +80,8 @@ public class LevelComponent extends IterableObject {
 		return lstFireModel.get(lstFireModel.size() - 1);
 	}
 
+	public FireModel getFire(int index) {
+		return lstFireModel.get(index);
+	}
+
 }
