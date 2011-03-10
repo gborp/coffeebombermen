@@ -23,6 +23,7 @@ import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.options.Diseases;
 import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 public class SimpleRobot implements IRobot {
 
@@ -381,7 +382,7 @@ public class SimpleRobot implements IRobot {
 	private String getKey(AStarNode source, AStarNode target) {
 		if (source.x == target.x) {
 			if (source.y == target.y) {
-				return null;
+				return Integer.valueOf(MathHelper.randomInt(5)).toString();
 			} else if (source.y < target.y) {
 				return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "0" : "1";
 			} else {
