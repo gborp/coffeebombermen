@@ -12,19 +12,19 @@ import com.braids.coffeebombermen.Consts;
 import com.braids.coffeebombermen.GameManager;
 import com.braids.coffeebombermen.MainFrame;
 import com.braids.coffeebombermen.MainMenuBar;
-import com.braids.coffeebombermen.MainMenuBar.GameStates;
 import com.braids.coffeebombermen.MessageHandler;
+import com.braids.coffeebombermen.MainMenuBar.GameStates;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.control.Player;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.client.gamecore.view.GameSceneMainComponentHandler;
 import com.braids.coffeebombermen.client.graphics.AnimationDatas;
 import com.braids.coffeebombermen.client.graphics.GraphicsManager;
-import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
-import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
 import com.braids.coffeebombermen.options.OptionsChangeListener;
 import com.braids.coffeebombermen.options.OptionsManager;
 import com.braids.coffeebombermen.options.ServerComponentOptions;
+import com.braids.coffeebombermen.options.OptConsts.NetworkLatencies;
+import com.braids.coffeebombermen.options.OptConsts.SceneRefreshModes;
 import com.braids.coffeebombermen.options.model.ClientOptions;
 import com.braids.coffeebombermen.options.model.PublicClientOptions;
 import com.braids.coffeebombermen.options.model.ServerOptions;
@@ -442,7 +442,9 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 		try {
 			newClientsActions = null;
 			// Receiving all required options and datas for a new game...
-			final Random random = new Random(Long.parseLong(serverStub.receiveMessage()));
+			long seed = Long.parseLong(serverStub.receiveMessage());
+			final Random random = new Random(seed);
+			System.out.println("Client.handleGameStarting() init random " + seed + " nextInt: " + random.nextInt());
 			final ServerOptions globalServerOptions = ServerOptions.parseFromString(serverStub.receiveMessage());
 			globalServerOptionsManager.setOptions(globalServerOptions);
 			LevelModel levelModel = null;
