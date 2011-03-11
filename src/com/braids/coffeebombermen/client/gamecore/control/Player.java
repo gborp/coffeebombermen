@@ -116,6 +116,7 @@ public class Player {
 	 *            the y coordinate of the initial position
 	 */
 	public void initForNextRound(final int posX, final int posY) {
+		System.out.println("Player.initForNextRound() " + posX + " - " + posY);
 		model.setPosX(posX);
 		model.setPosY(posY);
 
