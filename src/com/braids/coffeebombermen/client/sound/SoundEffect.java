@@ -48,7 +48,7 @@ public enum SoundEffect {
 
 	private final boolean allowParalell;
 	
-	private static Random soundRandom = new Random();
+	private static Random soundRandom ;
 
 	// Constructor to construct each element of the enum with its own sound
 	// file.
@@ -159,6 +159,10 @@ public enum SoundEffect {
 	}
 	
 	private static int randomInt(int max) {
+		if (soundRandom == null) {
+			soundRandom = new Random();
+		}
+
 		return (int) Math.floor(soundRandom.nextDouble() * (max + 1));
 	}
 }
