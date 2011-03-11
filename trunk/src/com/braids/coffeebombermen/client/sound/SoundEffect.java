@@ -3,6 +3,7 @@ package com.braids.coffeebombermen.client.sound;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -46,6 +47,8 @@ public enum SoundEffect {
 	private int           lastPlayIndex;
 
 	private final boolean allowParalell;
+	
+	private static Random soundRandom = new Random();
 
 	// Constructor to construct each element of the enum with its own sound
 	// file.
@@ -151,7 +154,11 @@ public enum SoundEffect {
 			return;
 		}
 		if (lastPlayIndex < 0) {
-			lastPlayIndex = MathHelper.randomInt(lstClip.size() - 1);
+			lastPlayIndex = randomInt(lstClip.size() - 1);
 		}
+	}
+	
+	private static int randomInt(int max) {
+		return (int) Math.floor(soundRandom.nextDouble() * (max + 1));
 	}
 }
