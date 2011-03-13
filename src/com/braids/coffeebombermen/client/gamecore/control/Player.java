@@ -510,6 +510,17 @@ public class Player {
 		}
 
 		if (model.hasNonAccumItem(Items.BOXING_GLOVES)) {
+			if (model.getActivity() != Activities.PUNCHING) {
+				int compPosX = model.getComponentPosX();
+				int compPosY = model.getComponentPosY();
+
+				for (PlayerModel pm : gameCoreHandler.getAllLivingPlayerModels()) {
+					if (pm != model && pm.getComponentPosX() == compPosX && pm.getComponentPosY() == compPosY) {
+						pm.setVitality(Math.max(0, pm.getVitality() - CoreConsts.MAX_PLAYER_VITALITY / 50));
+					}
+				}
+			}
+
 			model.setActivity(Activities.PUNCHING);
 
 			final Integer bombIndexAhead = gameCoreHandler.getBombIndexAtComponentPosition(model.getComponentPosX() + model.getDirectionXMultiplier(), model
@@ -528,6 +539,7 @@ public class Player {
 				gameCoreHandler.validateAndSetFlyingTargetPosY(bombModel, bombModel.getPosY() + bombModel.getDirectionYMultiplier()
 				        * CoreConsts.BOMB_FLYING_DISTANCE);
 			}
+
 		}
 
 		else if (model.hasNonAccumItem(Items.TRIGGER)) {

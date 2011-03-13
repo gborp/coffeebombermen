@@ -375,9 +375,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 */
 	public void setMenuStates(final String menuStates) {
 		final GeneralStringTokenizer optionsTokenizer = new GeneralStringTokenizer(menuStates);
-		((JCheckBoxMenuItem) menuItems[MenuItems.FULLSCREEN_WINDOW.ordinal()]).setState(optionsTokenizer.nextBooleanToken());
-		((JCheckBoxMenuItem) menuItems[MenuItems.SOUND_EFFECTS.ordinal()]).setState(optionsTokenizer.nextBooleanToken());
-
+		((JCheckBoxMenuItem) menuItems[MenuItems.FULLSCREEN_WINDOW.ordinal()]).setSelected(optionsTokenizer.nextBooleanToken());
+		((JCheckBoxMenuItem) menuItems[MenuItems.SOUND_EFFECTS.ordinal()]).setSelected(optionsTokenizer.nextBooleanToken());
 	}
 
 	/**
