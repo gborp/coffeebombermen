@@ -11,7 +11,6 @@ import javax.sound.sampled.Clip;
 
 import com.braids.coffeebombermen.Consts;
 import com.braids.coffeebombermen.utils.GeneralUtilities;
-import com.braids.coffeebombermen.utils.MathHelper;
 
 /**
  * This enum encapsulates all the sound effects of a game, so as to separate the
@@ -47,8 +46,8 @@ public enum SoundEffect {
 	private int           lastPlayIndex;
 
 	private final boolean allowParalell;
-	
-	private static Random soundRandom ;
+
+	private static Random soundRandom;
 
 	// Constructor to construct each element of the enum with its own sound
 	// file.
@@ -78,6 +77,10 @@ public enum SoundEffect {
 		if (!allowParalell && (lastPlayTime + MIN_LATENCY > System.nanoTime())) {
 			return;
 		}
+		SoundThread.play(this);
+	}
+
+	public void doPlay() {
 		lastPlayTime = System.nanoTime();
 		// no sound loaded
 		if ((lstClip == null) || lstClip.isEmpty()) {
@@ -157,7 +160,7 @@ public enum SoundEffect {
 			lastPlayIndex = randomInt(lstClip.size() - 1);
 		}
 	}
-	
+
 	private static int randomInt(int max) {
 		if (soundRandom == null) {
 			soundRandom = new Random();
