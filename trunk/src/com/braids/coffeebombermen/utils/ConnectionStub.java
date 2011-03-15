@@ -1,10 +1,13 @@
 package com.braids.coffeebombermen.utils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 /**
  * Represents a stub which is used to communicate with another computer.
@@ -29,8 +32,8 @@ public class ConnectionStub {
 	 */
 	public ConnectionStub(final Socket socket) throws IOException {
 		this.socket = socket;
-		input = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-		output = new PrintWriter(this.socket.getOutputStream(), true);
+		input = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), Charset.forName("utf-8")));
+		output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream(), Charset.forName("utf-8"))), true);
 	}
 
 	/**
