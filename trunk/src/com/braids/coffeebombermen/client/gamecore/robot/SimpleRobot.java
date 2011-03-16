@@ -43,6 +43,9 @@ public class SimpleRobot implements IRobot {
 	private boolean              hasOwnBombIsTriggered;
 	private boolean              startNextRound;
 
+	private boolean[]            reverseDisease;
+	private int                  reverseDiseasePointer;
+
 	private FileWriter           logger;
 	private static final boolean logging        = false;
 
@@ -50,6 +53,8 @@ public class SimpleRobot implements IRobot {
 		this.gameCoreHandler = gameCoreHandler;
 		this.index = index;
 		this.playerModel = playerModel;
+
+		reverseDisease = new boolean[25];
 
 		if (!logging) {
 			return;
@@ -74,6 +79,9 @@ public class SimpleRobot implements IRobot {
 	 */
 	@Override
 	public String getNextAction() {
+
+		reverseDisease[reverseDiseasePointer] = playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE);
+		reverseDiseasePointer = (reverseDiseasePointer + 1) % reverseDisease.length;
 
 		if (!gameCoreHandler.getHasMoreThanOneAlivePlayer()) {
 			return "";
@@ -376,6 +384,15 @@ public class SimpleRobot implements IRobot {
 		}
 	}
 
+	private boolean isReverseDisease() {
+		boolean actualReverse = reverseDisease[reverseDiseasePointer];
+		if (actualReverse && MathHelper.randomInt(100) > 10) {
+			return reverseDisease[(reverseDiseasePointer + 1) % reverseDisease.length];
+		}
+
+		return actualReverse;
+	}
+
 	/*
 	 * return key {0 - up, 1 - down, 2 - right, 3 - left, 4 - bomb, 5 - shift}
 	 */
@@ -384,14 +401,14 @@ public class SimpleRobot implements IRobot {
 			if (source.y == target.y) {
 				return Integer.valueOf(MathHelper.randomInt(5)).toString();
 			} else if (source.y < target.y) {
-				return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "0" : "1";
+				return isReverseDisease() ? "0" : "1";
 			} else {
-				return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "1" : "0";
+				return isReverseDisease() ? "1" : "0";
 			}
 		} else if (source.x < target.x) {
-			return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "3" : "2";
+			return isReverseDisease() ? "3" : "2";
 		} else {
-			return playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE) ? "2" : "3";
+			return isReverseDisease() ? "2" : "3";
 		}
 
 	}
