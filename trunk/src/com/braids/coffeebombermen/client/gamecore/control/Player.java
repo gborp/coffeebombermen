@@ -516,7 +516,7 @@ public class Player {
 
 				for (PlayerModel pm : gameCoreHandler.getAllLivingPlayerModels()) {
 					if (pm != model && pm.getComponentPosX() == compPosX && pm.getComponentPosY() == compPosY) {
-						pm.setVitality(Math.max(0, pm.getVitality() - CoreConsts.MAX_PLAYER_VITALITY / 50));
+						pm.setVitality(Math.max(0, pm.getVitality() - CoreConsts.MAX_PLAYER_VITALITY / 15));
 					}
 				}
 			}
