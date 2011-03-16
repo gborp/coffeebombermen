@@ -1,7 +1,5 @@
 package com.braids.coffeebombermen.client.shrink;
 
-import java.util.Random;
-
 import com.braids.coffeebombermen.client.gamecore.BombPhases;
 import com.braids.coffeebombermen.client.gamecore.BombTypes;
 import com.braids.coffeebombermen.client.gamecore.CoreConsts;
@@ -61,10 +59,6 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 
 	protected int getHeight() {
 		return getLevel().getModel().getHeight();
-	}
-
-	protected Random getRandom() {
-		return getGameCoreHandler().getRandom();
 	}
 
 	protected long getTick() {
@@ -139,8 +133,9 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 			int directionDif = 0;
 			while (directionDif < 4) {
 				Directions d = Directions.get((direction.ordinal() + directionDif) % 4);
-				if (gameCoreHandler.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(),
-				        newBombModel.getComponentPosY() + d.getYMultiplier())) {
+				if (gameCoreHandler.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel
+				        .getComponentPosY()
+				        + d.getYMultiplier())) {
 					newBombModel.setDirection(d);
 					return;
 				}
@@ -178,13 +173,13 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 		getGameCoreHandler().addNewBomb(newBomb);
 
 		// search for a direction open for roll
-		int direction = getRandom().nextInt(4);
+		int direction = MathHelper.nextInt(4);
 		GameCoreHandler mc = getGameCoreHandler();
 		int directionDif = 0;
 		while (directionDif < 4) {
 			Directions d = Directions.get((direction + directionDif) % 4);
-			if (mc.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(),
-			        newBombModel.getComponentPosY() + d.getYMultiplier())) {
+			if (mc.canBombRollToComponentPosition(newBombModel, newBombModel.getComponentPosX() + d.getXMultiplier(), newBombModel.getComponentPosY()
+			        + d.getYMultiplier())) {
 				newBombModel.setDirection(d);
 				return;
 			}

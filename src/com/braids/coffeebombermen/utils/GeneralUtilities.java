@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Provides general utilities.
@@ -164,14 +163,14 @@ public class GeneralUtilities {
 	 * @return a number between 0 and weights.length chosen randomly based on
 	 *         the weigths table using the specified random object
 	 */
-	public static int pickWeightedRandom(final int[] weights, final Random random) {
+	public static int pickWeightedRandom(final int[] weights) {
 		int sumWeight = 0;
 
 		for (final int weight : weights) {
 			sumWeight += weight;
 		}
 
-		int randomWeight = random.nextInt(sumWeight);
+		int randomWeight = MathHelper.nextInt(sumWeight);
 
 		for (int i = 0; i < weights.length; i++) {
 			randomWeight -= weights[i];

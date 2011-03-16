@@ -1,8 +1,8 @@
 package com.braids.coffeebombermen.client.shrink;
 
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
-import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.Shrinkers;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.model.ServerOptions;
 import com.braids.coffeebombermen.utils.MathHelper;
 
@@ -44,7 +44,7 @@ public class DefaultShrinkPerformer extends AbstractShrinkPerformer {
 		lastShrinkDirection = ShrinkDirection.RIGHT;
 		lastNewWallX = 0;
 		lastNewWallY = 0;
-		int shrinkTypeRandom = getRandom().nextInt(2);
+		int shrinkTypeRandom = MathHelper.nextInt(2);
 		if (shrinkTypeRandom == 0) {
 			shrinkType = ShrinkType.CLOCKWISE_SPIRAL;
 		} else if (shrinkTypeRandom == 1) {

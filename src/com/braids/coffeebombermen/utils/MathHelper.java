@@ -9,6 +9,10 @@ public class MathHelper {
 	private static final float HALF = 0.5f;
 	private static Random      random;
 
+	public static int nextInt(int max) {
+		return random.nextInt(max);
+	}
+
 	public static int randomInt(int max) {
 		return (int) Math.floor(random.nextDouble() * (max + 1));
 	}
