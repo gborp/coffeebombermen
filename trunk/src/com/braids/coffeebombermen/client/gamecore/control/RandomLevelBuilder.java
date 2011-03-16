@@ -36,8 +36,17 @@ public class RandomLevelBuilder {
 
 		maxGatewayEntranceNumber = gameCoreHandler.getGlobalServerOptions().getMaxGatewayEntranceNumber();
 		maxGatewayExitNumber = gameCoreHandler.getGlobalServerOptions().getMaxGatewayExitNumber();
-		chanceForGatewayEntrance = (levelWidth + levelHeight - 4) / maxGatewayEntranceNumber;
-		chanceForGatewayExit = (levelWidth + levelHeight - 4) / maxGatewayExitNumber;
+
+		if ((maxGatewayEntranceNumber == 0) || (maxGatewayExitNumber == 0)) {
+			chanceForGatewayEntrance = 0;
+			chanceForGatewayExit = 0;
+			maxGatewayEntranceNumber = 0;
+			maxGatewayExitNumber = 0;
+		} else {
+			chanceForGatewayEntrance = (levelWidth + levelHeight - 4) / maxGatewayEntranceNumber;
+			chanceForGatewayExit = (levelWidth + levelHeight - 4) / maxGatewayExitNumber;
+		}
+
 		nofGatewayEntrance = 0;
 		nofGatewayExit = 0;
 
