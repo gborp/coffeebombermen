@@ -10,6 +10,7 @@ import com.braids.coffeebombermen.options.OptConsts.Items;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.model.LevelOptions;
 import com.braids.coffeebombermen.utils.GeneralUtilities;
+import com.braids.coffeebombermen.utils.MathHelper;
 
 /**
  * The control layer of the level.
@@ -92,9 +93,9 @@ public class Level {
 		// cause it has to be appeared from the middle of the fire.
 		if ((levelComponent.getWall() == Walls.BRICK) && (levelComponent.getItem() == null)) {
 			// Item has to be generated once (see: time delayed multiple fire).
-			if (gameCoreHandler.getGlobalServerOptions().getGettingItemProbability() > gameCoreHandler.getRandom().nextInt(100)) {
+			if (gameCoreHandler.getGlobalServerOptions().getGettingItemProbability() > MathHelper.nextInt(100)) {
 				levelComponent.setItem(Items.values()[GeneralUtilities.pickWeightedRandom(gameCoreHandler.getGlobalServerOptions().getLevelOptions()
-				        .getItemWeights(), gameCoreHandler.getRandom())]);
+				        .getItemWeights())]);
 			}
 		}
 	}

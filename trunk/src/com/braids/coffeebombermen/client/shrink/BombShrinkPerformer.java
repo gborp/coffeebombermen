@@ -6,8 +6,8 @@ import java.util.List;
 import com.braids.coffeebombermen.client.gamecore.Directions;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
-import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.options.Shrinkers;
+import com.braids.coffeebombermen.options.OptConsts.Walls;
 import com.braids.coffeebombermen.utils.MathHelper;
 
 public class BombShrinkPerformer extends AbstractShrinkPerformer {
@@ -86,20 +86,20 @@ public class BombShrinkPerformer extends AbstractShrinkPerformer {
 					slot.direction = MathHelper.getRandomDirection();
 					switch (slot.direction) {
 						case UP:
-							slot.x = getRandom().nextInt(getWidth() - 3) + 1;
+							slot.x = MathHelper.nextInt(getWidth() - 3) + 1;
 							slot.y = getHeight() - 1;
 							break;
 						case DOWN:
-							slot.x = getRandom().nextInt(getWidth() - 3) + 1;
+							slot.x = MathHelper.nextInt(getWidth() - 3) + 1;
 							slot.y = 0;
 							break;
 						case LEFT:
 							slot.x = getWidth() - 1;
-							slot.y = getRandom().nextInt(getHeight() - 3) + 1;
+							slot.y = MathHelper.nextInt(getHeight() - 3) + 1;
 							break;
 						case RIGHT:
 							slot.x = 0;
-							slot.y = getRandom().nextInt(getHeight() - 3) + 1;
+							slot.y = MathHelper.nextInt(getHeight() - 3) + 1;
 							break;
 					}
 					lstBombsToAppear.add(slot);

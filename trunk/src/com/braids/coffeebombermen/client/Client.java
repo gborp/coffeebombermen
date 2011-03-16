@@ -32,6 +32,7 @@ import com.braids.coffeebombermen.server.PlayerCollector;
 import com.braids.coffeebombermen.server.Server;
 import com.braids.coffeebombermen.utils.ConnectionStub;
 import com.braids.coffeebombermen.utils.GeneralStringTokenizer;
+import com.braids.coffeebombermen.utils.MathHelper;
 import com.braids.coffeebombermen.utils.TimedIterableControlledThread;
 
 /**
@@ -444,6 +445,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			// Receiving all required options and datas for a new game...
 			long seed = Long.parseLong(serverStub.receiveMessage());
 			final Random random = new Random(seed);
+			MathHelper.setRandom(random);
 			System.out.println("Client.handleGameStarting() init random " + seed + " nextInt: " + random.nextInt());
 			final ServerOptions globalServerOptions = ServerOptions.parseFromString(serverStub.receiveMessage());
 			globalServerOptionsManager.setOptions(globalServerOptions);
@@ -455,7 +457,7 @@ public class Client extends TimedIterableControlledThread implements MessageHand
 			// We received all required informations... we can create game core
 			// handler now, and register that game is now in GameStates.PLAYING
 			// state
-			gameCoreHandler = new GameCoreHandler(gameManager, mainFrame, globalServerOptions, levelModel, random, clientsPublicClientOptions, ourIndex);
+			gameCoreHandler = new GameCoreHandler(gameManager, mainFrame, globalServerOptions, levelModel, clientsPublicClientOptions, ourIndex);
 			if (previousRoundsPoints != null) {
 				gameCoreHandler.setPoints(previousRoundsPoints);
 			}

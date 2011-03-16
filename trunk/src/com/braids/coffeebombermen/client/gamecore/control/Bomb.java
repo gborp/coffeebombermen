@@ -187,7 +187,8 @@ public class Bomb {
 							// new
 							// direction.
 							model.setPosY(model.getFlyingTargetPosY());
-							model.setDirection(Directions.values()[gameCoreHandler.getRandom().nextInt(Directions.values().length)]);
+
+							model.setDirection(Directions.values()[MathHelper.nextInt(Directions.values().length)]);
 						}
 						gameCoreHandler.validateAndSetFlyingTargetPosX(model, model.getFlyingTargetPosX() + model.getDirectionXMultiplier()
 						        * CoreConsts.LEVEL_COMPONENT_GRANULARITY);
@@ -201,7 +202,7 @@ public class Bomb {
 				if (gameCoreHandler.canBombRollToComponentPosition(model, model.getComponentPosX() + model.getDirectionXMultiplier(), model.getComponentPosY()
 				        + model.getDirectionYMultiplier())) {
 					if (MathHelper.checkRandomEvent(model.getCrazyPercent() / (CoreConsts.LEVEL_COMPONENT_GRANULARITY / CoreConsts.BOMB_ROLLING_SPEED))) {
-						Directions newDirection = Directions.values()[gameCoreHandler.getRandom().nextInt(Directions.values().length)];
+						Directions newDirection = Directions.values()[MathHelper.nextInt(Directions.values().length)];
 						if (newDirection.equals(model.getDirection()) || newDirection.equals(model.getDirection().getOpposite())) {
 							newDirection = newDirection.getTurnLeft();
 						}

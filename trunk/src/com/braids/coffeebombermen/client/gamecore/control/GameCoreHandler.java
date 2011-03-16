@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
@@ -72,8 +71,6 @@ public class GameCoreHandler {
 	 * generated, this can be null).
 	 */
 	private final LevelModel                receivedLevelModel;
-	/** Random object to be used when we generate random datas. */
-	private final Random                    random;
 	/** Vector of public client options of the clients. */
 	private final List<PublicClientOptions> clientsPublicClientOptions;
 	/** Our client index, our place among the clients. */
@@ -135,13 +132,11 @@ public class GameCoreHandler {
 	 *            our client index, our place among the clients
 	 */
 	public GameCoreHandler(final GameManager gameManager, final MainFrame mainFrame, final ServerOptions globalServerOptions, final LevelModel levelModel,
-	        final Random random, final List<PublicClientOptions> clientsPublicClientOptions, final int ourClientIndex) {
+	        final List<PublicClientOptions> clientsPublicClientOptions, final int ourClientIndex) {
 		this.gameManager = gameManager;
 		this.mainFrame = mainFrame;
 		this.globalServerOptions = globalServerOptions;
 		this.receivedLevelModel = levelModel;
-		this.random = random;
-		MathHelper.setRandom(random);
 		this.clientsPublicClientOptions = clientsPublicClientOptions;
 		this.ourClientIndex = ourClientIndex;
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
@@ -219,7 +214,7 @@ public class GameCoreHandler {
 	 */
 	public void initNextRound() {
 		level = globalServerOptions.getLevelName().equals(ServerComponentOptions.RANDOMLY_GENERATED_LEVEL_NAME) ? RandomLevelBuilder.generateRandomLevel(
-		        globalServerOptions, this, random) : new Level(receivedLevelModel.cloneLevel(), this);
+		        globalServerOptions, this) : new Level(receivedLevelModel.cloneLevel(), this);
 
 		LevelModel levelModel = level.getModel();
 
@@ -246,8 +241,8 @@ public class GameCoreHandler {
 			for (final Player player : players) {
 				// Now we generate random position
 
-				int componentPosX = 1 + getRandom().nextInt(maxComponentPosX);
-				int componentPosY = 1 + getRandom().nextInt(maxComponentPosY);
+				int componentPosX = 1 + MathHelper.nextInt(maxComponentPosX);
+				int componentPosY = 1 + MathHelper.nextInt(maxComponentPosY);
 
 				qualityCycle: while (true) {
 					trialCycle: for (int trialsCount = (maxComponentPosX - 1) * (maxComponentPosY - 1); trialsCount >= 0; trialsCount--) {
@@ -897,15 +892,6 @@ public class GameCoreHandler {
 	}
 
 	/**
-	 * Returns the Random object to be used for generating random datas.
-	 * 
-	 * @return the Random object to be used for generating random datas
-	 */
-	public Random getRandom() {
-		return random;
-	}
-
-	/**
 	 * Checks and sets the x coordiante of the target position in case of a
 	 * flying bomb.
 	 * 
@@ -1016,8 +1002,8 @@ public class GameCoreHandler {
 		final int maxComponentPosX = levelModel.getWidth() - 2;
 		final int maxComponentPosY = levelModel.getHeight() - 2;
 
-		int componentPosX = 1 + getRandom().nextInt(maxComponentPosX);
-		int componentPosY = 1 + getRandom().nextInt(maxComponentPosY);
+		int componentPosX = 1 + MathHelper.nextInt(maxComponentPosX);
+		int componentPosY = 1 + MathHelper.nextInt(maxComponentPosY);
 
 		for (int trialsCount = (maxComponentPosX - 1) * (maxComponentPosY - 1); trialsCount >= 0; trialsCount--) {
 			if (--componentPosX < 1) {
