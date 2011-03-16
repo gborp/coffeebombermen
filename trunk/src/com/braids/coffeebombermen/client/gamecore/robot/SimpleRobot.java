@@ -27,8 +27,10 @@ import com.braids.coffeebombermen.utils.MathHelper;
 
 public class SimpleRobot implements IRobot {
 
-	private static final int     COST_FIRE      = 50;
-	private static final int     COST_FIRE_LINE = 5;
+	private static final int     FIRST_MOVE_DELAY = 50;
+
+	private static final int     COST_FIRE        = 50;
+	private static final int     COST_FIRE_LINE   = 5;
 
 	private GameCoreHandler      gameCoreHandler;
 	private int                  index;
@@ -44,10 +46,10 @@ public class SimpleRobot implements IRobot {
 	private boolean              startNextRound;
 
 	private boolean[]            reverseDisease;
-	private int                  reverseDiseasePointer;
+	private int                  iteration;
 
 	private FileWriter           logger;
-	private static final boolean logging        = false;
+	private static final boolean logging          = false;
 
 	public SimpleRobot(GameCoreHandler gameCoreHandler, int index, PlayerModel playerModel) {
 		this.gameCoreHandler = gameCoreHandler;
@@ -80,8 +82,12 @@ public class SimpleRobot implements IRobot {
 	@Override
 	public String getNextAction() {
 
-		reverseDisease[reverseDiseasePointer] = playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE);
-		reverseDiseasePointer = (reverseDiseasePointer + 1) % reverseDisease.length;
+		iteration++;
+		reverseDisease[iteration % reverseDisease.length] = playerModel.getOwnedDiseases().containsKey(Diseases.REVERSE);
+
+		if (iteration < FIRST_MOVE_DELAY) {
+			return "";
+		}
 
 		if (!gameCoreHandler.getHasMoreThanOneAlivePlayer()) {
 			return "";
@@ -385,9 +391,9 @@ public class SimpleRobot implements IRobot {
 	}
 
 	private boolean isReverseDisease() {
-		boolean actualReverse = reverseDisease[reverseDiseasePointer];
+		boolean actualReverse = reverseDisease[iteration % reverseDisease.length];
 		if (actualReverse && MathHelper.randomInt(100) > 10) {
-			return reverseDisease[(reverseDiseasePointer + 1) % reverseDisease.length];
+			return reverseDisease[(iteration + 1) % reverseDisease.length];
 		}
 
 		return actualReverse;
