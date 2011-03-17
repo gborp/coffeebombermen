@@ -3,9 +3,7 @@ package com.braids.coffeebombermen.client.shrink;
 import java.util.ArrayList;
 
 import com.braids.coffeebombermen.client.gamecore.FireShapes;
-import com.braids.coffeebombermen.client.gamecore.control.Fire;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
-import com.braids.coffeebombermen.client.gamecore.model.FireModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.options.Shrinkers;
 import com.braids.coffeebombermen.options.OptConsts.Walls;
@@ -82,15 +80,6 @@ public class ArmageddonShrinkPerformer extends AbstractShrinkPerformer {
 		}
 
 		return true;
-	}
-
-	private void addFire(int x, int y, FireShapes shape) {
-		GameCoreHandler gch = getGameCoreHandler();
-		final Fire fire = new Fire(x, y, gch);
-		final FireModel fireModel = fire.getModel();
-		fireModel.setIterationCounter(Integer.MIN_VALUE);
-		fireModel.setShape(shape);
-		gch.getLevel().addFireToComponentPos(fire, x, y);
 	}
 
 	private boolean isFireIn(int x, int y) {

@@ -25,6 +25,7 @@ import com.braids.coffeebombermen.client.shrink.ArmageddonShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BinaryShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BinaryWalkingShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BombShrinkPerformer;
+import com.braids.coffeebombermen.client.shrink.BouncingFireShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.BouncingWallShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DefaultShrinkPerformer;
 import com.braids.coffeebombermen.client.shrink.DiseaseShrinkPerformer;
@@ -142,7 +143,7 @@ public class GameCoreHandler {
 		this.shrinkPerformers = new ShrinkPerformer[] { new DefaultShrinkPerformer(this), new BombShrinkPerformer(this), new BinaryShrinkPerformer(this),
 		        new BinaryWalkingShrinkPerformer(this), new SpiderBombShrinkPerformer(this), new MassKillShrinkPerformer(this),
 		        new DiseaseShrinkPerformer(this), new DrawWallShrinkPerformer(this), new BouncingWallShrinkPerformer(this),
-		        new ArmageddonShrinkPerformer(this), new ExplodeOnHitShrinkPerformer(this) };
+		        new ArmageddonShrinkPerformer(this), new ExplodeOnHitShrinkPerformer(this), new BouncingFireShrinkPerformer(this) };
 		clientsPlayers = new ArrayList<Player[]>(this.clientsPublicClientOptions.size());
 		clientsPlayerModels = new ArrayList<PlayerModel[]>(this.clientsPublicClientOptions.size());
 		for (int i = 0; i < this.clientsPublicClientOptions.size(); i++) {

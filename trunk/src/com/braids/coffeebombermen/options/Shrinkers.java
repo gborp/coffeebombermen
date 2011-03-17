@@ -68,5 +68,11 @@ public enum Shrinkers {
 			return "Explode on hit";
 		}
 	},
+	BouncingFire {
+
+		public String toString() {
+			return "Bouncing fire";
+		}
+	},
 	;
 }
