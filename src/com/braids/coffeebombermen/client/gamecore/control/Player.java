@@ -509,7 +509,7 @@ public class Player {
 			}
 		}
 
-		if (model.hasNonAccumItem(Items.BOXING_GLOVES)) {
+		if (model.hasNonAccumItem(Items.GOLDEN_BOXING_GLOVES)) {
 			if (model.getActivity() != Activities.PUNCHING) {
 				int compPosX = model.getComponentPosX();
 				int compPosY = model.getComponentPosY();
@@ -521,6 +521,10 @@ public class Player {
 				}
 			}
 
+			model.setActivity(Activities.PUNCHING);
+		}
+
+		if (model.hasNonAccumItem(Items.BOXING_GLOVES)) {
 			model.setActivity(Activities.PUNCHING);
 
 			final Integer bombIndexAhead = gameCoreHandler.getBombIndexAtComponentPosition(model.getComponentPosX() + model.getDirectionXMultiplier(), model
