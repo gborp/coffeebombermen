@@ -76,6 +76,10 @@ public class LevelComponent extends IterableObject {
 		lstFireModel.remove(fire);
 	}
 
+	public void removeAllFire() {
+		lstFireModel.clear();
+	}
+
 	public FireModel getLastFire() {
 		return lstFireModel.get(lstFireModel.size() - 1);
 	}

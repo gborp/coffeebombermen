@@ -115,6 +115,11 @@ public class Level {
 		model.getComponent(componentPosX, componentPosY).removeFire(fire.getModel());
 	}
 
+	public void removeAllFireFromComponentPos(final int componentPosX, final int componentPosY) {
+		fireVectorss[componentPosY][componentPosX].clear();
+		model.getComponent(componentPosX, componentPosY).removeAllFire();
+	}
+
 	/**
 	 * Performs operations which are required by passing the time.
 	 */

@@ -4,10 +4,13 @@ import com.braids.coffeebombermen.client.gamecore.BombPhases;
 import com.braids.coffeebombermen.client.gamecore.BombTypes;
 import com.braids.coffeebombermen.client.gamecore.CoreConsts;
 import com.braids.coffeebombermen.client.gamecore.Directions;
+import com.braids.coffeebombermen.client.gamecore.FireShapes;
 import com.braids.coffeebombermen.client.gamecore.control.Bomb;
+import com.braids.coffeebombermen.client.gamecore.control.Fire;
 import com.braids.coffeebombermen.client.gamecore.control.GameCoreHandler;
 import com.braids.coffeebombermen.client.gamecore.control.Level;
 import com.braids.coffeebombermen.client.gamecore.model.BombModel;
+import com.braids.coffeebombermen.client.gamecore.model.FireModel;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelComponent;
 import com.braids.coffeebombermen.client.gamecore.model.level.LevelModel;
 import com.braids.coffeebombermen.options.OptConsts.Items;
@@ -186,6 +189,20 @@ public abstract class AbstractShrinkPerformer implements ShrinkPerformer {
 			directionDif++;
 		}
 		newBombModel.setDirection(Directions.get(direction));
+	}
+
+	protected void removeFire(int x, int y) {
+		GameCoreHandler gch = getGameCoreHandler();
+		gch.getLevel().removeAllFireFromComponentPos(x, y);
+	}
+
+	protected void addFire(int x, int y, FireShapes shape) {
+		GameCoreHandler gch = getGameCoreHandler();
+		final Fire fire = new Fire(x, y, gch);
+		final FireModel fireModel = fire.getModel();
+		fireModel.setIterationCounter(Integer.MIN_VALUE);
+		fireModel.setShape(shape);
+		gch.getLevel().addFireToComponentPos(fire, x, y);
 	}
 
 }
