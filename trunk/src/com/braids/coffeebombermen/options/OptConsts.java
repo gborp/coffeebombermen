@@ -249,6 +249,13 @@ public class OptConsts {
 				return "Swap teleport";
 			}
 		},
+		/** The Golden Boxing Gloves item. */
+		GOLDEN_BOXING_GLOVES {
+
+			public String toString() {
+				return "Golden Boxing gloves";
+			}
+		},
 	}
 
 	/**
@@ -257,49 +264,49 @@ public class OptConsts {
 	// attila: toString is only for debug.
 	public enum Walls {
 		/** Empty wall. */
-		EMPTY{
+		EMPTY {
 
 			public String toString() {
 				return "Empty wall";
 			}
 		},
 		/** Concrete wall. */
-		CONCRETE{
+		CONCRETE {
 
 			public String toString() {
 				return "Concrete wall";
 			}
 		},
 		/** Brick wall. */
-		BRICK{
+		BRICK {
 
 			public String toString() {
 				return "Brick wall";
 			}
 		},
 		/** the shrinking game area's wall */
-		DEATH{
+		DEATH {
 
 			public String toString() {
 				return "Death wall";
 			}
 		},
 		/** the shrinking game area's wall */
-		DEATH_WARN{
+		DEATH_WARN {
 
 			public String toString() {
 				return "DeathWarn wall";
 			}
 		},
 		/** gateway entrance wall */
-		GATEWAY_ENTRANCE{
+		GATEWAY_ENTRANCE {
 
 			public String toString() {
 				return "GatewayEntrance wall";
 			}
 		},
 		/** gateway exit wall */
-		GATEWAY_EXIT{
+		GATEWAY_EXIT {
 
 			public String toString() {
 				return "GatewayExit wall";
@@ -325,11 +332,13 @@ public class OptConsts {
 		// Bomb sprinkle neutralizes Blue Gloves
 		NEUTRALIZER_ITEMS_MAP.put(Items.BOMB_SPRINKLE, EnumSet.of(Items.BLUE_GLOVES));
 		// Trigger neutralizes Boxing Gloves, Wall building and Jelly
-		NEUTRALIZER_ITEMS_MAP.put(Items.TRIGGER, EnumSet.of(Items.BOXING_GLOVES, Items.WALL_BUILDING, Items.JELLY));
+		NEUTRALIZER_ITEMS_MAP.put(Items.TRIGGER, EnumSet.of(Items.BOXING_GLOVES, Items.WALL_BUILDING, Items.JELLY, Items.GOLDEN_BOXING_GLOVES));
 		// Boxing Gloves neutralizes Trigger and Wall building
-		NEUTRALIZER_ITEMS_MAP.put(Items.BOXING_GLOVES, EnumSet.of(Items.TRIGGER, Items.WALL_BUILDING));
+		NEUTRALIZER_ITEMS_MAP.put(Items.BOXING_GLOVES, EnumSet.of(Items.TRIGGER, Items.WALL_BUILDING, Items.GOLDEN_BOXING_GLOVES));
+		// Boxing Gloves neutralizes Trigger and Wall building
+		NEUTRALIZER_ITEMS_MAP.put(Items.GOLDEN_BOXING_GLOVES, EnumSet.of(Items.TRIGGER, Items.WALL_BUILDING, Items.BOXING_GLOVES));
 		// Wall building neutralizes Trigger and Boxing Gloves
-		NEUTRALIZER_ITEMS_MAP.put(Items.WALL_BUILDING, EnumSet.of(Items.TRIGGER, Items.BOXING_GLOVES, Items.WALL_CLIMBING));
+		NEUTRALIZER_ITEMS_MAP.put(Items.WALL_BUILDING, EnumSet.of(Items.TRIGGER, Items.BOXING_GLOVES, Items.WALL_CLIMBING, Items.GOLDEN_BOXING_GLOVES));
 		// Jelly neutralizes Trigger
 		NEUTRALIZER_ITEMS_MAP.put(Items.JELLY, EnumSet.of(Items.TRIGGER));
 
