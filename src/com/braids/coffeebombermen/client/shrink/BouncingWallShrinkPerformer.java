@@ -42,7 +42,7 @@ public class BouncingWallShrinkPerformer extends AbstractShrinkPerformer {
 
 				if (nextWallLatency == 0) {
 					lstSlot.add(new Slot(lstSlot.size()));
-					nextWallLatency = BouncingWallShrinkPerformer.this.getWidth() * 2;
+					nextWallLatency = BouncingWallShrinkPerformer.this.getWidth() / 3;
 				} else {
 					nextWallLatency--;
 				}

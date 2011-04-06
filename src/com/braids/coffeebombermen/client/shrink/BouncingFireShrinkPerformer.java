@@ -41,7 +41,7 @@ public class BouncingFireShrinkPerformer extends AbstractShrinkPerformer {
 
 				if (nextWallLatency == 0) {
 					lstSlot.add(new Slot(lstSlot.size()));
-					nextWallLatency = BouncingFireShrinkPerformer.this.getWidth() * 2;
+					nextWallLatency = BouncingFireShrinkPerformer.this.getWidth() / 3;
 				} else {
 					nextWallLatency--;
 				}
