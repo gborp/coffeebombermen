@@ -1,0 +1,1 @@
+Coffee BomberMen is a multiplayer lan-based bomberman clone written in java. It's a fork of the game called BomberMen. The code, the gfx and the sfx are heavily rewritten, bugfixed, enhanched.
